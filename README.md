@@ -2,7 +2,3 @@
 
 Final project for BSc in CS.
 
-
-
-Test
-
