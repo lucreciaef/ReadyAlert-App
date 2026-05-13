@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { styles } from './src/styles/appStyles';
 import { RightSideMenu } from './src/components/RightSideMenu';
