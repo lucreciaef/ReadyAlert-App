@@ -19,7 +19,7 @@ export default function App() {
 
   function renderScreenTitle() {
     if (activeTab === 'home') return 'Dashboard';
-    if (activeTab === 'national') return 'National View';
+    if (activeTab === 'national') return 'National view';
     if (activeTab === 'emergency') return 'Emergency';
     return 'Dashboard';
   }
