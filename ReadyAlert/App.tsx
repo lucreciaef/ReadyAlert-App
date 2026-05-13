@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
-import { styles } from './src/styles/appStyles';
+import { card, layout, typography } from './src/styles/appStyles';
 import { RightSideMenu } from './src/components/RightSideMenu';
 
 export default function App() {
@@ -26,14 +26,14 @@ export default function App() {
   }
 
   return (
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-        <View style={styles.app}>
-          <View style={styles.content}>
-            <Text style={styles.title}>{renderScreenTitle()}</Text>
+      <SafeAreaView className={layout.safeArea} edges={['bottom']}>
+        <View className={layout.app}>
+          <View className={layout.content}>
+            <Text className={typography.title}>{renderScreenTitle()}</Text>
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Main content area</Text>
-              <Text style={styles.cardText}>
+            <View className={card.container}>
+              <Text className={card.title}>Main content area</Text>
+              <Text className={card.text}>
                 This is where your dashboard content will go.
               </Text>
             </View>

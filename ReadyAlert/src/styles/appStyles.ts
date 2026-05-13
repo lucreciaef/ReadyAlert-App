@@ -1,102 +1,39 @@
-import { StyleSheet } from 'react-native';
-import { colors } from './colors';
+export const layout = {
+  safeArea: 'flex-1 bg-background',
+  app: 'flex-1',
+  content: 'flex-1 p-5 pt-16',
+};
 
-export const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: colors.background,
-    },
-    app: {
-        flex: 1,
-    },
-    content: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 64,
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    card: {
-        backgroundColor: colors.surface,
-        padding: 20,
-        borderRadius: 16,
-    },
-    cardTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    cardText: {
-        fontSize: 16,
-        color: colors.textMuted,
-    },
-    bottomMenu: {
-        height: 76,
-        backgroundColor: colors.surface,
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-    menuButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1,
-    },
-    menuLabel: {
-        fontSize: 12,
-        marginTop: 4,
-        color: colors.textMuted,
-    },
-    activeMenuLabel: {
-        color: colors.primary,
-        fontWeight: 'bold',
-    },
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        flexDirection: 'row',
-    },
-    overlayBackground: {
-        flex: 1,
-        backgroundColor: colors.overlay,
-    },
-    sideMenu: {
-        width: 280,
-        backgroundColor: colors.surface,
-        padding: 24,
-        paddingTop: 64,
-    },
-    sideMenuTitle: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        marginBottom: 24,
-    },
-    sideMenuItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 14,
-        gap: 12,
-    },
-    sideMenuText: {
-        fontSize: 18,
-    },
-    closeButton: {
-        marginTop: 32,
-        backgroundColor: colors.primary,
-        padding: 14,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: colors.surface,
-        fontWeight: 'bold',
-    },
-});
+export const typography = {
+  title: 'text-3xl font-bold mb-5',
+  cardTitle: 'text-xl font-bold mb-2',
+  cardText: 'text-base text-text-muted',
+};
+
+export const card = {
+  container: 'bg-surface p-5 rounded-2xl',
+  title: typography.cardTitle,
+  text: typography.cardText,
+};
+
+export const bottomMenu = {
+  container:
+    'h-20 bg-surface border-t border-border flex flex-row justify-around items-center',
+  button: 'flex-1 items-center justify-center',
+  label: 'text-xs mt-1 text-text-muted',
+  labelActive: 'text-primary font-bold',
+};
+
+export const overlay = {
+  container: 'absolute inset-0 flex flex-row',
+  background: 'flex-1 bg-overlay',
+};
+
+export const sideMenu = {
+  container: 'w-70 bg-surface p-6 pt-16',
+  title: 'text-2xl font-bold mb-6',
+  item: 'flex flex-row items-center py-3 gap-3',
+  text: 'text-lg',
+  closeButton: 'mt-8 bg-primary p-3 rounded-lg items-center',
+  closeButtonText: 'text-surface font-bold',
+};

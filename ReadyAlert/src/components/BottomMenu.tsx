@@ -1,12 +1,10 @@
-import {View} from "react-native";
-import {colors} from "../styles/colors";
-import {Ionicons} from "@expo/vector-icons";
-import {styles} from "../styles/appStyles";
-import {MenuButton} from "./MenuButton";
+import { View } from 'react-native';
+import { bottomMenu } from '../styles/appStyles';
+import { MenuButton } from './MenuButton';
 
 export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }) {
     return (
-        <View style={styles.bottomMenu}>
+        <View className={bottomMenu.container}>
             <MenuButton
                 label="Home"
                 icon="home-outline"

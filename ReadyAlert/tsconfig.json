@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "nativewind"
+    "jsxImportSource": "nativewind",
+    "types": [
+      "nativewind/types"
+    ]
   },
   "extends": "expo/tsconfig.base"
 }
