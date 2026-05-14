@@ -1,32 +1,52 @@
-import {Pressable, Text, TouchableOpacity, View} from "react-native";
-import {styles} from "../styles/appStyles";
-import {Ionicons} from "@expo/vector-icons";
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { getOverlayStyles, getSideMenuStyles } from '../styles/appStyles';
+import { getThemeColors } from '../styles/themeColors';
+import { useTheme } from '../theme/ThemeContext';
 
-export function RightSideMenu({ closeMenu }) {
+export function RightSideMenu({ closeMenu, onSettingsPress }) {
+    const { isDark, toggleTheme } = useTheme();
+    const overlay = getOverlayStyles(isDark);
+    const sideMenu = getSideMenuStyles(isDark);
+    const colors = getThemeColors(isDark);
+
     return (
-        <View style={styles.overlay}>
-            <Pressable style={styles.overlayBackground} onPress={closeMenu}/>
+        <View className={overlay.container}>
+            <Pressable className={overlay.background} onPress={closeMenu} />
 
-            <View style={styles.sideMenu}>
-                <Text style={styles.sideMenuTitle}>More</Text>
+            <View className={sideMenu.container}>
+                <Text className={sideMenu.title}>More</Text>
 
-                <TouchableOpacity style={styles.sideMenuItem}>
-                    <Ionicons name="settings-outline" size={22} color="#222"/>
-                    <Text style={styles.sideMenuText}>Settings</Text>
+                <TouchableOpacity className={sideMenu.item} onPress={onSettingsPress}>
+                    <Ionicons name="settings-outline" size={22} color={colors.text} />
+                    <Text className={sideMenu.text}>Settings</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.sideMenuItem}>
-                    <Ionicons name="information-circle-outline" size={22} color="#222"/>
-                    <Text style={styles.sideMenuText}>About</Text>
+                <TouchableOpacity className={sideMenu.item} onPress={toggleTheme}>
+                    <Ionicons
+                        name={isDark ? 'sunny' : 'moon'}
+                        size={22}
+                        color={colors.primary}
+                    />
+                    <View className="flex-1 flex-row items-center justify-between">
+                        <Text className={sideMenu.text}>
+                            {isDark ? 'Light' : 'Dark'} Mode
+                        </Text>
+                    </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.sideMenuItem}>
-                    <Ionicons name="help-circle-outline" size={22} color="#222"/>
-                    <Text style={styles.sideMenuText}>Help</Text>
+                <TouchableOpacity className={sideMenu.item}>
+                    <Ionicons name="information-circle-outline" size={22} color={colors.text} />
+                    <Text className={sideMenu.text}>About</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.closeButton} onPress={closeMenu}>
-                    <Text style={styles.closeButtonText}>Close</Text>
+                <TouchableOpacity className={sideMenu.item}>
+                    <Ionicons name="help-circle-outline" size={22} color={colors.text} />
+                    <Text className={sideMenu.text}>Help</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity className={sideMenu.closeButton} onPress={closeMenu}>
+                    <Text className={sideMenu.closeButtonText}>Close</Text>
                 </TouchableOpacity>
             </View>
         </View>
