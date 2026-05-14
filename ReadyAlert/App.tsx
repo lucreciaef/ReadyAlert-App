@@ -7,6 +7,7 @@ import { getCardStyles, getLayoutStyles, getTypographyStyles } from './src/style
 import { RightSideMenu } from './src/components/RightSideMenu';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { SettingsPage } from './src/pages/SettingsPage';
+import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -38,6 +39,11 @@ function AppContent() {
       return <SettingsPage />;
     }
 
+    if (activeTab === 'home') {
+      return <HomeDashboardPage />;
+    }
+
+    // Placeholder for national and emergency tabs
     return (
       <>
         <Text className={typography.title}>{renderScreenTitle()}</Text>
@@ -45,7 +51,7 @@ function AppContent() {
         <View className={card.container}>
           <Text className={card.title}>Main content area</Text>
           <Text className={card.text}>
-            This is where your dashboard content will go.
+            This is where your {renderScreenTitle().toLowerCase()} content will go.
           </Text>
         </View>
       </>
