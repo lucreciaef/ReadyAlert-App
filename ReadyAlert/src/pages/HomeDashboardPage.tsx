@@ -6,10 +6,7 @@ import { getCardStyles, getLayoutStyles, getTypographyStyles } from '../styles/a
 import { getThemeColors } from '../styles/themeColors';
 import { fetchWarningsForLocation, getLocationName, getWarningCount } from '../api';
 import { GeosphereResponse, Warning } from '../api';
-
-// Vienna coordinates as default placeholder
-const DEFAULT_LON = 16.356388;
-const DEFAULT_LAT = 48.248611;
+import { useLocation } from '../hooks/useLocation';
 
 export function HomeDashboardPage() {
   const { isDark } = useTheme();
@@ -18,21 +15,26 @@ export function HomeDashboardPage() {
   const card = getCardStyles(isDark);
   const colors = getThemeColors(isDark);
 
+  // Get user location
+  const { coords: userLocation, loading: locationLoading, error: locationError, requestPermission } = useLocation();
+
   const [apiData, setApiData] = useState<GeosphereResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedWarning, setExpandedWarning] = useState<number | null>(null);
 
-  // Fetch warnings on component mount
+  // Fetch warnings when location is available
   useEffect(() => {
-    loadWarnings();
-  }, []);
+    if (userLocation && !locationLoading) {
+      loadWarnings(userLocation.longitude, userLocation.latitude);
+    }
+  }, [userLocation, locationLoading]);
 
-  const loadWarnings = async () => {
+  const loadWarnings = async (lon: number, lat: number) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchWarningsForLocation(DEFAULT_LON, DEFAULT_LAT, 'en');
+      const data = await fetchWarningsForLocation(lon, lat, 'en');
       setApiData(data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch warnings';
@@ -43,10 +45,20 @@ export function HomeDashboardPage() {
     }
   };
 
+  const handleRefresh = () => {
+    if (userLocation) {
+      loadWarnings(userLocation.longitude, userLocation.latitude);
+    } else {
+      requestPermission();
+    }
+  };
+
   const warningCount = getWarningCount(apiData);
   const locationName = getLocationName(apiData);
   const hasWarnings = warningCount > 0;
   const warnings = apiData?.properties?.warnings || [];
+
+  const isInitialLoading = locationLoading || !userLocation;
 
   return (
     <ScrollView className={layout.content} showsVerticalScrollIndicator={false}>
@@ -54,16 +66,33 @@ export function HomeDashboardPage() {
       <View className={card.container}>
         <View className="flex flex-row items-center justify-between mb-4">
           <Text className={typography.cardTitle}>Current Warnings</Text>
-          <TouchableOpacity onPress={loadWarnings} disabled={loading}>
+          <TouchableOpacity onPress={handleRefresh} disabled={loading || isInitialLoading}>
             <Ionicons
               name="refresh"
               size={20}
-              color={loading ? colors.textMuted : colors.primary}
+              color={loading || isInitialLoading ? colors.textMuted : colors.primary}
             />
           </TouchableOpacity>
         </View>
 
-        {loading && (
+        {isInitialLoading && (
+          <View className="py-8 items-center">
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text className={`mt-3 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
+              Getting your location...
+            </Text>
+          </View>
+        )}
+
+        {locationError && !userLocation && (
+          <View className={`p-4 rounded-lg ${isDark ? 'bg-yellow-900/20' : 'bg-yellow-100'}`}>
+            <Text className={`text-sm ${isDark ? 'text-yellow-300' : 'text-yellow-700'}`}>
+              {locationError}
+            </Text>
+          </View>
+        )}
+
+        {loading && !isInitialLoading && (
           <View className="py-8 items-center">
             <ActivityIndicator size="large" color={colors.primary} />
             <Text className={`mt-3 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
@@ -187,11 +216,13 @@ export function HomeDashboardPage() {
       )}
 
       {/* Debug Info */}
-      <View className={`mt-4 mb-4 p-3 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-        <Text className={`text-xs font-mono ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
-          📍 Location: Vienna (Lat: {DEFAULT_LAT}, Lon: {DEFAULT_LON})
-        </Text>
-      </View>
+      {userLocation && (
+        <View className={`mt-4 mb-4 p-3 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
+          <Text className={`text-xs font-mono ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
+            📍 Your Location: Lat {userLocation.latitude.toFixed(4)}, Lon {userLocation.longitude.toFixed(4)}
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 }

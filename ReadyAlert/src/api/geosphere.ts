@@ -10,7 +10,7 @@ const BASE_URL = 'https://warnungen.zamg.at/wsapp/api';
 const ENDPOINT = '/getWarningsForCoords';
 
 // Toggle this to use mock data instead of real API
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
 // Toggle this to use mock data WITH warnings
 const USE_MOCK_WITH_WARNINGS = true;
 

@@ -49,9 +49,9 @@ function AppContent() {
         <Text className={typography.title}>{renderScreenTitle()}</Text>
 
         <View className={card.container}>
-          <Text className={card.title}>Main content area</Text>
+          <Text className={card.title}>Main content area placeholder</Text>
           <Text className={card.text}>
-            This is where your {renderScreenTitle().toLowerCase()} content will go.
+            Placeholder.
           </Text>
         </View>
       </>
