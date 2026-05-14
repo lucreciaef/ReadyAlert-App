@@ -3,12 +3,19 @@ import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
-import { card, layout, typography } from './src/styles/appStyles';
+import { getCardStyles, getLayoutStyles, getTypographyStyles } from './src/styles/appStyles';
 import { RightSideMenu } from './src/components/RightSideMenu';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+import { SettingsPage } from './src/pages/SettingsPage';
 
-export default function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isDark } = useTheme();
+
+  const layout = getLayoutStyles(isDark);
+  const typography = getTypographyStyles(isDark);
+  const card = getCardStyles(isDark);
 
   function openMoreMenu() {
     setIsMenuOpen(true);
@@ -22,21 +29,37 @@ export default function App() {
     if (activeTab === 'home') return 'Dashboard';
     if (activeTab === 'national') return 'National view';
     if (activeTab === 'emergency') return 'Emergency';
+    if (activeTab === 'settings') return 'Settings';
     return 'Dashboard';
   }
 
+  function renderContent() {
+    if (activeTab === 'settings') {
+      return <SettingsPage />;
+    }
+
+    return (
+      <>
+        <Text className={typography.title}>{renderScreenTitle()}</Text>
+
+        <View className={card.container}>
+          <Text className={card.title}>Main content area</Text>
+          <Text className={card.text}>
+            This is where your dashboard content will go.
+          </Text>
+        </View>
+      </>
+    );
+  }
+
   return (
-      <SafeAreaView className={layout.safeArea} edges={['bottom']}>
+      <SafeAreaView
+        className={`${layout.safeArea} ${isDark ? 'dark' : ''}`}
+        edges={['bottom']}
+      >
         <View className={layout.app}>
           <View className={layout.content}>
-            <Text className={typography.title}>{renderScreenTitle()}</Text>
-
-            <View className={card.container}>
-              <Text className={card.title}>Main content area</Text>
-              <Text className={card.text}>
-                This is where your dashboard content will go.
-              </Text>
-            </View>
+            {renderContent()}
           </View>
 
           <BottomMenu
@@ -45,8 +68,24 @@ export default function App() {
               openMoreMenu={openMoreMenu}
           />
 
-          {isMenuOpen && <RightSideMenu closeMenu={closeMoreMenu} />}
+          {isMenuOpen && (
+            <RightSideMenu
+              closeMenu={closeMoreMenu}
+              onSettingsPress={() => {
+                setActiveTab('settings');
+                closeMoreMenu();
+              }}
+            />
+          )}
         </View>
       </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }

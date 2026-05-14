@@ -1,9 +1,14 @@
 import { Text, TouchableOpacity } from 'react-native';
-import { colors } from '../styles/colors';
 import { Ionicons } from '@expo/vector-icons';
-import { bottomMenu } from '../styles/appStyles';
+import { getThemeColors } from '../styles/themeColors';
+import { getBottomMenuStyles } from '../styles/appStyles';
+import { useTheme } from '../theme/ThemeContext';
 
 export function MenuButton({ label, icon, active, onPress }) {
+    const { isDark } = useTheme();
+    const colors = getThemeColors(isDark);
+    const bottomMenu = getBottomMenuStyles(isDark);
+
     return (
         <TouchableOpacity className={bottomMenu.button} onPress={onPress}>
             <Ionicons
