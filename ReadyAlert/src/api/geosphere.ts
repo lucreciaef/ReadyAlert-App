@@ -1,6 +1,6 @@
 /**
- * Geosphere API Service
- * Handles requests to the Austrian ZAMG warning API
+ * Service layer for the Austrian Geosphere (ZAMG) weather warning API.
+ * Exposes functions to fetch active warnings for given coordinates and to extract summary data from the response.
  */
 
 import { GeoLocation, GeosphereResponse } from './types';
@@ -36,16 +36,16 @@ interface GeoLocationParams extends GeoLocation {
 export async function fetchWarningsForLocation(
   lon: number,
   lat: number,
-  lang: string = 'en'
+  lang: string = 'en',
 ): Promise<GeosphereResponse> {
   try {
     // Use mock data if enabled
     if (USE_MOCK_DATA) {
-      console.log('🧪 Using MOCK data mode');
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+      console.log('Using mock data mode');
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
 
       const mockData = USE_MOCK_WITH_WARNINGS ? mockResponseWithWarnings : mockResponseNoWarnings;
-      console.log('✅ Mock data returned:', mockData);
+      console.log('Mock data returned:', mockData);
       return mockData;
     }
 
@@ -57,17 +57,17 @@ export async function fetchWarningsForLocation(
     });
 
     const url = `${BASE_URL}${ENDPOINT}?${params.toString()}`;
-    console.log('🌍 Fetching Geosphere warnings from:', url);
+    console.log('Fetching warnings from:', url);
 
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
 
     if (!response.ok) {
-      console.warn('⚠️ Geosphere HTTP error:', response.status, response.statusText);
+      console.warn('Geosphere HTTP error:', response.status, response.statusText);
       // Treat any HTTP error as an unsupported-location signal and show a
       // user-friendly toast instead of a raw "API Error: 404" message.
       throw new OutsideAustriaError();
@@ -78,7 +78,7 @@ export async function fetchWarningsForLocation(
     // The API returns HTTP 200 with {type:"Error"} for unsupported coordinates
     if (data?.type === 'Error') {
       const apiMsg: string = data.msg ?? 'Unknown API error';
-      console.warn('⚠️ Geosphere API error:', apiMsg);
+      console.warn('Geosphere API error:', apiMsg);
       // Provide a user-friendly message for the "outside Austria" case
       if (apiMsg.toLowerCase().includes('municipal')) {
         throw new OutsideAustriaError();
@@ -86,10 +86,10 @@ export async function fetchWarningsForLocation(
       throw new Error(apiMsg);
     }
 
-    console.log('✅ Geosphere API response received:', data);
+    console.log('Geosphere API response received:', data);
     return data as GeosphereResponse;
   } catch (error) {
-    console.error('❌ Error fetching warnings:', error);
+    console.error('🔴 Error fetching warnings:', error);
     throw error;
   }
 }
@@ -109,11 +109,3 @@ export function getLocationName(data: GeosphereResponse | null): string {
   if (!data?.properties?.location?.properties?.name) return 'Unknown Location';
   return data.properties.location.properties.name;
 }
-
-/**
- * Check if there are any active warnings
- */
-export function hasActiveWarnings(data: GeosphereResponse | null): boolean {
-  return getWarningCount(data) > 0;
-}
-
