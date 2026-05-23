@@ -160,7 +160,7 @@ export function HomeDashboardPage() {
         <View className="mt-4 gap-3">
           {warnings.map((warning: Warning, index: number) => (
             <TouchableOpacity
-              key={warning.properties.warnid}
+              key={`${warning.properties.warnid}-${index}`}
               onPress={() => setExpandedWarning(expandedWarning === index ? null : index)}
               className={`p-4 rounded-lg ${isDark ? 'bg-surface-dark border border-red-900/30' : 'bg-yellow-50 border border-yellow-200'}`}
             >
