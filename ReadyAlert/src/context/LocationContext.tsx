@@ -36,11 +36,11 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     requestPermission: gps.requestPermission,
     isDebugMode: debugCoords !== null,
     setDebugLondon: () => {
-      console.log('🐛 Debug: overriding location to London');
+      console.log('Debug: overriding location to London');
       setDebugCoords(LONDON);
     },
     clearDebugLocation: () => {
-      console.log('🐛 Debug: cleared location override, back to GPS');
+      console.log('Debug: cleared location override, back to GPS');
       setDebugCoords(null);
     },
   };
