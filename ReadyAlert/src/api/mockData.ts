@@ -1,5 +1,6 @@
 /**
- * Mock data for testing Geosphere API responses
+ * Static mock responses for the Geosphere API, used during local development when USE_MOCK_DATA is enabled.
+ * Contains one fixture with no active warnings (Vienna-Döbling) and one with active wind warnings (Schwechat).
  */
 
 import { GeosphereResponse } from './types';
@@ -168,4 +169,3 @@ export const mockResponseWithWarnings: GeosphereResponse = {
     ],
   },
 };
-
