@@ -73,4 +73,3 @@ export function useLocation(): LocationState {
     requestPermission,
   };
 }
-
