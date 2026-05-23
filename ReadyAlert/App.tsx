@@ -42,10 +42,6 @@ function AppContent() {
       return <SettingsPage />;
     }
 
-    if (activeTab === 'home') {
-      return <HomeDashboardPage />;
-    }
-
     // Placeholder for national and emergency tabs
     return (
       <>
@@ -53,54 +49,43 @@ function AppContent() {
 
         <View className={card.container}>
           <Text className={card.title}>Main content area placeholder</Text>
-          <Text className={card.text}>
-            Placeholder.
-          </Text>
+          <Text className={card.text}>Placeholder.</Text>
         </View>
       </>
     );
   }
 
   return (
-      <SafeAreaView
-        className={`${layout.safeArea} ${isDark ? 'dark' : ''}`}
-        edges={['bottom']}
-      >
-        <View className={layout.app}>
-          {activeTab === 'home' ? (
-            <HomeDashboardPage />
-          ) : (
-            <View className={layout.content}>
-              {renderContent()}
-            </View>
-          )}
+    <SafeAreaView className={`${layout.safeArea} ${isDark ? 'dark' : ''}`} edges={['bottom']}>
+      <View className={layout.app}>
+        {activeTab === 'home' ? (
+          <HomeDashboardPage />
+        ) : (
+          <View className={layout.content}>{renderContent()}</View>
+        )}
 
-          <BottomMenu
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              openMoreMenu={openMoreMenu}
+        <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openMoreMenu} />
+
+        {isMenuOpen && (
+          <RightSideMenu
+            closeMenu={closeMoreMenu}
+            onSettingsPress={() => {
+              setActiveTab('settings');
+              closeMoreMenu();
+            }}
+            isDebugMode={isDebugMode}
+            onDebugLondonPress={() => {
+              setDebugLondon();
+              closeMoreMenu();
+            }}
+            onClearDebugPress={() => {
+              clearDebugLocation();
+              closeMoreMenu();
+            }}
           />
-
-          {isMenuOpen && (
-            <RightSideMenu
-              closeMenu={closeMoreMenu}
-              onSettingsPress={() => {
-                setActiveTab('settings');
-                closeMoreMenu();
-              }}
-              isDebugMode={isDebugMode}
-              onDebugLondonPress={() => {
-                setDebugLondon();
-                closeMoreMenu();
-              }}
-              onClearDebugPress={() => {
-                clearDebugLocation();
-                closeMoreMenu();
-              }}
-            />
-          )}
-        </View>
-      </SafeAreaView>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
