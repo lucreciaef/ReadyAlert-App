@@ -39,11 +39,3 @@ export const getSideMenuStyles = (isDark: boolean) => ({
   closeButton: `mt-10 ${isDark ? 'bg-primary-dark' : 'bg-primary'} p-4 rounded-lg items-center`,
   closeButtonText: 'text-white font-bold text-lg',
 });
-
-// Legacy exports for backward compatibility (light mode only)
-export const layout = getLayoutStyles(false);
-export const typography = getTypographyStyles(false);
-export const card = getCardStyles(false);
-export const bottomMenu = getBottomMenuStyles(false);
-export const overlay = getOverlayStyles(false);
-export const sideMenu = getSideMenuStyles(false);
