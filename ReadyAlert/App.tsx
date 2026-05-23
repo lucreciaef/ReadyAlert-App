@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { getCardStyles, getLayoutStyles, getTypographyStyles } from './src/styles/appStyles';
 import { RightSideMenu } from './src/components/RightSideMenu';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { SettingsPage } from './src/pages/SettingsPage';
+import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
+import { LocationProvider, useLocationContext } from './src/context/LocationContext';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -16,6 +18,8 @@ function AppContent() {
   const layout = getLayoutStyles(isDark);
   const typography = getTypographyStyles(isDark);
   const card = getCardStyles(isDark);
+
+  const { isDebugMode, setDebugLondon, clearDebugLocation } = useLocationContext();
 
   function openMoreMenu() {
     setIsMenuOpen(true);
@@ -38,54 +42,61 @@ function AppContent() {
       return <SettingsPage />;
     }
 
+    // Placeholder for national and emergency tabs
     return (
       <>
         <Text className={typography.title}>{renderScreenTitle()}</Text>
 
         <View className={card.container}>
-          <Text className={card.title}>Main content area</Text>
-          <Text className={card.text}>
-            This is where your dashboard content will go.
-          </Text>
+          <Text className={card.title}>Main content area placeholder</Text>
+          <Text className={card.text}>Placeholder.</Text>
         </View>
       </>
     );
   }
 
   return (
-      <SafeAreaView
-        className={`${layout.safeArea} ${isDark ? 'dark' : ''}`}
-        edges={['bottom']}
-      >
-        <View className={layout.app}>
-          <View className={layout.content}>
-            {renderContent()}
-          </View>
+    <SafeAreaView className={`${layout.safeArea} ${isDark ? 'dark' : ''}`} edges={['bottom']}>
+      <View className={layout.app}>
+        {activeTab === 'home' ? (
+          <HomeDashboardPage />
+        ) : (
+          <View className={layout.content}>{renderContent()}</View>
+        )}
 
-          <BottomMenu
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              openMoreMenu={openMoreMenu}
+        <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openMoreMenu} />
+
+        {isMenuOpen && (
+          <RightSideMenu
+            closeMenu={closeMoreMenu}
+            onSettingsPress={() => {
+              setActiveTab('settings');
+              closeMoreMenu();
+            }}
+            isDebugMode={isDebugMode}
+            onDebugLondonPress={() => {
+              setDebugLondon();
+              closeMoreMenu();
+            }}
+            onClearDebugPress={() => {
+              clearDebugLocation();
+              closeMoreMenu();
+            }}
           />
-
-          {isMenuOpen && (
-            <RightSideMenu
-              closeMenu={closeMoreMenu}
-              onSettingsPress={() => {
-                setActiveTab('settings');
-                closeMoreMenu();
-              }}
-            />
-          )}
-        </View>
-      </SafeAreaView>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <LocationProvider>
+          <AppContent />
+        </LocationProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

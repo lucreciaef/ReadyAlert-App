@@ -1,3 +1,8 @@
+/**
+ * Context provider that tracks and exposes the active colour scheme (light or dark).
+ * Initialises from the device's system preference and exposes a toggle for manual overrides.
+ */
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
@@ -14,21 +19,19 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
   const [theme, setTheme] = useState<ThemeMode>('light');
-  const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialize theme based on system preference
   useEffect(() => {
     if (systemColorScheme) {
       setTheme(systemColorScheme as ThemeMode);
-      setIsInitialized(true);
-      console.log('🎨 Theme initialized with system preference:', systemColorScheme);
+      console.log('Theme initialized with system preference:', systemColorScheme);
     }
   }, [systemColorScheme]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => {
+    setTheme((prevTheme) => {
       const newTheme = prevTheme === 'light' ? 'dark' : 'light';
-      console.log('🎨 Theme toggled to:', newTheme);
+      console.log('Theme toggled to:', newTheme);
       return newTheme;
     });
   };
@@ -39,11 +42,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     toggleTheme,
   };
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
@@ -53,4 +52,3 @@ export function useTheme() {
   }
   return context;
 }
-

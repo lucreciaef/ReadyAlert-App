@@ -1,3 +1,8 @@
+/**
+ * Settings screen for user preferences.
+ * Currently exposes a light/dark theme toggle.
+ */
+
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
@@ -20,11 +25,7 @@ export function SettingsPage() {
 
         <View className="flex flex-row items-center justify-between py-4">
           <View className="flex flex-row items-center gap-3">
-            <Ionicons
-              name={isDark ? 'moon' : 'sunny'}
-              size={24}
-              color={colors.primary}
-            />
+            <Ionicons name={isDark ? 'moon' : 'sunny'} size={24} color={colors.primary} />
             <Text className={`text-lg ${isDark ? 'text-text-dark' : 'text-text'}`}>
               Current mode:
             </Text>
@@ -40,12 +41,9 @@ export function SettingsPage() {
           }`}
           onPress={toggleTheme}
         >
-          <Text className="text-white font-bold">
-            Switch to {isDark ? 'Light' : 'Dark'} Mode
-          </Text>
+          <Text className="text-white font-bold">Switch to {isDark ? 'Light' : 'Dark'} Mode</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
