@@ -5,7 +5,6 @@ import {
   Dimensions,
   PanResponder,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -15,7 +14,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
-import { fetchWarningsForLocation, getLocationName, getWarningCount, OutsideAustriaError } from '../api';
+import {
+  fetchWarningsForLocation,
+  getLocationName,
+  getWarningCount,
+  OutsideAustriaError,
+} from '../api';
 import { GeosphereResponse, Warning } from '../api';
 import { useLocationContext } from '../context/LocationContext';
 import { Toast } from '../components/Toast';
@@ -30,7 +34,13 @@ export function HomeDashboardPage() {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
 
-  const { coords: userLocation, loading: locationLoading, error: locationError, requestPermission, isDebugMode } = useLocationContext();
+  const {
+    coords: userLocation,
+    loading: locationLoading,
+    error: locationError,
+    requestPermission,
+    isDebugMode,
+  } = useLocationContext();
 
   const [apiData, setApiData] = useState<GeosphereResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -69,10 +79,10 @@ export function HomeDashboardPage() {
         const snapTo = finalVal < MAX_TRANSLATE_Y / 2 || gs.vy < -0.5 ? 0 : MAX_TRANSLATE_Y;
         snapSheet(snapTo);
       },
-    })
+    }),
   ).current;
 
-  // ── Data fetching ───────────────────────────────────────────────────────────
+  // data fetching
   useEffect(() => {
     if (userLocation && !locationLoading) {
       loadWarnings(userLocation.longitude, userLocation.latitude);
@@ -120,32 +130,45 @@ export function HomeDashboardPage() {
   // State/region level zoom — large enough to see the surrounding area
   const REGION_DELTA = 1.2;
   const mapRegion = userLocation
-    ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA }
-    : { latitude: 48.2082, longitude: 16.3738, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA };
+    ? {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: REGION_DELTA,
+        longitudeDelta: REGION_DELTA,
+      }
+    : {
+        latitude: 48.2082,
+        longitude: 16.3738,
+        latitudeDelta: REGION_DELTA,
+        longitudeDelta: REGION_DELTA,
+      };
 
   const headerLabel = locationLoading
     ? 'Locating…'
     : isDebugMode
-    ? '🐛 London, UK (debug)'
-    : apiData
-    ? locationName
-    : userLocation
-    ? `${userLocation.latitude.toFixed(3)}°, ${userLocation.longitude.toFixed(3)}°`
-    : 'Unknown location';
+      ? 'London, UK (debug)'
+      : apiData
+        ? locationName
+        : userLocation
+          ? `${userLocation.latitude.toFixed(3)}°, ${userLocation.longitude.toFixed(3)}°`
+          : 'Unknown location';
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-
-      {/* ── HEADER BAR ── */}
-      <View style={[styles.headerBar, { backgroundColor: colors.surface, borderBottomColor: isDark ? '#333' : '#E5E7EB' }]}>
-        <View style={styles.headerLeft}>
+    <View className="flex-1" style={{ paddingTop: insets.top }}>
+      <View
+        className={`flex-row items-center justify-between px-4 h-14 border-b shadow-sm ${
+          isDark ? 'bg-surface-dark border-[#333]' : 'bg-surface border-gray-200'
+        }`}
+      >
+        <View className="flex-row items-center flex-1 gap-2">
           <Ionicons name="location" size={18} color={colors.primary} />
-          <Text style={[styles.locationText, { color: colors.text }]} numberOfLines={1}>
+          <Text
+            className={`text-[15px] font-semibold flex-1 ${isDark ? 'text-text-dark' : 'text-text'}`}
+            numberOfLines={1}
+          >
             {headerLabel}
           </Text>
         </View>
-        {/* Right-side action area — add more buttons here as needed */}
         <TouchableOpacity
           onPress={handleRefresh}
           disabled={loading || locationLoading}
@@ -159,13 +182,12 @@ export function HomeDashboardPage() {
         </TouchableOpacity>
       </View>
 
-      {/* ── MAP + SHEET AREA ── */}
-      <View style={styles.mapArea}>
-
-        {/* Map — mapPadding.bottom matches the sheet height so the native map
+      {/* map section + bottom sheet */}
+      <View className="flex-1">
+        {/* mapPadding.bottom matches the sheet height so the native map
             engine centres the pin in the visible area above the sheet */}
         <MapView
-          style={StyleSheet.absoluteFill}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           region={mapRegion}
           showsUserLocation
           showsMyLocationButton={false}
@@ -173,145 +195,174 @@ export function HomeDashboardPage() {
           mapPadding={{ top: 0, right: 0, bottom: HALF_HEIGHT, left: 0 }}
         />
 
-      {/* ── BOTTOM SHEET ── */}
-      <Animated.View
-        style={[
-          styles.sheet,
-          { height: HALF_HEIGHT, backgroundColor: colors.surface },
-          { transform: [{ translateY: sheetAnim }] },
-        ]}
-      >
-        {/* Handle + title row — drag target */}
-        <View {...panResponder.panHandlers} style={styles.handleArea}>
-          <View style={[styles.handleBar, { backgroundColor: isDark ? '#555' : '#D1D5DB' }]} />
-
-          <View style={styles.sheetTitleRow}>
-            <View style={styles.sheetTitleLeft}>
-              <Ionicons
-                name={hasWarnings ? 'alert-circle' : 'checkmark-circle'}
-                size={20}
-                color={hasWarnings ? '#EF4444' : '#22C55E'}
-              />
-              <Text style={[styles.sheetTitle, { color: colors.text }]}>
-                {loading
-                  ? 'Loading…'
-                  : hasWarnings
-                  ? `${warningCount} Active Warning${warningCount !== 1 ? 's' : ''}`
-                  : apiData
-                  ? 'No Active Warnings'
-                  : 'Warnings'}
-              </Text>
-            </View>
-            <TouchableOpacity onPress={() => snapSheet(sheetExpanded ? MAX_TRANSLATE_Y : 0)}>
-              <Ionicons
-                name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
-                size={20}
-                color={colors.textMuted}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Scrollable content */}
-        <ScrollView
-          style={styles.sheetScroll}
-          contentContainerStyle={styles.sheetScrollContent}
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={sheetExpanded}
-          keyboardShouldPersistTaps="handled"
+        <Animated.View
+          className={`absolute bottom-0 left-0 right-0 rounded-t-[22px] ${isDark ? 'bg-surface-dark' : 'bg-surface'}`}
+          style={{
+            height: HALF_HEIGHT,
+            transform: [{ translateY: sheetAnim }],
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: 0.12,
+            shadowRadius: 12,
+            elevation: 10,
+          }}
         >
-          {/* Loading */}
-          {(loading || locationLoading) && (
-            <View style={styles.centeredState}>
-              <ActivityIndicator size="large" color={colors.primary} />
-              <Text style={[styles.statusText, { color: colors.textMuted }]}>
-                {locationLoading ? 'Getting your location…' : 'Loading warnings…'}
-              </Text>
-            </View>
-          )}
+          <View {...panResponder.panHandlers} className="px-4 pb-1">
+            <View
+              className={`w-10 h-1 rounded-sm self-center mt-2.5 mb-3 ${isDark ? 'bg-[#555]' : 'bg-gray-300'}`}
+            />
 
-          {/* Location / network error */}
-          {(error || (locationError && !userLocation)) && !loading && (
-            <View style={[styles.alertBox, { backgroundColor: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2' }]}>
-              <Ionicons name="warning-outline" size={16} color={isDark ? '#FCA5A5' : '#B91C1C'} />
-              <Text style={[styles.alertText, { color: isDark ? '#FCA5A5' : '#B91C1C' }]}>
-                {error || locationError}
-              </Text>
-            </View>
-          )}
-
-          {/* No warnings */}
-          {!loading && apiData && !hasWarnings && (
-            <View style={[styles.noWarningsBox, { backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#DCFCE7' }]}>
-              <Ionicons name="checkmark-circle" size={28} color={isDark ? '#86EFAC' : '#16A34A'} />
-              <Text style={[styles.noWarningsText, { color: isDark ? '#86EFAC' : '#15803D' }]}>
-                No active warnings in this area
-              </Text>
-            </View>
-          )}
-
-          {/* Warning cards */}
-          {!loading &&
-            hasWarnings &&
-            warnings.map((warning: Warning, index: number) => (
-              <TouchableOpacity
-                key={`${warning.properties.warnid}-${index}`}
-                onPress={() => setExpandedWarning(expandedWarning === index ? null : index)}
-                activeOpacity={0.8}
-                style={[
-                  styles.warningCard,
-                  {
-                    backgroundColor: isDark ? 'rgba(239,68,68,0.10)' : '#FFFBEB',
-                    borderColor: isDark ? 'rgba(239,68,68,0.30)' : '#FDE68A',
-                  },
-                ]}
-              >
-                <View style={styles.warningCardHeader}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.warningTitle, { color: isDark ? '#FCA5A5' : '#B91C1C' }]}>
-                      {warning.properties.text}
-                    </Text>
-                    <Text style={[styles.warningDates, { color: colors.textMuted }]}>
-                      {warning.properties.begin} – {warning.properties.end}
-                    </Text>
-                  </View>
-                  <Ionicons
-                    name={expandedWarning === index ? 'chevron-up' : 'chevron-down'}
-                    size={18}
-                    color={colors.textMuted}
-                  />
-                </View>
-
-                {expandedWarning === index && (
-                  <View
-                    style={[
-                      styles.warningDetails,
-                      { borderTopColor: isDark ? 'rgba(239,68,68,0.20)' : '#FDE68A' },
-                    ]}
-                  >
-                    {[
-                      { label: 'Auswirkungen', value: warning.properties.auswirkungen },
-                      { label: 'Empfehlungen', value: warning.properties.empfehlungen },
-                      { label: 'Meteorologischer Hintergrund', value: warning.properties.meteotext },
-                    ]
-                      .filter((d) => !!d.value)
-                      .map((d) => (
-                        <View key={d.label} style={styles.detailBlock}>
-                          <Text style={[styles.detailLabel, { color: colors.textMuted }]}>{d.label}:</Text>
-                          <Text style={[styles.detailValue, { color: colors.text }]}>{d.value}</Text>
-                        </View>
-                      ))}
-                  </View>
-                )}
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-row items-center gap-2">
+                <Ionicons
+                  name={hasWarnings ? 'alert-circle' : 'checkmark-circle'}
+                  size={20}
+                  color={hasWarnings ? '#EF4444' : '#22C55E'}
+                />
+                <Text className={`text-base font-bold ${isDark ? 'text-text-dark' : 'text-text'}`}>
+                  {loading
+                    ? 'Loading…'
+                    : hasWarnings
+                      ? `${warningCount} Active Warning${warningCount !== 1 ? 's' : ''}`
+                      : apiData
+                        ? 'No Active Warnings'
+                        : 'Warnings'}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={() => snapSheet(sheetExpanded ? MAX_TRANSLATE_Y : 0)}>
+                <Ionicons
+                  name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
+                  size={20}
+                  color={colors.textMuted}
+                />
               </TouchableOpacity>
-            ))}
+            </View>
+          </View>
 
-          <View style={{ height: 24 }} />
-        </ScrollView>
-      </Animated.View>
-      </View>{/* end mapArea */}
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{ paddingHorizontal: 16 }}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={sheetExpanded}
+            keyboardShouldPersistTaps="handled"
+          >
 
-      {/* ── TOAST ── */}
+            {(loading || locationLoading) && (
+              <View className="items-center py-6">
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text
+                  className={`mt-3 text-sm ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
+                >
+                  {locationLoading ? 'Getting your location…' : 'Loading warnings…'}
+                </Text>
+              </View>
+            )}
+
+            {(error || (locationError && !userLocation)) && !loading && (
+              <View
+                className={`flex-row items-start gap-2 p-3 rounded-[10px] mt-1 ${
+                  isDark ? 'bg-red-600/[0.12]' : 'bg-red-100'
+                }`}
+              >
+                <Ionicons name="warning-outline" size={16} color={isDark ? '#FCA5A5' : '#B91C1C'} />
+                <Text
+                  className={`text-[13px] flex-1 leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}
+                >
+                  {error || locationError}
+                </Text>
+              </View>
+            )}
+
+            {!loading && apiData && !hasWarnings && (
+              <View
+                className={`items-center p-6 rounded-[14px] mt-1 gap-2.5 ${
+                  isDark ? 'bg-green-500/[0.12]' : 'bg-green-100'
+                }`}
+              >
+                <Ionicons
+                  name="checkmark-circle"
+                  size={28}
+                  color={isDark ? '#86EFAC' : '#16A34A'}
+                />
+                <Text
+                  className={`text-sm font-medium text-center ${isDark ? 'text-green-300' : 'text-green-700'}`}
+                >
+                  No active warnings in this area
+                </Text>
+              </View>
+            )}
+
+            {!loading &&
+              hasWarnings &&
+              warnings.map((warning: Warning, index: number) => (
+                <TouchableOpacity
+                  key={`${warning.properties.warnid}-${index}`}
+                  onPress={() => setExpandedWarning(expandedWarning === index ? null : index)}
+                  activeOpacity={0.8}
+                  className={`p-3 rounded-xl border mt-2 ${
+                    isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-50 border-amber-200'
+                  }`}
+                >
+                  <View className="flex-row items-start gap-2">
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        className={`text-[13px] font-bold leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}
+                      >
+                        {warning.properties.text}
+                      </Text>
+                      <Text
+                        className={`text-[11px] mt-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
+                      >
+                        {warning.properties.begin} – {warning.properties.end}
+                      </Text>
+                    </View>
+                    <Ionicons
+                      name={expandedWarning === index ? 'chevron-up' : 'chevron-down'}
+                      size={18}
+                      color={colors.textMuted}
+                    />
+                  </View>
+
+                  {expandedWarning === index && (
+                    <View
+                      className={`mt-3 pt-3 border-t gap-2.5 ${
+                        isDark ? 'border-red-500/20' : 'border-amber-200'
+                      }`}
+                    >
+                      {[
+                        { label: 'Auswirkungen', value: warning.properties.auswirkungen },
+                        { label: 'Empfehlungen', value: warning.properties.empfehlungen },
+                        {
+                          label: 'Meteorologischer Hintergrund',
+                          value: warning.properties.meteotext,
+                        },
+                      ]
+                        .filter((d) => !!d.value)
+                        .map((d) => (
+                          <View key={d.label} className="gap-0.5">
+                            <Text
+                              className={`text-[11px] font-semibold ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
+                            >
+                              {d.label}:
+                            </Text>
+                            <Text
+                              className={`text-[11px] leading-4 ${isDark ? 'text-text-dark' : 'text-text'}`}
+                            >
+                              {d.value}
+                            </Text>
+                          </View>
+                        ))}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+
+            <View className="h-6" />
+          </ScrollView>
+        </Animated.View>
+      </View>
+      {/* end mapArea */}
+
       <Toast
         visible={!!toast}
         message={toast?.message ?? ''}
@@ -322,162 +373,3 @@ export function HomeDashboardPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-
-  // ── Header bar ──
-  headerBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    height: 56,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 8,
-  },
-  locationText: {
-    fontSize: 15,
-    fontWeight: '600',
-    flex: 1,
-  },
-
-  // ── Map area (fills space below header) ──
-  mapArea: {
-    flex: 1,
-  },
-
-  // ── Sheet ──
-  sheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 10,
-  },
-  handleArea: {
-    paddingHorizontal: 16,
-    paddingBottom: 4,
-  },
-  handleBar: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginTop: 10,
-    marginBottom: 12,
-  },
-  sheetTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  sheetTitleLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sheetTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  sheetScroll: {
-    flex: 1,
-  },
-  sheetScrollContent: {
-    paddingHorizontal: 16,
-  },
-
-  // ── States ──
-  centeredState: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  statusText: {
-    marginTop: 12,
-    fontSize: 14,
-  },
-  alertBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 4,
-  },
-  alertText: {
-    fontSize: 13,
-    flex: 1,
-    lineHeight: 18,
-  },
-  noWarningsBox: {
-    alignItems: 'center',
-    padding: 24,
-    borderRadius: 14,
-    marginTop: 4,
-    gap: 10,
-  },
-  noWarningsText: {
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-
-  // ── Warning cards ──
-  warningCard: {
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  warningCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-  },
-  warningTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 18,
-  },
-  warningDates: {
-    fontSize: 11,
-    marginTop: 4,
-  },
-  warningDetails: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    gap: 10,
-  },
-  detailBlock: {
-    gap: 2,
-  },
-  detailLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  detailValue: {
-    fontSize: 11,
-    lineHeight: 16,
-  },
-});
-

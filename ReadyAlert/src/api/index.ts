@@ -5,5 +5,3 @@
 
 export * from './geosphere';
 export * from './types';
-export * from './mockData';
-

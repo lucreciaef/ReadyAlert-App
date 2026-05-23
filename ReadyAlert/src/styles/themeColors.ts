@@ -1,3 +1,8 @@
+/**
+ * Runtime colour palette keyed on the current dark-mode state.
+ * Returns hex colour values for use in style props where a Tailwind class is insufficient, such as Ionicons colour attributes.
+ */
+
 export function getThemeColors(isDark: boolean) {
   if (isDark) {
     return {
@@ -23,4 +28,3 @@ export function getThemeColors(isDark: boolean) {
 }
 
 export const colors = getThemeColors(false);
-

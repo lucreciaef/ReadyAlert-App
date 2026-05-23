@@ -53,4 +53,3 @@ export function useLocationContext(): LocationContextValue {
   if (!ctx) throw new Error('useLocationContext must be used inside <LocationProvider>');
   return ctx;
 }
-
