@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { getCardStyles, getLayoutStyles, getTypographyStyles } from './src/styles/appStyles';
@@ -8,6 +8,7 @@ import { RightSideMenu } from './src/components/RightSideMenu';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { SettingsPage } from './src/pages/SettingsPage';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
+import { LocationProvider, useLocationContext } from './src/context/LocationContext';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -17,6 +18,8 @@ function AppContent() {
   const layout = getLayoutStyles(isDark);
   const typography = getTypographyStyles(isDark);
   const card = getCardStyles(isDark);
+
+  const { isDebugMode, setDebugLondon, clearDebugLocation } = useLocationContext();
 
   function openMoreMenu() {
     setIsMenuOpen(true);
@@ -64,9 +67,13 @@ function AppContent() {
         edges={['bottom']}
       >
         <View className={layout.app}>
-          <View className={layout.content}>
-            {renderContent()}
-          </View>
+          {activeTab === 'home' ? (
+            <HomeDashboardPage />
+          ) : (
+            <View className={layout.content}>
+              {renderContent()}
+            </View>
+          )}
 
           <BottomMenu
               activeTab={activeTab}
@@ -81,6 +88,15 @@ function AppContent() {
                 setActiveTab('settings');
                 closeMoreMenu();
               }}
+              isDebugMode={isDebugMode}
+              onDebugLondonPress={() => {
+                setDebugLondon();
+                closeMoreMenu();
+              }}
+              onClearDebugPress={() => {
+                clearDebugLocation();
+                closeMoreMenu();
+              }}
             />
           )}
         </View>
@@ -90,8 +106,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <LocationProvider>
+          <AppContent />
+        </LocationProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

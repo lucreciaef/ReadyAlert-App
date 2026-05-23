@@ -6,6 +6,14 @@
 import { GeoLocation, GeosphereResponse } from './types';
 import { mockResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
+/** Thrown when the queried coordinates are outside the supported coverage area. */
+export class OutsideAustriaError extends Error {
+  constructor(message = 'Location unsupported. Please wait until we can support more regions!') {
+    super(message);
+    this.name = 'OutsideAustriaError';
+  }
+}
+
 const BASE_URL = 'https://warnungen.zamg.at/wsapp/api';
 const ENDPOINT = '/getWarningsForCoords';
 
@@ -59,13 +67,27 @@ export async function fetchWarningsForLocation(
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      console.warn('⚠️ Geosphere HTTP error:', response.status, response.statusText);
+      // Treat any HTTP error as an unsupported-location signal and show a
+      // user-friendly toast instead of a raw "API Error: 404" message.
+      throw new OutsideAustriaError();
     }
 
-    const data: GeosphereResponse = await response.json();
-    console.log('✅ Geosphere API response received:', data);
+    const data = await response.json();
 
-    return data;
+    // The API returns HTTP 200 with {type:"Error"} for unsupported coordinates
+    if (data?.type === 'Error') {
+      const apiMsg: string = data.msg ?? 'Unknown API error';
+      console.warn('⚠️ Geosphere API error:', apiMsg);
+      // Provide a user-friendly message for the "outside Austria" case
+      if (apiMsg.toLowerCase().includes('municipal')) {
+        throw new OutsideAustriaError();
+      }
+      throw new Error(apiMsg);
+    }
+
+    console.log('✅ Geosphere API response received:', data);
+    return data as GeosphereResponse;
   } catch (error) {
     console.error('❌ Error fetching warnings:', error);
     throw error;

@@ -4,7 +4,15 @@ import { getOverlayStyles, getSideMenuStyles } from '../styles/appStyles';
 import { getThemeColors } from '../styles/themeColors';
 import { useTheme } from '../theme/ThemeContext';
 
-export function RightSideMenu({ closeMenu, onSettingsPress }) {
+interface RightSideMenuProps {
+  closeMenu: () => void;
+  onSettingsPress: () => void;
+  isDebugMode?: boolean;
+  onDebugLondonPress?: () => void;
+  onClearDebugPress?: () => void;
+}
+
+export function RightSideMenu({ closeMenu, onSettingsPress, isDebugMode, onDebugLondonPress, onClearDebugPress }: RightSideMenuProps) {
     const { isDark, toggleTheme } = useTheme();
     const overlay = getOverlayStyles(isDark);
     const sideMenu = getSideMenuStyles(isDark);
@@ -44,6 +52,30 @@ export function RightSideMenu({ closeMenu, onSettingsPress }) {
                     <Ionicons name="help-circle-outline" size={22} color={colors.text} />
                     <Text className={sideMenu.text}>Help</Text>
                 </TouchableOpacity>
+
+                {/* ── DEBUG SECTION ── */}
+                <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: isDark ? '#444' : '#e5e7eb', paddingTop: 12 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: isDark ? '#666' : '#9ca3af', letterSpacing: 1, marginBottom: 4, paddingHorizontal: 8 }}>
+                        DEBUG
+                    </Text>
+
+                    {!isDebugMode ? (
+                        <TouchableOpacity className={sideMenu.item} onPress={onDebugLondonPress}>
+                            <Ionicons name="bug-outline" size={22} color="#F59E0B" />
+                            <Text className={sideMenu.text}>Simulate London, UK</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity className={sideMenu.item} onPress={onClearDebugPress}>
+                            <Ionicons name="bug" size={22} color="#F59E0B" />
+                            <View className="flex-1">
+                                <Text className={sideMenu.text}>Clear Debug Location</Text>
+                                <Text style={{ fontSize: 11, color: '#F59E0B', marginTop: 1 }}>
+                                    Currently: London, UK 🐛
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                </View>
 
                 <TouchableOpacity className={sideMenu.closeButton} onPress={closeMenu}>
                     <Text className={sideMenu.closeButtonText}>Close</Text>
