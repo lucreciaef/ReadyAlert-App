@@ -96,6 +96,7 @@ export interface RtrAlert {
   info_description?: string;
   info_area_description?: string;
   info_expires?: string; // ISO-8601 timestamp
+  begin_date?: string; // ISO-8601 timestamp
   end_date?: string; // ISO-8601 timestamp
   sender?: string;
   sent?: string; //ISO-8601 timestamp
