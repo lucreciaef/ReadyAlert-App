@@ -8,6 +8,7 @@ import { RightSideMenu } from './src/components/RightSideMenu';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { SettingsPage } from './src/pages/SettingsPage';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
+import { NationalStatusPage } from './src/pages/NationalStatusPage';
 import { LocationProvider, useLocationContext } from './src/context/LocationContext';
 
 function AppContent() {
@@ -42,7 +43,7 @@ function AppContent() {
       return <SettingsPage />;
     }
 
-    // Placeholder for national and emergency tabs
+    // Placeholder for emergency tab
     return (
       <>
         <Text className={typography.title}>{renderScreenTitle()}</Text>
@@ -60,6 +61,8 @@ function AppContent() {
       <View className={layout.app}>
         {activeTab === 'home' ? (
           <HomeDashboardPage />
+        ) : activeTab === 'national' ? (
+          <NationalStatusPage />
         ) : (
           <View className={layout.content}>{renderContent()}</View>
         )}
