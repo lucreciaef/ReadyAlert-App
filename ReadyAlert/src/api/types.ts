@@ -61,3 +61,53 @@ export interface GeosphereResponse {
   };
   properties: GeosphereProperties;
 }
+
+/**
+ * Type definitions for the RTR Austria Alerting System API
+**/
+
+export type RtrAlertLevel = 'AlertLevel1' | 'AlertLevel2' | 'AlertLevel3' | 'AlertLevel4' | 'Amber';
+export type RtrRegion = string;
+export interface RtrAlertListRequest {
+  regions: RtrRegion[];
+  alertLevels: RtrAlertLevel[];
+  search: string;
+  limit: number;
+  offset: number;
+}
+
+export interface RtrLocalizedText {
+  de?: string;
+  en?: string;
+  [lang: string]: string | undefined;
+}
+
+export interface RtrAlertArea {
+  name?: string;
+  regionCode?: string;
+  geometry?: unknown; // WGS-84 polygon or point description
+}
+
+export interface RtrAlert {
+  consolidation_identifier: string;
+  alert_level: RtrAlertLevel;
+  title?: string;
+  description?: string;
+  info_description?: string;
+  info_area_description?: string;
+  info_expires?: string; // ISO-8601 timestamp
+  end_date?: string; // ISO-8601 timestamp
+  sender?: string;
+  sent?: string; //ISO-8601 timestamp
+  polygons?: number[][][]; // Each polygon is an array of [latitude, longitude] coordinate pairs.
+  [key: string]: unknown;
+}
+
+export interface RtrListPayload {
+  totalCount: number;
+  alerts: RtrAlert[];
+}
+
+export interface RtrAlertListResponse {
+  json: RtrListPayload;
+}
