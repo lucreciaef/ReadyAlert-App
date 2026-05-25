@@ -6,7 +6,6 @@ import { BottomMenu } from './src/components/BottomMenu';
 import { getCardStyles, getLayoutStyles, getTypographyStyles } from './src/styles/appStyles';
 import { RightSideMenu } from './src/components/RightSideMenu';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
-import { SettingsPage } from './src/pages/SettingsPage';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
 import { NationalStatusPage } from './src/pages/NationalStatusPage';
 import { LocationProvider, useLocationContext } from './src/context/LocationContext';
@@ -34,14 +33,10 @@ function AppContent() {
     if (activeTab === 'home') return 'Dashboard';
     if (activeTab === 'national') return 'National view';
     if (activeTab === 'emergency') return 'Emergency';
-    if (activeTab === 'settings') return 'Settings';
     return 'Dashboard';
   }
 
   function renderContent() {
-    if (activeTab === 'settings') {
-      return <SettingsPage />;
-    }
 
     // Placeholder for emergency tab
     return (
@@ -72,10 +67,6 @@ function AppContent() {
         {isMenuOpen && (
           <RightSideMenu
             closeMenu={closeMoreMenu}
-            onSettingsPress={() => {
-              setActiveTab('settings');
-              closeMoreMenu();
-            }}
             isDebugMode={isDebugMode}
             onDebugLondonPress={() => {
               setDebugLondon();

@@ -32,10 +32,10 @@ export const getOverlayStyles = (isDark: boolean) => ({
 });
 
 export const getSideMenuStyles = (isDark: boolean) => ({
-  container: `w-4/5 ${isDark ? 'bg-surface-dark' : 'bg-surface'} p-6 pt-16`,
+  container: `w-4/5 ${isDark ? 'bg-surface-dark' : 'bg-surface'} p-6 pt-16 flex-1 justify-between`,
   title: `text-2xl font-bold mb-8 ${isDark ? 'text-text-dark' : 'text-text'}`,
   item: 'flex flex-row items-center py-4 px-2 gap-4',
   text: `text-lg ${isDark ? 'text-text-dark' : 'text-text'}`,
-  closeButton: `mt-10 ${isDark ? 'bg-primary-dark' : 'bg-primary'} p-4 rounded-lg items-center`,
+  closeButton: `${isDark ? 'bg-primary-dark' : 'bg-primary'} p-4 rounded-lg items-center`,
   closeButtonText: 'text-white font-bold text-lg',
 });
