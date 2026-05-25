@@ -196,8 +196,7 @@ function AlertCard({ alert, expanded, onPress, isDark, colors }: AlertCardProps)
   );
 }
 
-// ─── Weather placeholder ──────────────────────────────────────────────────────
-
+// Weather placeholder
 interface StateWeatherOverviewProps {
   isDark: boolean;
   colors: ReturnType<typeof getThemeColors>;
@@ -214,21 +213,8 @@ function StateWeatherOverview({ isDark, colors }: StateWeatherOverviewProps) {
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 }}>
         <Ionicons name="partly-sunny-outline" size={16} color={colors.primary} />
         <Text style={{ fontSize: 13, fontWeight: '700', color: isDark ? '#f5f5f5' : '#111' }}>
-          Weather by State
+          Weather in Austria
         </Text>
-        <View
-          style={{
-            marginLeft: 4,
-            paddingHorizontal: 7,
-            paddingVertical: 2,
-            borderRadius: 6,
-            backgroundColor: isDark ? '#3a3a3a' : '#e5e7eb',
-          }}
-        >
-          <Text style={{ fontSize: 10, fontWeight: '600', color: colors.textMuted }}>
-            Coming soon
-          </Text>
-        </View>
       </View>
 
       {states.map((state) => (
@@ -255,7 +241,6 @@ function StateWeatherOverview({ isDark, colors }: StateWeatherOverviewProps) {
                 backgroundColor: isDark ? '#3a3a3a' : '#e5e7eb',
               }}
             />
-            <Ionicons name="ellipse-outline" size={14} color={colors.textMuted} />
           </View>
         </View>
       ))}
