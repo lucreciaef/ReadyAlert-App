@@ -49,7 +49,7 @@ export function HomeDashboardPage() {
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
 
-  // ── Bottom sheet animation ──────────────────────────────────────────────────
+  // Bottom sheet animation
   const sheetAnim = useRef(new Animated.Value(MAX_TRANSLATE_Y)).current;
   const expandedRef = useRef(false);
 
@@ -182,10 +182,7 @@ export function HomeDashboardPage() {
         </TouchableOpacity>
       </View>
 
-      {/* map section + bottom sheet */}
       <View className="flex-1">
-        {/* mapPadding.bottom matches the sheet height so the native map
-            engine centres the pin in the visible area above the sheet */}
         <MapView
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           region={mapRegion}
@@ -361,7 +358,6 @@ export function HomeDashboardPage() {
           </ScrollView>
         </Animated.View>
       </View>
-      {/* end mapArea */}
 
       <Toast
         visible={!!toast}
