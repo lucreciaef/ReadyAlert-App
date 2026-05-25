@@ -11,8 +11,6 @@ import {
   RtrAlertLevel,
   RtrAlertListRequest,
   RtrAlertListResponse,
-  RtrLocalizedText,
-  RtrRegion,
 } from './types';
 
 const RTR_BASE_URL = 'https://warnungen.at-alert.at/api/rpc';
@@ -92,28 +90,7 @@ export async function fetchRtrAlerts(
   return payload;
 }
 
-/** Fetch alerts filtered to a specific set of regions.
- * @param regions  Array of region/district codes to filter on.
- */
-export async function fetchRtrAlertsForRegions(
-  regions: RtrRegion[],
-): Promise<{ totalCount: number; alerts: RtrAlert[] }> {
-  return fetchRtrAlerts({ regions });
-}
-
-//Extract a displayable string from a field that may be a plain string or a `RtrLocalizedText` object.
-// Falls back to German if English is unavailable,then to the first available language, then to `fallback`.
-export function resolveText(
-  value: RtrLocalizedText | string | undefined,
-  preferredLang: string = 'en',
-  fallback: string = '',
-): string {
-  if (!value) return fallback;
-  if (typeof value === 'string') return value;
-  return value[preferredLang] ?? value['de'] ?? Object.values(value).find(Boolean) ?? fallback;
-}
-
-//Returns the colour token for a given alert level (defaults to a neutral grey for unknown levels).
+// Returns the colour token for a given alert level (defaults to a neutral grey for unknown levels).
 export function getAlertLevelColor(level: RtrAlertLevel | string): string {
   return ALERT_LEVEL_COLORS[level as RtrAlertLevel] ?? '#9CA3AF';
 }
@@ -138,10 +115,3 @@ export function sortAlertsBySeverity(alerts: RtrAlert[]): RtrAlert[] {
     (a, b) => (SEVERITY_ORDER[b.alert_level] ?? 0) - (SEVERITY_ORDER[a.alert_level] ?? 0),
   );
 }
-
-
-
-
-
-
-

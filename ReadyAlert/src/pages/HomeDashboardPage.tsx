@@ -16,11 +16,12 @@ import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
 import {
   fetchWarningsForLocation,
+  GeosphereResponse,
   getLocationName,
   getWarningCount,
   OutsideAustriaError,
+  Warning,
 } from '../api';
-import { GeosphereResponse, Warning } from '../api';
 import { useLocationContext } from '../context/LocationContext';
 import { Toast } from '../components/Toast';
 

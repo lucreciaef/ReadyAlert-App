@@ -3,7 +3,7 @@
  * Exposes functions to fetch active warnings for given coordinates and to extract summary data from the response.
  */
 
-import { GeoLocation, GeosphereResponse } from './types';
+import { GeosphereResponse } from './types';
 import { mockResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
 /** Thrown when the queried coordinates are outside the supported coverage area. */
@@ -22,9 +22,6 @@ const USE_MOCK_DATA = false;
 // Toggle this to use mock data WITH warnings
 const USE_MOCK_WITH_WARNINGS = true;
 
-interface GeoLocationParams extends GeoLocation {
-  lang?: string;
-}
 
 /**
  * Fetch warnings for a specific location

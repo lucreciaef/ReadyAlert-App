@@ -3,11 +3,6 @@
  * Austrian weather warning system
  */
 
-export interface GeoLocation {
-  lon: number;
-  lat: number;
-}
-
 export interface MunicipalityProperties {
   gemeindenr: number;
   name: string;
@@ -74,18 +69,6 @@ export interface RtrAlertListRequest {
   search: string;
   limit: number;
   offset: number;
-}
-
-export interface RtrLocalizedText {
-  de?: string;
-  en?: string;
-  [lang: string]: string | undefined;
-}
-
-export interface RtrAlertArea {
-  name?: string;
-  regionCode?: string;
-  geometry?: unknown; // WGS-84 polygon or point description
 }
 
 export interface RtrAlert {

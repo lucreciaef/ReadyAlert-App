@@ -26,5 +26,3 @@ export function getThemeColors(isDark: boolean) {
     overlay: 'rgba(0, 0, 0, 0.35)',
   };
 }
-
-export const colors = getThemeColors(false);
