@@ -9,6 +9,7 @@ import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
 import { NationalStatusPage } from './src/pages/NationalStatusPage';
 import { EmergencyPage } from "./src/pages/EmergencyPage";
+import { LearningCentrePage } from './src/pages/LearningCentrePage';
 import { LocationProvider, useLocationContext } from './src/context/LocationContext';
 
 function AppContent() {
@@ -37,6 +38,8 @@ function AppContent() {
           <NationalStatusPage />
         ) : activeTab === 'emergency' ? (
           <EmergencyPage />
+        ) : activeTab === 'learningCentre' ? (
+          <LearningCentrePage />
         ) : null}
 
         <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openMoreMenu} />
@@ -44,6 +47,10 @@ function AppContent() {
         {isMenuOpen && (
           <RightSideMenu
             closeMenu={closeMoreMenu}
+            onLearningCentrePress={() => {
+              setActiveTab('learningCentre');
+              closeMoreMenu();
+            }}
             isDebugMode={isDebugMode}
             onDebugLondonPress={() => {
               setDebugLondon();
