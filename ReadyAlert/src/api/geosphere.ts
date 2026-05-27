@@ -6,7 +6,7 @@
 import { GeosphereResponse } from './types';
 import { mockResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
-/** Thrown when the queried coordinates are outside the supported coverage area. */
+// Thrown when the queried coordinates are outside the supported coverage area
 export class OutsideAustriaError extends Error {
   constructor(message = 'Location unsupported. Please wait until we can support more regions!') {
     super(message);
@@ -65,21 +65,18 @@ export async function fetchWarningsForLocation(
 
     if (!response.ok) {
       console.warn('Geosphere HTTP error:', response.status, response.statusText);
-      // Treat any HTTP error as an unsupported-location signal and show a
-      // user-friendly toast instead of a raw "API Error: 404" message.
+      // Treat any HTTP error as an unsupported-location signal and show a user-friendly toast instead of a raw "API Error: 404" message
       throw new OutsideAustriaError();
     }
 
     const rawText = await response.text();
     // console.log('Geosphere raw response:', rawText);
-
     let data: Record<string, unknown>;
     try {
       data = JSON.parse(rawText) as Record<string, unknown>;
     } catch (parseError) {
       console.error('Geosphere JSON parse error:', parseError, '\nRaw text:', rawText);
-      // The server returned HTML (e.g. a PHP fatal error page) instead of JSON.
-      // This is a transient server-side issue (e.g. DB connection pool exhausted).
+      // The server returned HTML error instead of json (aka service is currently down or overloaded)
       throw new Error('The weather warning service is temporarily unavailable. Please try again in a moment.');
     }
 
