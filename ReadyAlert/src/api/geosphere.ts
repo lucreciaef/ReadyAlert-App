@@ -3,10 +3,10 @@
  * Exposes functions to fetch active warnings for given coordinates and to extract summary data from the response.
  */
 
-import { GeoLocation, GeosphereResponse } from './types';
+import { GeosphereResponse } from './types';
 import { mockResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
-/** Thrown when the queried coordinates are outside the supported coverage area. */
+// Thrown when the queried coordinates are outside the supported coverage area
 export class OutsideAustriaError extends Error {
   constructor(message = 'Location unsupported. Please wait until we can support more regions!') {
     super(message);
@@ -22,9 +22,6 @@ const USE_MOCK_DATA = false;
 // Toggle this to use mock data WITH warnings
 const USE_MOCK_WITH_WARNINGS = true;
 
-interface GeoLocationParams extends GeoLocation {
-  lang?: string;
-}
 
 /**
  * Fetch warnings for a specific location
@@ -68,16 +65,24 @@ export async function fetchWarningsForLocation(
 
     if (!response.ok) {
       console.warn('Geosphere HTTP error:', response.status, response.statusText);
-      // Treat any HTTP error as an unsupported-location signal and show a
-      // user-friendly toast instead of a raw "API Error: 404" message.
+      // Treat any HTTP error as an unsupported-location signal and show a user-friendly toast instead of a raw "API Error: 404" message
       throw new OutsideAustriaError();
     }
 
-    const data = await response.json();
+    const rawText = await response.text();
+    // console.log('Geosphere raw response:', rawText);
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(rawText) as Record<string, unknown>;
+    } catch (parseError) {
+      console.error('Geosphere JSON parse error:', parseError, '\nRaw text:', rawText);
+      // The server returned HTML error instead of json (aka service is currently down or overloaded)
+      throw new Error('The weather warning service is temporarily unavailable. Please try again in a moment.');
+    }
 
     // The API returns HTTP 200 with {type:"Error"} for unsupported coordinates
     if (data?.type === 'Error') {
-      const apiMsg: string = data.msg ?? 'Unknown API error';
+      const apiMsg: string = (data.msg as string) ?? 'Unknown API error';
       console.warn('Geosphere API error:', apiMsg);
       // Provide a user-friendly message for the "outside Austria" case
       if (apiMsg.toLowerCase().includes('municipal')) {
@@ -87,7 +92,7 @@ export async function fetchWarningsForLocation(
     }
 
     console.log('Geosphere API response received:', data);
-    return data as GeosphereResponse;
+    return data as unknown as GeosphereResponse;
   } catch (error) {
     console.error('🔴 Error fetching warnings:', error);
     throw error;
