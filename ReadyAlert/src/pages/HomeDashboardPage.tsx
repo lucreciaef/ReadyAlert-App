@@ -90,12 +90,12 @@ export function HomeDashboardPage() {
     }
   }, [userLocation, locationLoading]);
 
-  // Auto-expand sheet once data arrives
+  // Auto-expand sheet once data arrives or an error occurs
   useEffect(() => {
-    if (!loading && apiData) {
+    if (!loading && (apiData || error)) {
       snapSheet(0);
     }
-  }, [loading, apiData]);
+  }, [loading, apiData, error]);
 
   const loadWarnings = async (lon: number, lat: number) => {
     try {

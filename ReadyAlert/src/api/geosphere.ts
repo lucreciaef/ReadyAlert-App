@@ -70,11 +70,22 @@ export async function fetchWarningsForLocation(
       throw new OutsideAustriaError();
     }
 
-    const data = await response.json();
+    const rawText = await response.text();
+    // console.log('Geosphere raw response:', rawText);
+
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(rawText) as Record<string, unknown>;
+    } catch (parseError) {
+      console.error('Geosphere JSON parse error:', parseError, '\nRaw text:', rawText);
+      // The server returned HTML (e.g. a PHP fatal error page) instead of JSON.
+      // This is a transient server-side issue (e.g. DB connection pool exhausted).
+      throw new Error('The weather warning service is temporarily unavailable. Please try again in a moment.');
+    }
 
     // The API returns HTTP 200 with {type:"Error"} for unsupported coordinates
     if (data?.type === 'Error') {
-      const apiMsg: string = data.msg ?? 'Unknown API error';
+      const apiMsg: string = (data.msg as string) ?? 'Unknown API error';
       console.warn('Geosphere API error:', apiMsg);
       // Provide a user-friendly message for the "outside Austria" case
       if (apiMsg.toLowerCase().includes('municipal')) {
@@ -84,7 +95,7 @@ export async function fetchWarningsForLocation(
     }
 
     console.log('Geosphere API response received:', data);
-    return data as GeosphereResponse;
+    return data as unknown as GeosphereResponse;
   } catch (error) {
     console.error('🔴 Error fetching warnings:', error);
     throw error;
