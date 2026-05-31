@@ -5,7 +5,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Animated,
   Dimensions,
   PanResponder,
@@ -28,6 +27,10 @@ import {
 } from '../api';
 import { RtrAlert, RtrAlertLevel } from '../api';
 import { mockRtrResponseNoAlerts, mockRtrResponseWithAlerts } from '../api/mockData';
+import { APIResultButton } from '../components/APIResultButton';
+import { ErrorBanner } from '../components/ErrorBanner';
+import { LoadingState } from '../components/LoadingState';
+import { EmptyState } from '../components/EmptyState';
 
 // FOR TEST ONLY -
 // Set to true to bypass the real API and use local fixture data instead.
@@ -508,112 +511,25 @@ export function NationalStatusPage() {
           >
             {sheetView === 'main' ? (
               <>
-                <TouchableOpacity
+                <APIResultButton
+                  loading={loading}
+                  hasAlerts={hasAlerts}
+                  totalCount={totalCount}
                   onPress={openAlertsView}
-                  activeOpacity={0.8}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingVertical: 13,
-                    paddingHorizontal: 14,
-                    borderRadius: 12,
-                    marginBottom: 14,
-                    backgroundColor: isDark
-                      ? hasAlerts ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)'
-                      : hasAlerts ? '#FEF2F2' : '#F3F4F6',
-                    borderWidth: 1,
-                    borderColor: isDark
-                      ? hasAlerts ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.08)'
-                      : hasAlerts ? '#FECACA' : '#E5E7EB',
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                    <Ionicons
-                      name={loading ? 'hourglass-outline' : hasAlerts ? 'alert-circle' : 'checkmark-circle'}
-                      size={22}
-                      color={hasAlerts ? '#EF4444' : '#22C55E'}
-                    />
-                    <View>
-                      <Text style={{ fontSize: 14, fontWeight: '700', color: isDark ? '#f5f5f5' : '#111' }}>
-                        All Alerts
-                      </Text>
-                      <Text style={{ fontSize: 11, color: colors.textMuted, marginTop: 1 }}>
-                        {loading
-                          ? 'Loading…'
-                          : hasAlerts
-                            ? `${totalCount} active alert${totalCount !== 1 ? 's' : ''} across Austria`
-                            : 'No active alerts'}
-                      </Text>
-                    </View>
-                  </View>
-                  {!loading && totalCount > 0 && (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 4,
-                        backgroundColor: '#EF4444',
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
-                        borderRadius: 12,
-                      }}
-                    >
-                      <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>{totalCount}</Text>
-                      <Ionicons name="chevron-forward" size={12} color="#fff" />
-                    </View>
-                  )}
-                  {!loading && totalCount === 0 && (
-                    <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-                  )}
-                </TouchableOpacity>
+                />
 
                 <StateWeatherOverview isDark={isDark} colors={colors} />
               </>
             ) : (
               <>
-                {loading && (
-                  <View className="items-center py-6">
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Text className={`mt-3 text-sm ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
-                      Loading alerts…
-                    </Text>
-                  </View>
-                )}
+                {loading && <LoadingState message="Loading alerts…" />}
 
                 {error && !loading && (
-                  <View>
-                    <View
-                      className={`flex-row items-start gap-2 p-3 rounded-[10px] mt-1 ${
-                        isDark ? 'bg-red-600/[0.12]' : 'bg-red-100'
-                      }`}
-                    >
-                      <Ionicons name="warning-outline" size={16} color={isDark ? '#FCA5A5' : '#B91C1C'} />
-                      <Text className={`text-[13px] flex-1 leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}>
-                        {error}
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      onPress={loadAlerts}
-                      className="self-center mt-3 px-5 py-2 rounded-[10px]"
-                      style={{ backgroundColor: colors.primary }}
-                    >
-                      <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>Try again</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <ErrorBanner message={error} onRetry={loadAlerts} />
                 )}
 
                 {!loading && !error && !hasAlerts && (
-                  <View
-                    className={`items-center p-6 rounded-[14px] mt-1 gap-2.5 ${
-                      isDark ? 'bg-green-500/[0.12]' : 'bg-green-100'
-                    }`}
-                  >
-                    <Ionicons name="checkmark-circle" size={28} color={isDark ? '#86EFAC' : '#16A34A'} />
-                    <Text className={`text-sm font-medium text-center ${isDark ? 'text-green-300' : 'text-green-700'}`}>
-                      No active alerts in Austria
-                    </Text>
-                  </View>
+                  <EmptyState message="No active alerts in Austria" />
                 )}
 
                 {!loading && !error && hasAlerts &&

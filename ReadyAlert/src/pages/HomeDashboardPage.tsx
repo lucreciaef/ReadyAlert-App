@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Animated,
   Dimensions,
   PanResponder,
@@ -24,6 +23,10 @@ import {
 } from '../api';
 import { useLocationContext } from '../context/LocationContext';
 import { Toast } from '../components/Toast';
+import { ErrorBanner } from '../components/ErrorBanner';
+import { LoadingState } from '../components/LoadingState';
+import { EmptyState } from '../components/EmptyState';
+import { ExpandableWarningCard } from '../components/ExpandableWarningCard';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -46,7 +49,6 @@ export function HomeDashboardPage() {
   const [apiData, setApiData] = useState<GeosphereResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expandedWarning, setExpandedWarning] = useState<number | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
 
@@ -246,113 +248,24 @@ export function HomeDashboardPage() {
           >
 
             {(loading || locationLoading) && (
-              <View className="items-center py-6">
-                <ActivityIndicator size="large" color={colors.primary} />
-                <Text
-                  className={`mt-3 text-sm ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-                >
-                  {locationLoading ? 'Getting your location…' : 'Loading warnings…'}
-                </Text>
-              </View>
+              <LoadingState message={locationLoading ? 'Getting your location…' : 'Loading warnings…'} />
             )}
 
             {(error || (locationError && !userLocation)) && !loading && (
-              <View
-                className={`flex-row items-start gap-2 p-3 rounded-[10px] mt-1 ${
-                  isDark ? 'bg-red-600/[0.12]' : 'bg-red-100'
-                }`}
-              >
-                <Ionicons name="warning-outline" size={16} color={isDark ? '#FCA5A5' : '#B91C1C'} />
-                <Text
-                  className={`text-[13px] flex-1 leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}
-                >
-                  {error || locationError}
-                </Text>
-              </View>
+              <ErrorBanner message={error || locationError || ''} />
             )}
 
             {!loading && apiData && !hasWarnings && (
-              <View
-                className={`items-center p-6 rounded-[14px] mt-1 gap-2.5 ${
-                  isDark ? 'bg-green-500/[0.12]' : 'bg-green-100'
-                }`}
-              >
-                <Ionicons
-                  name="checkmark-circle"
-                  size={28}
-                  color={isDark ? '#86EFAC' : '#16A34A'}
-                />
-                <Text
-                  className={`text-sm font-medium text-center ${isDark ? 'text-green-300' : 'text-green-700'}`}
-                >
-                  No active warnings in this area
-                </Text>
-              </View>
+              <EmptyState message="No active warnings in this area" />
             )}
 
             {!loading &&
               hasWarnings &&
               warnings.map((warning: Warning, index: number) => (
-                <TouchableOpacity
+                <ExpandableWarningCard
                   key={`${warning.properties.warnid}-${index}`}
-                  onPress={() => setExpandedWarning(expandedWarning === index ? null : index)}
-                  activeOpacity={0.8}
-                  className={`p-3 rounded-xl border mt-2 ${
-                    isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-50 border-amber-200'
-                  }`}
-                >
-                  <View className="flex-row items-start gap-2">
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        className={`text-[13px] font-bold leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}
-                      >
-                        {warning.properties.text}
-                      </Text>
-                      <Text
-                        className={`text-[11px] mt-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-                      >
-                        {warning.properties.begin} – {warning.properties.end}
-                      </Text>
-                    </View>
-                    <Ionicons
-                      name={expandedWarning === index ? 'chevron-up' : 'chevron-down'}
-                      size={18}
-                      color={colors.textMuted}
-                    />
-                  </View>
-
-                  {expandedWarning === index && (
-                    <View
-                      className={`mt-3 pt-3 border-t gap-2.5 ${
-                        isDark ? 'border-red-500/20' : 'border-amber-200'
-                      }`}
-                    >
-                      {[
-                        { label: 'Auswirkungen', value: warning.properties.auswirkungen },
-                        { label: 'Empfehlungen', value: warning.properties.empfehlungen },
-                        {
-                          label: 'Meteorologischer Hintergrund',
-                          value: warning.properties.meteotext,
-                        },
-                      ]
-                        .filter((d) => !!d.value)
-                        .map((d) => (
-                          <View key={d.label} className="gap-0.5">
-                            <Text
-                              className={`text-[11px] font-semibold ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-                            >
-                              {d.label}:
-                            </Text>
-                            <Text
-                              className={`text-[11px] leading-4 ${isDark ? 'text-text-dark' : 'text-text'}`}
-                            >
-                              {d.value}
-                            </Text>
-                          </View>
-                        ))}
-                    </View>
-                  )}
-                </TouchableOpacity>
+                  warning={warning}
+                />
               ))}
 
             <View className="h-6" />

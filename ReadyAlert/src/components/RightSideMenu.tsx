@@ -6,6 +6,7 @@ import { useTheme } from '../theme/ThemeContext';
 
 interface RightSideMenuProps {
   closeMenu: () => void;
+  onLearningCentrePress?: () => void;
   isDebugMode?: boolean;
   onDebugLondonPress?: () => void;
   onClearDebugPress?: () => void;
@@ -13,6 +14,7 @@ interface RightSideMenuProps {
 
 export function RightSideMenu({
   closeMenu,
+  onLearningCentrePress,
   isDebugMode,
   onDebugLondonPress,
   onClearDebugPress,
@@ -30,6 +32,11 @@ export function RightSideMenu({
         {/* ── Top section: menu items ── */}
         <View>
           <Text className={sideMenu.title}>More</Text>
+
+          <TouchableOpacity className={sideMenu.item} onPress={onLearningCentrePress}>
+            <Ionicons name="school-outline" size={22} color={colors.primary} />
+            <Text className={sideMenu.text}>Learning Centre</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity className={sideMenu.item} onPress={toggleTheme}>
             <Ionicons name={isDark ? 'sunny' : 'moon'} size={22} color={colors.primary} />
