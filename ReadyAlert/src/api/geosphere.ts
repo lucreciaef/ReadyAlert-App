@@ -14,13 +14,21 @@ export class OutsideAustriaError extends Error {
   }
 }
 
+// used when the service is temporarily unavailable ( HTTP 503)
+export class ServiceUnavailableError extends Error {
+  constructor(message = 'The weather warning service is currently unavailable. Please try again later.') {
+    super(message);
+    this.name = 'ServiceUnavailableError';
+  }
+}
+
 const BASE_URL = 'https://warnungen.zamg.at/wsapp/api';
 const ENDPOINT = '/getWarningsForCoords';
 
 // Toggle this to use mock data instead of real API
 const USE_MOCK_DATA = false;
 // Toggle this to use mock data WITH warnings
-const USE_MOCK_WITH_WARNINGS = true;
+const USE_MOCK_WITH_WARNINGS = false;
 
 
 /**
@@ -65,7 +73,10 @@ export async function fetchWarningsForLocation(
 
     if (!response.ok) {
       console.warn('Geosphere HTTP error:', response.status, response.statusText);
-      // Treat any HTTP error as an unsupported-location signal and show a user-friendly toast instead of a raw "API Error: 404" message
+      if (response.status === 503) {
+        throw new ServiceUnavailableError();
+      }
+      // Treat any other HTTP error as an unsupported-location signal and show a user-friendly toast instead of a raw "API Error: 404" message
       throw new OutsideAustriaError();
     }
 
