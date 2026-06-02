@@ -18,7 +18,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow ReadyAlert to access your location."
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "ios": {
       "supportsTablet": true

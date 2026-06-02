@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SQLiteProvider } from 'expo-sqlite';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { getLayoutStyles } from './src/styles/appStyles';
@@ -11,6 +12,8 @@ import { NationalStatusPage } from './src/pages/NationalStatusPage';
 import { EmergencyPage } from "./src/pages/EmergencyPage";
 import { LearningCentrePage } from './src/pages/LearningCentrePage';
 import { LocationProvider, useLocationContext } from './src/context/LocationContext';
+import { PreparednessProvider } from './src/context/PreparednessContext';
+import { migrateDbIfNeeded } from './src/db/migrations';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -33,7 +36,7 @@ function AppContent() {
     <SafeAreaView className={`${layout.safeArea} ${isDark ? 'dark' : ''}`} edges={['bottom']}>
       <View className={layout.app}>
         {activeTab === 'home' ? (
-          <HomeDashboardPage />
+          <HomeDashboardPage onPreparednessPress={() => setActiveTab('learningCentre')} />
         ) : activeTab === 'national' ? (
           <NationalStatusPage />
         ) : activeTab === 'emergency' ? (
@@ -72,7 +75,11 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <LocationProvider>
-          <AppContent />
+          <SQLiteProvider databaseName="readyalert.db" onInit={migrateDbIfNeeded}>
+            <PreparednessProvider>
+              <AppContent />
+            </PreparednessProvider>
+          </SQLiteProvider>
         </LocationProvider>
       </ThemeProvider>
     </SafeAreaProvider>

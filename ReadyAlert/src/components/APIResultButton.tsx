@@ -13,11 +13,15 @@ interface APIResultButtonProps {
   hasAlerts: boolean;
   totalCount: number;
   onPress: () => void;
+  isUnavailable?: boolean;
 }
 
-export function APIResultButton({ loading, hasAlerts, totalCount, onPress }: APIResultButtonProps) {
+export function APIResultButton({ loading, hasAlerts, totalCount, onPress, isUnavailable = false }: APIResultButtonProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
+
+  const unavailableBg = isDark ? 'rgba(245,158,11,0.12)' : '#FFFBEB';
+  const unavailableBorder = isDark ? 'rgba(245,158,11,0.30)' : '#FDE68A';
 
   return (
     <TouchableOpacity
@@ -31,36 +35,50 @@ export function APIResultButton({ loading, hasAlerts, totalCount, onPress }: API
         paddingHorizontal: 14,
         borderRadius: 12,
         marginBottom: 14,
-        backgroundColor: isDark
-          ? hasAlerts ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)'
-          : hasAlerts ? '#FEF2F2' : '#F3F4F6',
+        backgroundColor: isUnavailable
+          ? unavailableBg
+          : isDark
+            ? hasAlerts ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)'
+            : hasAlerts ? '#FEF2F2' : '#F3F4F6',
         borderWidth: 1,
-        borderColor: isDark
-          ? hasAlerts ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.08)'
-          : hasAlerts ? '#FECACA' : '#E5E7EB',
+        borderColor: isUnavailable
+          ? unavailableBorder
+          : isDark
+            ? hasAlerts ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.08)'
+            : hasAlerts ? '#FECACA' : '#E5E7EB',
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <Ionicons
-          name={loading ? 'hourglass-outline' : hasAlerts ? 'alert-circle' : 'checkmark-circle'}
+          name={
+            isUnavailable
+              ? 'warning'
+              : loading
+                ? 'hourglass-outline'
+                : hasAlerts
+                  ? 'alert-circle'
+                  : 'checkmark-circle'
+          }
           size={22}
-          color={hasAlerts ? '#EF4444' : '#22C55E'}
+          color={isUnavailable ? '#F59E0B' : hasAlerts ? '#EF4444' : '#22C55E'}
         />
         <View>
           <Text style={{ fontSize: 14, fontWeight: '700', color: isDark ? '#f5f5f5' : '#111' }}>
-            All Alerts
+            {isUnavailable ? 'Service Unavailable' : 'All Alerts'}
           </Text>
           <Text style={{ fontSize: 11, color: colors.textMuted, marginTop: 1 }}>
-            {loading
-              ? 'Loading…'
-              : hasAlerts
-                ? `${totalCount} active alert${totalCount !== 1 ? 's' : ''} across Austria`
-                : 'No active alerts'}
+            {isUnavailable
+              ? 'Warning data could not be loaded'
+              : loading
+                ? 'Loading…'
+                : hasAlerts
+                  ? `${totalCount} active alert${totalCount !== 1 ? 's' : ''} across Austria`
+                  : 'No active alerts'}
           </Text>
         </View>
       </View>
 
-      {!loading && totalCount > 0 && (
+      {!isUnavailable && !loading && totalCount > 0 && (
         <View
           style={{
             flexDirection: 'row',
@@ -77,8 +95,12 @@ export function APIResultButton({ loading, hasAlerts, totalCount, onPress }: API
         </View>
       )}
 
-      {!loading && totalCount === 0 && (
+      {!isUnavailable && !loading && totalCount === 0 && (
         <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+      )}
+
+      {isUnavailable && (
+        <Ionicons name="refresh-outline" size={18} color={colors.textMuted} />
       )}
     </TouchableOpacity>
   );
