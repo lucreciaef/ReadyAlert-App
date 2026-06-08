@@ -2,9 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ensure dark mode colors are applied */
-@layer base {
-  .dark {
-    @apply bg-background-dark text-text-dark;
-  }
-}

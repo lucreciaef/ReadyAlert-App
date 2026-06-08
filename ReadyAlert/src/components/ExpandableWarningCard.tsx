@@ -25,12 +25,19 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
       style={{
         borderRadius: 12,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: isDark ? 'rgba(239,83,80,0.3)' : 'rgba(229,115,115,0.5)',
-        backgroundColor: isDark ? 'rgba(239,83,80,0.08)' : '#FFF8F7',
         marginTop: 8,
       }}
     >
+      {/* backgroundColor + border live on this inner View so Android's ripple
+          layer doesn't cache the old colour when the theme changes. */}
+      <View
+        style={{
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: isDark ? 'rgba(239,83,80,0.3)' : 'rgba(229,115,115,0.5)',
+          backgroundColor: isDark ? 'rgba(239,83,80,0.08)' : '#FFF8F7',
+        }}
+      >
       <View style={{ height: 3, backgroundColor: '#EF5350' }} />
 
       <View style={{ padding: 12 }}>
@@ -92,6 +99,7 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
               ))}
           </View>
         )}
+      </View>
       </View>
     </Pressable>
   );

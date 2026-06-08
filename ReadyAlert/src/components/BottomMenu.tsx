@@ -4,7 +4,8 @@
  */
 
 import { View } from 'react-native';
-import { getBottomMenuStyles } from '../styles/appStyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getThemeColors } from '../styles/themeColors';
 import { MenuButton } from './MenuButton';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -16,10 +17,18 @@ interface BottomMenuProps {
 
 export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenuProps) {
   const { isDark } = useTheme();
-  const bottomMenu = getBottomMenuStyles(isDark);
+  const colors = getThemeColors(isDark);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className={bottomMenu.container}>
+    <View
+      style={{
+        flexDirection: 'row',
+        paddingTop: 16,
+        paddingBottom: insets.bottom,
+        backgroundColor: isDark ? colors.surfaceContainer : colors.surfaceContainer,
+      }}
+    >
       <MenuButton
         label="Home"
         icon="home-outline"

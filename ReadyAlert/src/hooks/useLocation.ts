@@ -50,7 +50,7 @@ export function useLocation(): LocationState {
         longitude: location.coords.longitude,
       });
 
-      console.log('✅ Location obtained:', location.coords);
+      console.log('Location received:', location.coords);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to get location';
       console.error('❌ Location error:', errorMessage);

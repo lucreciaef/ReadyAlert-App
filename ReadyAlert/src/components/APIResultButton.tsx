@@ -50,23 +50,26 @@ export function APIResultButton({
     : hasAlerts ? '#EF5350' : '#4CAF50';
 
   return (
+    // Pressable only owns geometry + ripple clipping; backgroundColor/border live
+    // on the inner View so Android's ripple layer doesn't cache the old colour.
     <Pressable
       onPress={onPress}
       android_ripple={{ color: colors.ripple }}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 14,
-        paddingHorizontal: 16,
-        borderRadius: 12,
-        marginBottom: 12,
-        backgroundColor: bgColor,
-        borderWidth: 1,
-        borderColor,
-        overflow: 'hidden',
-      }}
+      style={{ borderRadius: 12, marginBottom: 12, overflow: 'hidden' }}
     >
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingVertical: 14,
+          paddingHorizontal: 16,
+          borderRadius: 12,
+          backgroundColor: bgColor,
+          borderWidth: 1,
+          borderColor,
+        }}
+      >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <MaterialCommunityIcons name={iconName as any} size={24} color={iconColor} />
         <View>
@@ -107,6 +110,7 @@ export function APIResultButton({
       {isUnavailable && (
         <MaterialCommunityIcons name="refresh" size={20} color={colors.textMuted} />
       )}
+      </View>
     </Pressable>
   );
 }

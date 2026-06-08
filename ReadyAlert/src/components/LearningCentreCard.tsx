@@ -11,9 +11,10 @@ interface LearningCentreCardProps {
   title: string;
   description: string;
   onPress: () => void;
+  iconName: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 }
 
-export function LearningCentreCard({ title, description, onPress }: LearningCentreCardProps) {
+export function LearningCentreCard({ title, description, onPress, iconName }: LearningCentreCardProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
 
@@ -24,7 +25,6 @@ export function LearningCentreCard({ title, description, onPress }: LearningCent
       style={{
         borderRadius: 12,
         overflow: 'hidden',
-        backgroundColor: isDark ? '#27293A' : colors.surface,
         marginBottom: 12,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -33,7 +33,10 @@ export function LearningCentreCard({ title, description, onPress }: LearningCent
         elevation: 2,
       }}
     >
-      {/* Hero image placeholder */}
+      {/* Inner View owns the background so it updates reliably when the theme
+          changes – setting backgroundColor on Pressable+android_ripple can
+          cause Android's native layer to cache the old colour. */}
+      <View style={{ backgroundColor: isDark ? '#27293A' : colors.surface }}>
       <View
         style={{
           width: '100%',
@@ -44,12 +47,11 @@ export function LearningCentreCard({ title, description, onPress }: LearningCent
         }}
       >
         <MaterialCommunityIcons
-          name="medical-bag"
+          name={iconName}
           size={52}
           color={isDark ? colors.textMuted : colors.primary}
         />
       </View>
-
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, marginBottom: 2 }}>
@@ -60,6 +62,7 @@ export function LearningCentreCard({ title, description, onPress }: LearningCent
           </Text>
         </View>
         <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted} />
+      </View>
       </View>
     </Pressable>
   );
