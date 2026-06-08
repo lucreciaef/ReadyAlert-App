@@ -1,10 +1,9 @@
 /**
- * Green "all good" card shown when an API call returns with no results.
- * Used inside bottom sheets after a successful but empty fetch
+ * Empty state – shown when an API call returns no results.
  */
 
 import { Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 
 interface EmptyStateProps {
@@ -16,13 +15,28 @@ export function EmptyState({ message }: EmptyStateProps) {
 
   return (
     <View
-      className={`items-center p-6 rounded-[14px] mt-1 gap-2.5 ${
-        isDark ? 'bg-green-500/[0.12]' : 'bg-green-100'
-      }`}
+      style={{
+        alignItems: 'center',
+        padding: 24,
+        borderRadius: 12,
+        marginTop: 8,
+        gap: 10,
+        backgroundColor: isDark ? 'rgba(76,175,80,0.10)' : '#F1F8F1',
+      }}
     >
-      <Ionicons name="checkmark-circle" size={28} color={isDark ? '#86EFAC' : '#16A34A'} />
+      <MaterialCommunityIcons
+        name="check-circle"
+        size={32}
+        color={isDark ? '#A5D6A7' : '#2E7D32'}
+      />
       <Text
-        className={`text-sm font-medium text-center ${isDark ? 'text-green-300' : 'text-green-700'}`}
+        style={{
+          fontSize: 14,
+          fontWeight: '400',
+          textAlign: 'center',
+          color: isDark ? '#A5D6A7' : '#2E7D32',
+          lineHeight: 20,
+        }}
       >
         {message}
       </Text>

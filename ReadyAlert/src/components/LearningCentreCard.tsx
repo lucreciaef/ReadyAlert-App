@@ -1,9 +1,9 @@
 /**
- * Tappable card displayed on the Learning Centre main page
+ * Elevated Card – tappable card displayed on the Learning Centre main page.
  */
 
-import { Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Pressable, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
 
@@ -18,44 +18,49 @@ export function LearningCentreCard({ title, description, onPress }: LearningCent
   const colors = getThemeColors(isDark);
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.75}
+    <Pressable
       onPress={onPress}
-      className={`rounded-2xl overflow-hidden border mb-4 ${
-        isDark ? 'bg-[#2a2a2a] border-[#3a3a3a]' : 'bg-white border-gray-200'
-      }`}
+      android_ripple={{ color: colors.ripple }}
       style={{
+        borderRadius: 12,
+        overflow: 'hidden',
+        backgroundColor: isDark ? '#27293A' : colors.surface,
+        marginBottom: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.3 : 0.08,
-        shadowRadius: 6,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: isDark ? 0.25 : 0.08,
+        shadowRadius: 4,
+        elevation: 2,
       }}
     >
+      {/* Hero image placeholder */}
       <View
-        className={`w-full h-40 items-center justify-center ${
-          isDark ? 'bg-[#3a3a3a]' : 'bg-gray-200'
-        }`}
+        style={{
+          width: '100%',
+          height: 160,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: isDark ? colors.surfaceContainer : '#E8F0FE',
+        }}
       >
-        <Ionicons name="medkit-outline" size={48} color={isDark ? '#666' : '#aaa'} />
+        <MaterialCommunityIcons
+          name="medical-bag"
+          size={52}
+          color={isDark ? colors.textMuted : colors.primary}
+        />
       </View>
 
-      <View className="flex-row items-center px-4 py-3 gap-3">
-        <View className="flex-1">
-          <Text
-            className={`text-[15px] font-bold mb-0.5 ${isDark ? 'text-text-dark' : 'text-text'}`}
-          >
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, marginBottom: 2 }}>
             {title}
           </Text>
-          <Text
-            className={`text-[13px] leading-[18px] ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-          >
+          <Text style={{ fontSize: 14, lineHeight: 20, color: colors.textMuted }}>
             {description}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+        <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted} />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
-

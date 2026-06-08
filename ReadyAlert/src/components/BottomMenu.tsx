@@ -1,6 +1,6 @@
 /**
  * Bottom navigation bar rendered across all tabs.
- * Delegates active-tab state upward and opens the right-side drawer when the More button is pressed.
+ * Delegates active-tab state upward and opens the navigation drawer when the More button is pressed.
  */
 
 import { View } from 'react-native';
@@ -41,7 +41,12 @@ export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenu
         onPress={() => setActiveTab('emergency')}
       />
 
-      <MenuButton label="More" icon="ellipsis-horizontal" active={false} onPress={openMoreMenu} />
+      <MenuButton
+        label="More"
+        icon="dots-horizontal"
+        active={false}
+        onPress={openMoreMenu}
+      />
     </View>
   );
 }

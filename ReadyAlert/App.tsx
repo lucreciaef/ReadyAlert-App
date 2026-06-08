@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { SQLiteProvider } from 'expo-sqlite';
+import { StatusBar } from 'expo-status-bar';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { getLayoutStyles } from './src/styles/appStyles';
-import { RightSideMenu } from './src/components/RightSideMenu';
+import { LeftSideMenu } from './src/components/LeftSideMenu';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
 import { NationalStatusPage } from './src/pages/NationalStatusPage';
@@ -34,6 +35,7 @@ function AppContent() {
 
   return (
     <SafeAreaView className={`${layout.safeArea} ${isDark ? 'dark' : ''}`} edges={['bottom']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <View className={layout.app}>
         {activeTab === 'home' ? (
           <HomeDashboardPage onPreparednessPress={() => setActiveTab('learningCentre')} />
@@ -48,7 +50,7 @@ function AppContent() {
         <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openMoreMenu} />
 
         {isMenuOpen && (
-          <RightSideMenu
+          <LeftSideMenu
             closeMenu={closeMoreMenu}
             onLearningCentrePress={() => {
               setActiveTab('learningCentre');

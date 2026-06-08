@@ -1,16 +1,14 @@
 /**
- * Inline error banner with an optional "Try again" retry button.
- * Used wherever an API call fails and the error should be shown inside a list/sheet.
+ * Inline error banner with an optional "Try again" Text Button.
  */
 
-import { Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Pressable, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
 
 interface ErrorBannerProps {
   message: string;
-  // If provided, renders a "Try again" button below the message
   onRetry?: () => void;
 }
 
@@ -19,30 +17,59 @@ export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
   const colors = getThemeColors(isDark);
 
   return (
-    <View>
+    <View style={{ marginTop: 8 }}>
       <View
-        className={`flex-row items-start gap-2 p-3 rounded-[10px] mt-1 ${
-          isDark ? 'bg-red-600/[0.12]' : 'bg-red-100'
-        }`}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          gap: 10,
+          padding: 14,
+          borderRadius: 12,
+          backgroundColor: isDark ? 'rgba(239,83,80,0.10)' : colors.errorContainer,
+        }}
       >
-        <Ionicons name="warning-outline" size={16} color={isDark ? '#FCA5A5' : '#B91C1C'} />
+        <MaterialCommunityIcons
+          name="alert-outline"
+          size={18}
+          color={isDark ? '#EF9A9A' : colors.error}
+        />
         <Text
-          className={`text-[13px] flex-1 leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}
+          style={{
+            flex: 1,
+            fontSize: 14,
+            lineHeight: 20,
+            color: isDark ? '#EF9A9A' : colors.error,
+          }}
         >
           {message}
         </Text>
       </View>
 
       {onRetry && (
-        <TouchableOpacity
+        <Pressable
           onPress={onRetry}
-          className="self-center mt-3 px-5 py-2 rounded-[10px]"
-          style={{ backgroundColor: colors.primary }}
+          android_ripple={{ color: colors.ripple, borderless: false }}
+          style={{
+            alignSelf: 'center',
+            marginTop: 12,
+            borderRadius: 20,
+            overflow: 'hidden',
+          }}
         >
-          <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>Try again</Text>
-        </TouchableOpacity>
+          <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
+            <Text
+              style={{
+                color: colors.primary,
+                fontWeight: '500',
+                fontSize: 14,
+                letterSpacing: 0.1,
+              }}
+            >
+              Try again
+            </Text>
+          </View>
+        </Pressable>
       )}
     </View>
   );
 }
-

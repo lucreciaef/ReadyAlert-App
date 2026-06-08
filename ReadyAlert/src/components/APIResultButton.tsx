@@ -1,10 +1,9 @@
 /**
- * Tappable summary row that shows a live alert count and navigates into the full alert list.
- * Used in the National Status bottom sheet main view.
+ * Filled Card / List Item – tappable summary row showing the live alert count.
  */
 
-import { Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Pressable, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
 
@@ -16,57 +15,65 @@ interface APIResultButtonProps {
   isUnavailable?: boolean;
 }
 
-export function APIResultButton({ loading, hasAlerts, totalCount, onPress, isUnavailable = false }: APIResultButtonProps) {
+export function APIResultButton({
+  loading,
+  hasAlerts,
+  totalCount,
+  onPress,
+  isUnavailable = false,
+}: APIResultButtonProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
 
-  const unavailableBg = isDark ? 'rgba(245,158,11,0.12)' : '#FFFBEB';
-  const unavailableBorder = isDark ? 'rgba(245,158,11,0.30)' : '#FDE68A';
+  const bgColor = isUnavailable
+    ? isDark ? 'rgba(245,158,11,0.10)' : '#FFFBEB'
+    : hasAlerts
+      ? isDark ? 'rgba(239,83,80,0.10)' : '#FFF8F7'
+      : isDark ? colors.surfaceContainer : '#F1F3FF';
+
+  const borderColor = isUnavailable
+    ? isDark ? 'rgba(245,158,11,0.28)' : '#FDE68A'
+    : hasAlerts
+      ? isDark ? 'rgba(239,83,80,0.25)' : 'rgba(229,115,115,0.4)'
+      : isDark ? colors.border : colors.border;
+
+  const iconName = isUnavailable
+    ? 'alert'
+    : loading
+      ? 'timer-sand'
+      : hasAlerts
+        ? 'alert-circle'
+        : 'check-circle';
+
+  const iconColor = isUnavailable
+    ? '#F59E0B'
+    : hasAlerts ? '#EF5350' : '#4CAF50';
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.8}
+      android_ripple={{ color: colors.ripple }}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 13,
-        paddingHorizontal: 14,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
         borderRadius: 12,
-        marginBottom: 14,
-        backgroundColor: isUnavailable
-          ? unavailableBg
-          : isDark
-            ? hasAlerts ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)'
-            : hasAlerts ? '#FEF2F2' : '#F3F4F6',
+        marginBottom: 12,
+        backgroundColor: bgColor,
         borderWidth: 1,
-        borderColor: isUnavailable
-          ? unavailableBorder
-          : isDark
-            ? hasAlerts ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.08)'
-            : hasAlerts ? '#FECACA' : '#E5E7EB',
+        borderColor,
+        overflow: 'hidden',
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <Ionicons
-          name={
-            isUnavailable
-              ? 'warning'
-              : loading
-                ? 'hourglass-outline'
-                : hasAlerts
-                  ? 'alert-circle'
-                  : 'checkmark-circle'
-          }
-          size={22}
-          color={isUnavailable ? '#F59E0B' : hasAlerts ? '#EF4444' : '#22C55E'}
-        />
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <MaterialCommunityIcons name={iconName as any} size={24} color={iconColor} />
         <View>
-          <Text style={{ fontSize: 14, fontWeight: '700', color: isDark ? '#f5f5f5' : '#111' }}>
+          <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
             {isUnavailable ? 'Service Unavailable' : 'All Alerts'}
           </Text>
-          <Text style={{ fontSize: 11, color: colors.textMuted, marginTop: 1 }}>
+          <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
             {isUnavailable
               ? 'Warning data could not be loaded'
               : loading
@@ -79,30 +86,27 @@ export function APIResultButton({ loading, hasAlerts, totalCount, onPress, isUna
       </View>
 
       {!isUnavailable && !loading && totalCount > 0 && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-            backgroundColor: '#EF4444',
-            paddingHorizontal: 8,
-            paddingVertical: 3,
-            borderRadius: 12,
-          }}
-        >
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          backgroundColor: '#EF5350',
+          paddingHorizontal: 10,
+          paddingVertical: 4,
+          borderRadius: 20,
+        }}>
           <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>{totalCount}</Text>
-          <Ionicons name="chevron-forward" size={12} color="#fff" />
+          <MaterialCommunityIcons name="chevron-right" size={14} color="#fff" />
         </View>
       )}
 
       {!isUnavailable && !loading && totalCount === 0 && (
-        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted} />
       )}
 
       {isUnavailable && (
-        <Ionicons name="refresh-outline" size={18} color={colors.textMuted} />
+        <MaterialCommunityIcons name="refresh" size={20} color={colors.textMuted} />
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
-

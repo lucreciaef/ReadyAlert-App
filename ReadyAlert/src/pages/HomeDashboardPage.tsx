@@ -3,17 +3,18 @@ import {
   Animated,
   Dimensions,
   PanResponder,
+  Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import MapView, { PROVIDER_DEFAULT } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
+import { getTopAppBarStyles } from '../styles/appStyles';
 import {
   fetchWarningsForLocation,
   GeosphereResponse,
@@ -42,9 +43,7 @@ const TROPHY_SIZE = 26;
 function TrophyIcon({ fill, color }: { fill: number; color: string }) {
   return (
     <View style={{ width: TROPHY_SIZE, height: TROPHY_SIZE }}>
-      {/* Gray outline — always visible as the "empty" background */}
-      <Ionicons name="trophy-outline" size={TROPHY_SIZE} color="#D1D5DB" />
-      {/* Coloured fill clipped to the fraction of the icon width */}
+      <MaterialCommunityIcons name="trophy-outline" size={TROPHY_SIZE} color="#CFD8DC" />
       {fill > 0 && (
         <View
           style={{
@@ -56,7 +55,7 @@ function TrophyIcon({ fill, color }: { fill: number; color: string }) {
             overflow: 'hidden',
           }}
         >
-          <Ionicons name="trophy" size={TROPHY_SIZE} color={color} />
+          <MaterialCommunityIcons name="trophy" size={TROPHY_SIZE} color={color} />
         </View>
       )}
     </View>
@@ -67,6 +66,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
+  const topBar = getTopAppBarStyles(isDark);
   const { preparedness, loading: prepLoading } = usePreparedness();
 
   const {
@@ -86,22 +86,16 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
 
   useEffect(() => {
-    if (!userLocation) {
-      setLocationDisplayName(null);
-      return;
-    }
+    if (!userLocation) { setLocationDisplayName(null); return; }
     let cancelled = false;
-    Location.reverseGeocodeAsync({
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude,
-    })
+    Location.reverseGeocodeAsync({ latitude: userLocation.latitude, longitude: userLocation.longitude })
       .then((results) => {
         if (cancelled || !results.length) return;
         const place = results[0];
         const parts = [place.city ?? place.district ?? place.subregion, place.country].filter(Boolean);
         if (parts.length) setLocationDisplayName(parts.join(', '));
       })
-      .catch(() => {}); // Fail silently if there is a geocoding error, just show coordinates without a name
+      .catch(() => {});
     return () => { cancelled = true; };
   }, [userLocation]);
 
@@ -113,12 +107,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     const expanded = toValue === 0;
     expandedRef.current = expanded;
     setSheetExpanded(expanded);
-    Animated.spring(sheetAnim, {
-      toValue,
-      useNativeDriver: true,
-      damping: 30,
-      stiffness: 200,
-    }).start();
+    Animated.spring(sheetAnim, { toValue, useNativeDriver: true, damping: 30, stiffness: 200 }).start();
   };
 
   const panResponder = useRef(
@@ -126,30 +115,22 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       onMoveShouldSetPanResponder: (_, gs) => Math.abs(gs.dy) > 4,
       onPanResponderMove: (_, gs) => {
         const base = expandedRef.current ? 0 : MAX_TRANSLATE_Y;
-        const next = Math.max(0, Math.min(MAX_TRANSLATE_Y, base + gs.dy));
-        sheetAnim.setValue(next);
+        sheetAnim.setValue(Math.max(0, Math.min(MAX_TRANSLATE_Y, base + gs.dy)));
       },
       onPanResponderRelease: (_, gs) => {
         const base = expandedRef.current ? 0 : MAX_TRANSLATE_Y;
         const finalVal = Math.max(0, Math.min(MAX_TRANSLATE_Y, base + gs.dy));
-        const snapTo = finalVal < MAX_TRANSLATE_Y / 2 || gs.vy < -0.5 ? 0 : MAX_TRANSLATE_Y;
-        snapSheet(snapTo);
+        snapSheet(finalVal < MAX_TRANSLATE_Y / 2 || gs.vy < -0.5 ? 0 : MAX_TRANSLATE_Y);
       },
     }),
   ).current;
 
-  // data fetching
   useEffect(() => {
-    if (userLocation && !locationLoading) {
-      loadWarnings(userLocation.longitude, userLocation.latitude);
-    }
+    if (userLocation && !locationLoading) loadWarnings(userLocation.longitude, userLocation.latitude);
   }, [userLocation, locationLoading]);
 
-  // Auto-expand sheet once data arrives or an error occurs
   useEffect(() => {
-    if (!loading && (apiData || error)) {
-      snapSheet(0);
-    }
+    if (!loading && (apiData || error)) snapSheet(0);
   }, [loading, apiData, error]);
 
   const loadWarnings = async (lon: number, lat: number) => {
@@ -157,16 +138,14 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       setLoading(true);
       setError(null);
       setServiceUnavailable(false);
-      setApiData(null); // clear stale data from previous location immediately
+      setApiData(null);
       const data = await fetchWarningsForLocation(lon, lat, 'en');
       setApiData(data);
     } catch (err) {
       if (err instanceof ServiceUnavailableError) {
-        // Show the unavailable banner inside the bottom sheet and expand it
         setServiceUnavailable(true);
         snapSheet(0);
       } else if (err instanceof OutsideAustriaError) {
-        // Clear any leftover warnings and collapse the sheet, then show a toast
         setApiData(null);
         snapSheet(MAX_TRANSLATE_Y);
         setToast({ message: err.message, type: 'warning' });
@@ -188,21 +167,10 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const hasWarnings = warningCount > 0;
   const warnings = apiData?.properties?.warnings || [];
 
-  // State/region level zoom — large enough to see the surrounding area
   const REGION_DELTA = 1.2;
   const mapRegion = userLocation
-    ? {
-        latitude: userLocation.latitude,
-        longitude: userLocation.longitude,
-        latitudeDelta: REGION_DELTA,
-        longitudeDelta: REGION_DELTA,
-      }
-    : {
-        latitude: 48.2082,
-        longitude: 16.3738,
-        latitudeDelta: REGION_DELTA,
-        longitudeDelta: REGION_DELTA,
-      };
+    ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA }
+    : { latitude: 48.2082, longitude: 16.3738, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA };
 
   const headerLabel = locationLoading
     ? 'Locating…'
@@ -210,36 +178,46 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       ? 'London, UK (debug)'
       : locationDisplayName ?? locationName ?? 'Unknown location';
 
+  // Status icon for the sheet header
+  const statusIcon = loading || locationLoading
+    ? 'timer-sand'
+    : serviceUnavailable || !!error || (!!locationError && !userLocation)
+      ? 'alert'
+      : 'check-circle';
+
+  const statusColor = loading || locationLoading
+    ? colors.textMuted
+    : serviceUnavailable || !!error || (!!locationError && !userLocation)
+      ? '#F59E0B'
+      : '#4CAF50';
+
   return (
-    <View className="flex-1" style={{ paddingTop: insets.top }}>
-      <View
-        className={`flex-row items-center justify-between px-4 h-14 border-b shadow-sm ${
-          isDark ? 'bg-surface-dark border-[#333]' : 'bg-surface border-gray-200'
-        }`}
-      >
-        <View className="flex-row items-center flex-1 gap-2">
-          <Ionicons name="location" size={18} color={colors.primary} />
+    <View style={{ flex: 1, paddingTop: insets.top }}>
+      <View className={topBar.container} style={{ elevation: 0 }}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, gap: 8 }}>
+          <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
           <Text
-            className={`text-[15px] font-semibold flex-1 ${isDark ? 'text-text-dark' : 'text-text'}`}
+            style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }}
             numberOfLines={1}
           >
             {headerLabel}
           </Text>
         </View>
-        <TouchableOpacity
+        <Pressable
           onPress={handleRefresh}
           disabled={loading || locationLoading}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          android_ripple={{ color: colors.ripple, borderless: true }}
+          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
         >
-          <Ionicons
+          <MaterialCommunityIcons
             name="refresh"
-            size={20}
+            size={24}
             color={loading || locationLoading ? colors.textMuted : colors.primary}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
-      <View className="flex-1">
+      <View style={{ flex: 1 }}>
         <MapView
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           region={mapRegion}
@@ -256,106 +234,107 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               bottom: PEEK_HEIGHT + 14,
               left: 16,
               alignSelf: 'flex-start',
-              elevation: 5,
+              elevation: 3,
               zIndex: 5,
-              transform: [{ translateY: Animated.subtract(sheetAnim, MAX_TRANSLATE_Y) }], // translateY mirrors sheetAnim: 0 when collapsed, -MAX_TRANSLATE_Y when fully open
+              transform: [{ translateY: Animated.subtract(sheetAnim, MAX_TRANSLATE_Y) }],
             }}
           >
-            <TouchableOpacity activeOpacity={0.85} onPress={onPreparednessPress}>
-            <View
-              className={`rounded-2xl px-4 py-3  ${isDark ? 'bg-surface-dark' : 'bg-white'}`}
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 3 },
-                shadowOpacity: isDark ? 0.35 : 0.12,
-                shadowRadius: 10,
-              }}
+            <Pressable
+              onPress={onPreparednessPress}
+              android_ripple={{ color: colors.ripple }}
+              style={{ borderRadius: 12, overflow: 'hidden' }}
             >
-              <Text
-                className={`text-[11px] font-semibold uppercase tracking-widest mb-2 ${
-                  isDark ? 'text-text-muted-dark' : 'text-text-muted'
-                }`}
+              <View
+                style={{
+                  backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+                  borderRadius: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.10,
+                  shadowRadius: 6,
+                  elevation: 3,
+                }}
               >
-                Preparedness score
-              </Text>
-
-              <View className="flex-row items-center justify-between">
-                {/* Trophy row — 5 icons representing 0–100% in 20% steps */}
-                <View className="flex-row gap-1.5">
+                <Text style={{
+                  fontSize: 11,
+                  fontWeight: '600',
+                  letterSpacing: 1.2,
+                  textTransform: 'uppercase',
+                  color: colors.textMuted,
+                  marginBottom: 8,
+                }}>
+                  Preparedness score
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
                   {[0, 1, 2, 3, 4].map((i) => {
-                    const trophyScore = preparedness.score / 20; // 0–5 scale
+                    const trophyScore = preparedness.score / 20;
                     const fill = Math.min(1, Math.max(0, trophyScore - i));
-                    return (
-                      <TrophyIcon key={i} fill={fill} color={preparedness.color} />
-                    );
+                    return <TrophyIcon key={i} fill={fill} color={preparedness.color} />;
                   })}
                 </View>
               </View>
-            </View>
-            </TouchableOpacity>
+            </Pressable>
           </Animated.View>
         )}
 
         <Animated.View
-          className={`absolute bottom-0 left-0 right-0 rounded-t-[22px] ${isDark ? 'bg-surface-dark' : 'bg-surface'}`}
           style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
             height: HALF_HEIGHT,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
             transform: [{ translateY: sheetAnim }],
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: -4 },
+            shadowOffset: { width: 0, height: -3 },
             shadowOpacity: 0.12,
-            shadowRadius: 12,
-            elevation: 10,
+            shadowRadius: 10,
+            elevation: 8,
           }}
         >
-          <View {...panResponder.panHandlers} className="px-4 pb-1">
-            <View
-              className={`w-10 h-1 rounded-sm self-center mt-2.5 mb-3 ${isDark ? 'bg-[#555]' : 'bg-gray-300'}`}
-            />
-            <View className="flex-row items-center justify-between mb-2">
-              <View className="flex-row items-center gap-2">
-                <Ionicons
-                  name={
-                    loading || locationLoading
-                      ? 'hourglass-outline'
-                      : serviceUnavailable || !!error || (!!locationError && !userLocation)
-                        ? 'warning'
-                        : 'checkmark-circle'
-                  }
-                  size={20}
-                  color={
-                    loading || locationLoading
-                      ? colors.textMuted
-                      : serviceUnavailable || !!error || (!!locationError && !userLocation)
-                        ? '#F59E0B'
-                        : '#22C55E'
-                  }
-                />
-                <Text className={`text-base font-bold ${isDark ? 'text-text-dark' : 'text-text'}`}>
+          <View {...panResponder.panHandlers} style={{ paddingHorizontal: 16, paddingBottom: 4 }}>
+            <View style={{
+              width: 32,
+              height: 4,
+              borderRadius: 2,
+              backgroundColor: isDark ? '#555' : '#CAC4D0',
+              alignSelf: 'center',
+              marginTop: 12,
+              marginBottom: 12,
+            }} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
+                <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>
                   Current location
                 </Text>
               </View>
-              <TouchableOpacity
+              <Pressable
                 onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}
-                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                android_ripple={{ color: colors.ripple, borderless: true }}
+                style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}
               >
-                <Ionicons
+                <MaterialCommunityIcons
                   name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
-                  size={20}
+                  size={22}
                   color={colors.textMuted}
                 />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
           <ScrollView
-            className="flex-1"
+            style={{ flex: 1 }}
             contentContainerStyle={{ paddingHorizontal: 16 }}
             showsVerticalScrollIndicator={false}
             scrollEnabled={sheetExpanded}
             keyboardShouldPersistTaps="handled"
           >
-
             {(loading || locationLoading) && (
               <LoadingState message={locationLoading ? 'Getting your location…' : 'Loading warnings…'} />
             )}
@@ -365,29 +344,18 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             )}
 
             {serviceUnavailable && !loading && (
-              <APIResultButton
-                loading={false}
-                hasAlerts={false}
-                totalCount={0}
-                isUnavailable
-                onPress={handleRefresh}
-              />
+              <APIResultButton loading={false} hasAlerts={false} totalCount={0} isUnavailable onPress={handleRefresh} />
             )}
 
             {!loading && apiData && !hasWarnings && (
               <EmptyState message="No active warnings in this area" />
             )}
 
-            {!loading &&
-              hasWarnings &&
-              warnings.map((warning: Warning, index: number) => (
-                <ExpandableWarningCard
-                  key={`${warning.properties.warnid}-${index}`}
-                  warning={warning}
-                />
-              ))}
+            {!loading && hasWarnings && warnings.map((warning: Warning, index: number) => (
+              <ExpandableWarningCard key={`${warning.properties.warnid}-${index}`} warning={warning} />
+            ))}
 
-            <View className="h-6" />
+            <View style={{ height: 24 }} />
           </ScrollView>
         </Animated.View>
       </View>

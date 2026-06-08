@@ -11,24 +11,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#f4f6f8',
-        'background-dark': '#1a1a1a',
-        surface: '#ffffff',
-        'surface-dark': '#2d2d2d',
-        primary: '#007AFF',
-        'primary-dark': '#0a84ff',
-        text: '#222222',
-        'text-dark': '#f5f5f5',
-        'text-muted': '#555555',
-        'text-muted-dark': '#9a9a9a',
-        border: '#dddddd',
-        'border-dark': '#444444',
-        overlay: 'rgba(0, 0, 0, 0.35)',
-        'overlay-dark': 'rgba(0, 0, 0, 0.6)',
+        // ── MD3 Background & Surface ──────────────────────────────────
+        background: '#FAFCFF',
+        'background-dark': '#111318',
+        surface: '#FAFCFF',
+        'surface-dark': '#1A1C22',
+        // Surface Container – used for Navigation Bar & bottom sheet headers
+        'surface-container': '#ECF0FB',
+        'surface-container-dark': '#20232A',
+        // ── MD3 Primary ───────────────────────────────────────────────
+        primary: '#1565C0',
+        'primary-dark': '#90CAF9',
+        // Primary Container – used for active Navigation Bar indicator
+        'primary-container': '#D1E4FF',
+        'primary-container-dark': '#003A73',
+        // ── MD3 Typography ────────────────────────────────────────────
+        text: '#1A1B21',
+        'text-dark': '#E3E2E9',
+        'text-muted': '#44474F',
+        'text-muted-dark': '#C5C6D0',
+        // ── MD3 Borders / Outline ─────────────────────────────────────
+        border: '#C5C6D0',
+        'border-dark': '#44474F',
+        // ── MD3 Scrim ─────────────────────────────────────────────────
+        overlay: 'rgba(0,0,0,0.32)',
+        'overlay-dark': 'rgba(0,0,0,0.48)',
       },
     },
   },
   plugins: [],
-  // Use class strategy for NativeWind dark mode support
+  // using class strategy for NativeWind dark mode support
   darkMode: 'class',
 };

@@ -1,11 +1,10 @@
 /**
- * Expandable card for a single Geosphere weather warning.
- * Tapping the card toggles the detailed Auswirkungen (effects) / Empfehlungen (recommendations) / Meteotext section.
+ * Outlined Card – expandable card for a single Geosphere weather warning
  */
 
 import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Pressable, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
 import { Warning } from '../api';
@@ -20,62 +19,81 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => setExpanded((prev) => !prev)}
-      activeOpacity={0.8}
-      className={`p-3 rounded-xl border mt-2 ${
-        isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-50 border-amber-200'
-      }`}
+      android_ripple={{ color: colors.ripple }}
+      style={{
+        borderRadius: 12,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: isDark ? 'rgba(239,83,80,0.3)' : 'rgba(229,115,115,0.5)',
+        backgroundColor: isDark ? 'rgba(239,83,80,0.08)' : '#FFF8F7',
+        marginTop: 8,
+      }}
     >
-      <View className="flex-row items-start gap-2">
-        <View style={{ flex: 1 }}>
-          <Text
-            className={`text-[13px] font-bold leading-[18px] ${isDark ? 'text-red-300' : 'text-red-700'}`}
-          >
-            {warning.properties.text}
-          </Text>
-          <Text
-            className={`text-[11px] mt-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-          >
-            {warning.properties.begin} – {warning.properties.end}
-          </Text>
-        </View>
-        <Ionicons
-          name={expanded ? 'chevron-up' : 'chevron-down'}
-          size={18}
-          color={colors.textMuted}
-        />
-      </View>
+      <View style={{ height: 3, backgroundColor: '#EF5350' }} />
 
-      {expanded && (
-        <View
-          className={`mt-3 pt-3 border-t gap-2.5 ${
-            isDark ? 'border-red-500/20' : 'border-amber-200'
-          }`}
-        >
-          {[
-            { label: 'Effects', value: warning.properties.auswirkungen },
-            { label: 'Recommendation', value: warning.properties.empfehlungen },
-            { label: 'Meteorological background', value: warning.properties.meteotext },
-          ]
-            .filter((d) => !!d.value)
-            .map((d) => (
-              <View key={d.label} className="gap-0.5">
-                <Text
-                  className={`text-[11px] font-semibold ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-                >
-                  {d.label}:
-                </Text>
-                <Text
-                  className={`text-[11px] leading-4 ${isDark ? 'text-text-dark' : 'text-text'}`}
-                >
-                  {d.value}
-                </Text>
-              </View>
-            ))}
+      <View style={{ padding: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: '500',
+              lineHeight: 20,
+              color: isDark ? '#EF9A9A' : '#B71C1C',
+            }}>
+              {warning.properties.text}
+            </Text>
+            <Text style={{
+              fontSize: 12,
+              marginTop: 4,
+              color: colors.textMuted,
+              letterSpacing: 0.4,
+            }}>
+              {warning.properties.begin} – {warning.properties.end}
+            </Text>
+          </View>
+          <MaterialCommunityIcons
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={20}
+            color={colors.textMuted}
+          />
         </View>
-      )}
-    </TouchableOpacity>
+
+        {expanded && (
+          <View style={{
+            marginTop: 12,
+            paddingTop: 12,
+            borderTopWidth: 1,
+            borderTopColor: isDark ? 'rgba(239,83,80,0.2)' : 'rgba(229,115,115,0.3)',
+            gap: 10,
+          }}>
+            {[
+              { label: 'Effects',                  value: warning.properties.auswirkungen },
+              { label: 'Recommendation',            value: warning.properties.empfehlungen },
+              { label: 'Meteorological background', value: warning.properties.meteotext },
+            ]
+              .filter((d) => !!d.value)
+              .map((d) => (
+                <View key={d.label}>
+                  <Text style={{
+                    fontSize: 11,
+                    fontWeight: '600',
+                    letterSpacing: 0.5,
+                    color: colors.textMuted,
+                    marginBottom: 2,
+                  }}>
+                    {d.label}
+                  </Text>
+                  <Text style={{ fontSize: 12, lineHeight: 18, color: colors.text }}>
+                    {d.value}
+                  </Text>
+                </View>
+              ))}
+          </View>
+        )}
+      </View>
+    </Pressable>
   );
 }
 

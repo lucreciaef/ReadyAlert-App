@@ -1,18 +1,17 @@
 /**
  * Sub-page: Home Pharmacy Kit
- * Displays a grouped checklist of items recommended for a home emergency kit.
- * Checklist state is loaded from and persisted to a local SQLite database.
+ * Top App Bar with back button, linear progress bar, checklist with checkboxes, and a Save button
  */
 
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColors } from '../../styles/themeColors';
+import { getTopAppBarStyles } from '../../styles/appStyles';
 import { usePharmacyChecklist } from '../../hooks/usePharmacyChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
 
-// The order in which groups should be rendered
 const GROUP_ORDER = ['Medicines', 'Other items', 'First-aid dressing packs'];
 
 interface PharmacyKitPageProps {
@@ -23,6 +22,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
+  const topBar = getTopAppBarStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
 
   const { items, loading, saving, saved, checkedCount, totalCount, toggleItem, saveChecklist } =
@@ -30,11 +30,9 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
 
   const handleSave = async () => {
     await saveChecklist();
-    // Re-compute the global preparedness score so the Home Dashboard badge updates
     await refreshPreparedness();
   };
 
-  // Group items while preserving GROUP_ORDER
   const groups = GROUP_ORDER.map((groupName) => ({
     name: groupName,
     items: items.filter((i) => i.group === groupName),
@@ -43,160 +41,152 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
   const progressPercent = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
 
   return (
-    <View
-      className={`flex-1 ${isDark ? 'bg-background-dark' : 'bg-background'}`}
-      style={{ paddingTop: insets.top }}
-    >
+    <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
       <View
-        className={`flex-row items-center px-3 h-14 border-b ${
-          isDark ? 'bg-surface-dark border-[#333]' : 'bg-surface border-gray-200'
-        }`}
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.06,
-          shadowRadius: 4,
-          elevation: 2,
-        }}
+        className={topBar.container}
+        style={{ elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
       >
-        <TouchableOpacity
+        <Pressable
           onPress={onBack}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          className="p-1 mr-2"
+          android_ripple={{ color: colors.ripple, borderless: true }}
+          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
         >
-          <Ionicons name="chevron-back" size={24} color={colors.primary} />
-        </TouchableOpacity>
-        <Text
-          className={`flex-1 text-[17px] font-bold ${isDark ? 'text-text-dark' : 'text-text'}`}
-          numberOfLines={1}
-        >
+          <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
+        </Pressable>
+        <Text className={topBar.titleMedium} numberOfLines={1}>
           Home Pharmacy Kit
         </Text>
       </View>
 
       {loading ? (
-        <View className="flex-1 items-center justify-center">
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text className={`mt-3 text-[14px] ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
+          <Text style={{ marginTop: 16, fontSize: 14, color: colors.textMuted }}>
             Loading checklist…
           </Text>
         </View>
       ) : (
         <>
-          {/* ── Progress bar ── */}
-          <View
-            className={`px-4 py-3 border-b ${
-              isDark ? 'bg-surface-dark border-[#333]' : 'bg-surface border-gray-200'
-            }`}
-          >
-            <View className="flex-row items-center justify-between mb-1.5">
-              <Text
-                className={`text-[13px] font-semibold ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}
-              >
-                {checkedCount} / {totalCount} items ready
+          <View style={{
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 14,
+            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+          }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <Text style={{ fontSize: 12, fontWeight: '500', letterSpacing: 0.5, color: colors.textMuted }}>
+                {checkedCount} / {totalCount} items ready at home
               </Text>
-              <Text
-                className={`text-[13px] font-bold ${
-                  progressPercent === 100
-                    ? 'text-green-500'
-                    : isDark
-                      ? 'text-primary-dark'
-                      : 'text-primary'
-                }`}
-              >
+              <Text style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: progressPercent === 100 ? '#4CAF50' : colors.primary,
+              }}>
                 {Math.round(progressPercent)}%
               </Text>
             </View>
-            {/* Track */}
-            <View className={`h-2 rounded-full ${isDark ? 'bg-[#3a3a3a]' : 'bg-gray-200'}`}>
+            <View style={{ height: 4, borderRadius: 2, backgroundColor: isDark ? '#3a3a3a' : colors.primaryContainer }}>
               <View
-                className={`h-2 rounded-full ${progressPercent === 100 ? 'bg-green-500' : 'bg-primary'}`}
-                style={{ width: `${progressPercent}%` }}
+                style={{
+                  height: 4,
+                  borderRadius: 2,
+                  backgroundColor: progressPercent === 100 ? '#4CAF50' : colors.primary,
+                  width: `${progressPercent}%`,
+                }}
               />
             </View>
           </View>
 
-          {/* ── Checklist ── */}
           <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 20 }}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
             {groups.map((group) => (
-              <View key={group.name} className="mb-5">
-                {/* Group header */}
-                <Text
-                  className={`text-[12px] font-bold uppercase tracking-widest mb-2 ${
-                    isDark ? 'text-text-muted-dark' : 'text-text-muted'
-                  }`}
-                >
+              <View key={group.name} style={{ marginBottom: 20 }}>
+                <Text style={{
+                  fontSize: 11,
+                  fontWeight: '700',
+                  letterSpacing: 1.5,
+                  textTransform: 'uppercase',
+                  color: colors.textMuted,
+                  marginBottom: 8,
+                }}>
                   {group.name}
                 </Text>
 
-                {/* Group items */}
-                <View
-                  className={`rounded-2xl overflow-hidden border ${
-                    isDark ? 'border-[#3a3a3a]' : 'border-gray-200'
-                  }`}
-                >
+                <View style={{
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+                  elevation: 1,
+                }}>
                   {group.items.map((item, idx) => {
                     const isLast = idx === group.items.length - 1;
                     return (
-                      <TouchableOpacity
+                      <Pressable
                         key={item.id}
-                        activeOpacity={0.7}
                         onPress={() => toggleItem(item.id)}
-                        className={`flex-row items-center px-4 py-3 ${
-                          isDark ? 'bg-surface-dark' : 'bg-surface'
-                        } ${!isLast ? (isDark ? 'border-b border-[#3a3a3a]' : 'border-b border-gray-100') : ''}`}
+                        android_ripple={{ color: colors.ripple }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          paddingHorizontal: 16,
+                          paddingVertical: 14,
+                          borderBottomWidth: isLast ? 0 : 1,
+                          borderBottomColor: colors.border,
+                        }}
                       >
-                        {/* Checkbox */}
-                        <View
-                          className={`w-6 h-6 rounded-full items-center justify-center border-2 mr-3 flex-shrink-0 ${
-                            item.checked
-                              ? 'bg-primary border-primary'
-                              : isDark
-                                ? 'border-[#555] bg-transparent'
-                                : 'border-gray-300 bg-transparent'
-                          }`}
-                        >
+                        <View style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 12,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderWidth: 2,
+                          marginRight: 14,
+                          flexShrink: 0,
+                          borderColor: item.checked ? colors.primary : colors.outline,
+                          backgroundColor: item.checked ? colors.primary : 'transparent',
+                        }}>
                           {item.checked && (
-                            <Ionicons name="checkmark" size={14} color="#fff" />
+                            <MaterialCommunityIcons name="check" size={14} color={colors.onPrimary} />
                           )}
                         </View>
 
-                        {/* Label */}
-                        <Text
-                          className={`flex-1 text-[14px] leading-5 ${
-                            item.checked
-                              ? isDark
-                                ? 'text-text-muted-dark line-through'
-                                : 'text-text-muted line-through'
-                              : isDark
-                                ? 'text-text-dark'
-                                : 'text-text'
-                          }`}
-                        >
+                        <Text style={{
+                          flex: 1,
+                          fontSize: 14,
+                          lineHeight: 20,
+                          color: item.checked ? colors.textMuted : colors.text,
+                          textDecorationLine: item.checked ? 'line-through' : 'none',
+                        }}>
                           {item.name}
                         </Text>
 
-                        {/* Optional quantity badge */}
                         {item.quantity && (
-                          <View
-                            className={`ml-2 px-2 py-0.5 rounded-full flex-shrink-0 ${
-                              isDark ? 'bg-[#3a3a3a]' : 'bg-gray-100'
-                            }`}
-                          >
-                            <Text
-                              className={`text-[11px] font-semibold ${
-                                isDark ? 'text-text-muted-dark' : 'text-text-muted'
-                              }`}
-                            >
+                          <View style={{
+                            marginLeft: 8,
+                            paddingHorizontal: 8,
+                            paddingVertical: 2,
+                            borderRadius: 12,
+                            backgroundColor: isDark ? colors.border : colors.primaryContainer,
+                            flexShrink: 0,
+                          }}>
+                            <Text style={{
+                              fontSize: 11,
+                              fontWeight: '600',
+                              color: isDark ? colors.textMuted : colors.primary,
+                            }}>
                               ×{item.quantity}
                             </Text>
                           </View>
                         )}
-                      </TouchableOpacity>
+                      </Pressable>
                     );
                   })}
                 </View>
@@ -204,51 +194,55 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
             ))}
           </ScrollView>
 
-          {/* ── Save button (sticky footer) ── */}
-          <View
-            className={`px-4 pt-3 border-t ${
-              isDark ? 'bg-surface-dark border-[#333]' : 'bg-surface border-gray-200'
-            }`}
-            style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 16 }}
-          >
-            <TouchableOpacity
-              activeOpacity={0.8}
+          <View style={{
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: insets.bottom > 0 ? insets.bottom : 16,
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
+            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+          }}>
+            <Pressable
               onPress={handleSave}
               disabled={saving || saved}
-              className={`rounded-2xl py-4 items-center justify-center flex-row gap-2 ${
-                saved
-                  ? 'bg-green-500'
-                  : saving
-                    ? isDark
-                      ? 'bg-[#3a3a3a]'
-                      : 'bg-gray-200'
-                    : 'bg-primary'
-              }`}
+              android_ripple={{ color: colors.rippleOnPrimary }}
+              style={{
+                borderRadius: 28,
+                overflow: 'hidden',
+                backgroundColor: saved ? '#4CAF50' : saving ? colors.border : colors.primary,
+                opacity: saving ? 0.7 : 1,
+              }}
             >
-              {saving ? (
-                <ActivityIndicator size="small" color={isDark ? '#aaa' : '#888'} />
-              ) : (
-                <Ionicons
-                  name={saved ? 'checkmark-circle' : 'save-outline'}
-                  size={20}
-                  color={saving ? (isDark ? '#aaa' : '#888') : '#fff'}
-                />
-              )}
-              <Text
-                className={`text-[15px] font-bold ${
-                  saving ? (isDark ? 'text-text-muted-dark' : 'text-text-muted') : 'text-white'
-                }`}
-              >
-                {saving ? 'Saving…' : saved ? 'Saved!' : 'Save progress'}
-              </Text>
-            </TouchableOpacity>
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                paddingVertical: 16,
+                paddingHorizontal: 24,
+              }}>
+                {saving ? (
+                  <ActivityIndicator size="small" color={colors.textMuted} />
+                ) : (
+                  <MaterialCommunityIcons
+                    name={saved ? 'check-circle' : 'content-save-outline'}
+                    size={20}
+                    color={saving ? colors.textMuted : colors.onPrimary}
+                  />
+                )}
+                <Text style={{
+                  fontSize: 14,
+                  fontWeight: '500',
+                  letterSpacing: 0.1,
+                  color: saving ? colors.textMuted : colors.onPrimary,
+                }}>
+                  {saving ? 'Saving…' : saved ? 'Saved!' : 'Save progress'}
+                </Text>
+              </View>
+            </Pressable>
           </View>
         </>
       )}
     </View>
   );
 }
-
-
-
-

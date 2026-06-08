@@ -1,6 +1,5 @@
 /**
- * Centred loading spinner with a status message.
- * Used inside bottom sheets while API calls are in progress
+ * loading state – centred progress indicator with a status message.
  */
 
 import { ActivityIndicator, Text, View } from 'react-native';
@@ -16,12 +15,16 @@ export function LoadingState({ message = 'Loading…' }: LoadingStateProps) {
   const colors = getThemeColors(isDark);
 
   return (
-    <View className="items-center py-6">
+    <View style={{ alignItems: 'center', paddingVertical: 32 }}>
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text className={`mt-3 text-sm ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`}>
+      <Text style={{
+        marginTop: 16,
+        fontSize: 14,
+        lineHeight: 20,
+        color: colors.textMuted,
+      }}>
         {message}
       </Text>
     </View>
   );
 }
-

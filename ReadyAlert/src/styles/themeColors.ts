@@ -1,28 +1,56 @@
 /**
- * Runtime colour palette keyed on the current dark-mode state.
- * Returns hex colour values for use in style props where a Tailwind class is insufficient, such as Ionicons colour attributes.
+ * Material Design 3 colour palette.
+ * Returns hex or rgba colour values for style props based on the current theme (dark or light).
  */
 
 export function getThemeColors(isDark: boolean) {
   if (isDark) {
     return {
-      background: '#1a1a1a',
-      surface: '#2d2d2d',
-      primary: '#0a84ff',
-      text: '#f5f5f5',
-      textMuted: '#9a9a9a',
-      border: '#444444',
-      overlay: 'rgba(0, 0, 0, 0.6)',
+      // Surfaces
+      background: '#111318',
+      surface: '#1A1C22',
+      surfaceContainer: '#20232A',
+      // Primary
+      primary: '#90CAF9',
+      primaryContainer: '#003A73',
+      onPrimary: '#003063',
+      // Text (On-Surface)
+      text: '#E3E2E9',
+      textMuted: '#C5C6D0',
+      // Borders
+      border: '#44474F',
+      outline: '#8D9199',
+      // Utility
+      overlay: 'rgba(0,0,0,0.48)',
+      ripple: 'rgba(144,202,249,0.12)',
+      rippleOnPrimary: 'rgba(255,255,255,0.16)',
+      // Semantic
+      error: '#FFB4AB',
+      errorContainer: '#93000A',
     };
   }
 
   return {
-    background: '#f4f6f8',
-    surface: '#ffffff',
-    primary: '#007AFF',
-    text: '#222222',
-    textMuted: '#555555',
-    border: '#dddddd',
-    overlay: 'rgba(0, 0, 0, 0.35)',
+    // Surfaces
+    background: '#FAFCFF',
+    surface: '#FAFCFF',
+    surfaceContainer: '#ECF0FB',
+    // Primary
+    primary: '#1565C0',
+    primaryContainer: '#D1E4FF',
+    onPrimary: '#FFFFFF',
+    // Text (On-Surface)
+    text: '#1A1B21',
+    textMuted: '#44474F',
+    // Borders
+    border: '#C5C6D0',
+    outline: '#73777F',
+    // Utility
+    overlay: 'rgba(0,0,0,0.32)',
+    ripple: 'rgba(21,101,192,0.12)',
+    rippleOnPrimary: 'rgba(255,255,255,0.16)',
+    // Semantic
+    error: '#B3261E',
+    errorContainer: '#F9DEDC',
   };
 }

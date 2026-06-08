@@ -1,11 +1,14 @@
 /**
- * Learning Centre page for preparedness educational content.
+ * Learning Centre page
+ * List of items to learn from, and lists of checklists to complete.
  */
 
 import { ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
+import { getThemeColors } from '../styles/themeColors';
+import { getTopAppBarStyles } from '../styles/appStyles';
 import { LearningCentreCard } from '../components/LearningCentreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
 
@@ -14,6 +17,8 @@ type SubPage = 'pharmacyKit' | null;
 export function LearningCentrePage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
+  const colors = getThemeColors(isDark);
+  const topBar = getTopAppBarStyles(isDark);
   const [activePage, setActivePage] = useState<SubPage>(null);
 
   if (activePage === 'pharmacyKit') {
@@ -22,28 +27,19 @@ export function LearningCentrePage() {
 
   return (
     <View
-      className={`flex-1 ${isDark ? 'bg-background-dark' : 'bg-background'}`}
-      style={{ paddingTop: insets.top }}
+      style={{ flex: 1, backgroundColor: isDark ? colors.background : colors.background, paddingTop: insets.top }}
     >
       <View
-        className={`px-4 h-14 justify-center border-b ${
-          isDark ? 'bg-surface-dark border-[#333]' : 'bg-surface border-gray-200'
-        }`}
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.06,
-          shadowRadius: 4,
-          elevation: 2,
-        }}
+        className={topBar.container}
+        style={{ elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
       >
-        <Text className={`text-[18px] font-bold ${isDark ? 'text-text-dark' : 'text-text'}`}>
+        <Text className={topBar.title} numberOfLines={1}>
           Learning Centre
         </Text>
       </View>
 
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 16 }}
         showsVerticalScrollIndicator={false}
       >

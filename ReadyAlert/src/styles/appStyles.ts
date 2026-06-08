@@ -1,29 +1,37 @@
+//
+// Material Design 3 shared style helpers.
+// All sizing follows the MD3 specs
+//
+
 export const getLayoutStyles = (isDark: boolean) => ({
   safeArea: `flex-1 ${isDark ? 'bg-background-dark' : 'bg-background'}`,
   app: 'flex-1 relative',
-  content: 'flex-1 p-5 pt-16',
+  content: 'flex-1 p-4 pt-0',
 });
 
 export const getTypographyStyles = (isDark: boolean) => ({
-  title: `text-3xl font-bold mb-5 ${isDark ? 'text-text-dark' : 'text-text'}`,
-  cardTitle: `text-xl font-bold mb-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
-  cardText: `text-base ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  // Title Large - Top App Bar title
+  title: `text-[22px] font-normal mb-4 ${isDark ? 'text-text-dark' : 'text-text'}`,
+  // Title Medium – card headings
+  cardTitle: `text-base font-medium mb-1 ${isDark ? 'text-text-dark' : 'text-text'}`,
+  // Body Medium – card body
+  cardText: `text-sm font-normal ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
 });
 
 export const getCardStyles = (isDark: boolean) => {
   const typography = getTypographyStyles(isDark);
   return {
-    container: `${isDark ? 'bg-surface-dark' : 'bg-surface'} p-5 rounded-2xl`,
+    container: `${isDark ? 'bg-surface-dark' : 'bg-surface'} p-4 rounded-xl`,
     title: typography.cardTitle,
     text: typography.cardText,
   };
 };
 
 export const getBottomMenuStyles = (isDark: boolean) => ({
-  container: `h-20 ${isDark ? 'bg-surface-dark border-border-dark' : 'bg-surface border-border'} border-t flex flex-row justify-around items-center`,
+  container: `h-20 ${isDark ? 'bg-surface-container-dark' : 'bg-surface-container'} flex flex-row`,
   button: 'flex-1 items-center justify-center',
-  label: `text-xs mt-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
-  labelActive: `${isDark ? 'text-primary-dark' : 'text-primary'} font-bold`,
+  label: `text-[12px] mt-1 font-medium tracking-[0.4px] ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  labelActive: `font-bold ${isDark ? 'text-primary-dark' : 'text-primary'}`,
 });
 
 export const getOverlayStyles = (isDark: boolean) => ({
@@ -31,11 +39,24 @@ export const getOverlayStyles = (isDark: boolean) => ({
   background: `flex-1 ${isDark ? 'bg-overlay-dark' : 'bg-overlay'}`,
 });
 
+// Opens from the left side, Width: 360dp max.
 export const getSideMenuStyles = (isDark: boolean) => ({
-  container: `w-4/5 ${isDark ? 'bg-surface-dark' : 'bg-surface'} p-6 pt-16 flex-1 justify-between`,
-  title: `text-2xl font-bold mb-8 ${isDark ? 'text-text-dark' : 'text-text'}`,
-  item: 'flex flex-row items-center py-4 px-2 gap-4',
-  text: `text-lg ${isDark ? 'text-text-dark' : 'text-text'}`,
-  closeButton: `${isDark ? 'bg-primary-dark' : 'bg-primary'} p-4 rounded-lg items-center`,
-  closeButtonText: 'text-white font-bold text-lg',
+  container: `w-[300px] ${isDark ? 'bg-surface-dark' : 'bg-surface'} flex-1`,
+  header: `px-6 pt-24 pb-5 ${isDark ? 'bg-surface-container-dark' : 'bg-surface-container'}`,
+  headerTitle: `text-[22px] font-normal mt-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
+  headerSubtitle: `text-sm mt-0.5 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  sectionLabel: `text-[11px] font-bold uppercase tracking-widest px-6 pt-4 pb-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  item: 'flex flex-row items-center py-3 px-4 mx-3 gap-4 rounded-full',
+  itemActive: `${isDark ? 'bg-primary-container-dark' : 'bg-primary-container'}`,
+  text: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  divider: `h-px mx-4 my-2 ${isDark ? 'bg-border-dark' : 'bg-border'}`,
+});
+
+export const getTopAppBarStyles = (isDark: boolean) => ({
+  container: `h-16 ${isDark ? 'bg-surface-dark' : 'bg-surface'} flex-row items-center px-1`,
+  // Title Large
+  title: `flex-1 text-[22px] font-normal px-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
+  // Title Medium (for sub-page titles with a back button)
+  titleMedium: `flex-1 text-[18px] font-medium px-1 ${isDark ? 'text-text-dark' : 'text-text'}`,
+  iconButton: 'w-12 h-12 items-center justify-center rounded-full',
 });
