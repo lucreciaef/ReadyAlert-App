@@ -17,9 +17,7 @@ import { getThemeColors } from '../styles/themeColors';
 export interface ContentSectionCardProps {
   icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
   title: string;
-  /** Hex colour used for the accent bar, icon tint and bullet dots. */
   color: string;
-  /** Each string becomes one bullet-point paragraph. */
   body: string[];
 }
 
@@ -43,11 +41,8 @@ export function ContentSectionCard({ icon, title, color, body }: ContentSectionC
         shadowRadius: 3,
       }}
     >
-      {/* Coloured accent bar */}
       <View style={{ height: 4, backgroundColor: color }} />
-
       <View style={{ padding: 16 }}>
-        {/* Header row: icon badge + title */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <View
             style={{
@@ -66,7 +61,6 @@ export function ContentSectionCard({ icon, title, color, body }: ContentSectionC
           </Text>
         </View>
 
-        {/* Bullet-point body */}
         {body.map((point, idx) => (
           <View
             key={idx}

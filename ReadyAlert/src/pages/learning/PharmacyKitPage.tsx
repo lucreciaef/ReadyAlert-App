@@ -1,5 +1,6 @@
 /**
  * Sub-page: Home Pharmacy Kit
+ * Source: Österreichisches Rotes Kreuz - https://www.roteskreuz.at/katastrophenvorsorge (PDF downloads link)
  * Top App Bar with back button, linear progress bar, checklist with checkboxes, and a Save button
  */
 
@@ -11,6 +12,7 @@ import { getThemeColors } from '../../styles/themeColors';
 import { getTopAppBarStyles } from '../../styles/appStyles';
 import { usePharmacyChecklist } from '../../hooks/usePharmacyChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
+import { SaveProgressButton } from "../../components/SaveProgressButton";
 
 const GROUP_ORDER = ['Medicines', 'Other items', 'First-aid dressing packs'];
 
@@ -127,20 +129,22 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
                 }}>
                   {group.items.map((item, idx) => {
                     const isLast = idx === group.items.length - 1;
-                    return (
-                      <Pressable
-                        key={item.id}
-                        onPress={() => toggleItem(item.id)}
-                        android_ripple={{ color: colors.ripple }}
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          paddingHorizontal: 16,
-                          paddingVertical: 14,
-                          borderBottomWidth: isLast ? 0 : 1,
-                          borderBottomColor: colors.border,
-                        }}
-                      >
+                      return (
+                        <Pressable
+                          key={item.id}
+                          onPress={() => toggleItem(item.id)}
+                          android_ripple={{ color: colors.ripple }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              paddingHorizontal: 16,
+                              paddingVertical: 14,
+                              borderBottomWidth: isLast ? 0 : 1,
+                              borderBottomColor: colors.border,
+                            }}
+                          >
                         <View style={{
                           width: 24,
                           height: 24,
@@ -186,7 +190,8 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
                             </Text>
                           </View>
                         )}
-                      </Pressable>
+                          </View>
+                        </Pressable>
                     );
                   })}
                 </View>
@@ -194,53 +199,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
             ))}
           </ScrollView>
 
-          <View style={{
-            paddingHorizontal: 16,
-            paddingTop: 12,
-            paddingBottom: insets.bottom > 0 ? insets.bottom : 16,
-            borderTopWidth: 1,
-            borderTopColor: colors.border,
-            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
-          }}>
-            <Pressable
-              onPress={handleSave}
-              disabled={saving || saved}
-              android_ripple={{ color: colors.rippleOnPrimary }}
-              style={{
-                borderRadius: 28,
-                overflow: 'hidden',
-                backgroundColor: saved ? '#4CAF50' : saving ? colors.border : colors.primary,
-                opacity: saving ? 0.7 : 1,
-              }}
-            >
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                paddingVertical: 16,
-                paddingHorizontal: 24,
-              }}>
-                {saving ? (
-                  <ActivityIndicator size="small" color={colors.textMuted} />
-                ) : (
-                  <MaterialCommunityIcons
-                    name={saved ? 'check-circle' : 'content-save-outline'}
-                    size={20}
-                    color={saving ? colors.textMuted : colors.onPrimary}
-                  />
-                )}
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: '500',
-                  letterSpacing: 0.1,
-                  color: saving ? colors.textMuted : colors.onPrimary,
-                }}>
-                  {saving ? 'Saving…' : saved ? 'Saved!' : 'Save progress'}
-                </Text>
-              </View>
-            </Pressable>
-          </View>
+          <SaveProgressButton onSave={handleSave} saving={saving} saved={saved} />
         </>
       )}
     </View>

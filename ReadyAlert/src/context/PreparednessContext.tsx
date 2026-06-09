@@ -1,8 +1,17 @@
 /**
  * PreparednessContext
  *
- * Computes and caches the user's overall "Preparedness Level" by aggregating
- * the completion score of every task stored in the local SQLite database.
+ * Scoring model:
+ *   - Each task in the DB corresponds to one LearningCentreCard.
+ *   - Every task carries equal weight: taskWeight = 100 / totalTasks.
+ *   - A task's contribution = (checkedItems / totalItems) * taskWeight.
+ *   - Overall score = sum of contributions  (0 – 100).
+ *
+ * Example with 2 tasks:
+ *   taskWeight = 50 each.
+ *   Pharmacy kit 10/19 done  → contributes 10/19 * 50 = aprox 26.3 pts
+ *   Weather tips  0/1  done  → contributes 0.
+ *   Overall = aprox 26.3 / 100
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
@@ -13,8 +22,9 @@ export interface TaskScore {
   title: string;
   checkedCount: number;
   totalCount: number;
-  /** 0–100 */
   score: number;
+  contribution: number;
+  weight: number;
 }
 
 export interface PreparednessLevel {
@@ -68,6 +78,7 @@ export function PreparednessProvider({ children }: { children: React.ReactNode }
         return;
       }
 
+      const taskWeight = 100 / tasks.length;
       const taskScores: TaskScore[] = [];
 
       for (const task of tasks) {
@@ -78,12 +89,13 @@ export function PreparednessProvider({ children }: { children: React.ReactNode }
         );
         const total = result?.total ?? 0;
         const checked = result?.checked ?? 0;
-        const score = total > 0 ? (checked / total) * 100 : 0;
-        taskScores.push({ taskId: task.id, title: task.title, checkedCount: checked, totalCount: total, score });
+        const completionRatio = total > 0 ? checked / total : 0;
+        const score = completionRatio * 100;
+        const contribution = completionRatio * taskWeight;
+        taskScores.push({ taskId: task.id, title: task.title, checkedCount: checked, totalCount: total, score, contribution, weight: taskWeight });
       }
 
-      const overallScore =
-        taskScores.reduce((sum, t) => sum + t.score, 0) / taskScores.length;
+      const overallScore = taskScores.reduce((sum, t) => sum + t.contribution, 0);
       const rounded = Math.round(overallScore * 10) / 10;
       const { label, color } = getLevelInfo(Math.round(overallScore));
 
@@ -110,4 +122,3 @@ export function PreparednessProvider({ children }: { children: React.ReactNode }
 export function usePreparedness() {
   return useContext(PreparednessContext);
 }
-

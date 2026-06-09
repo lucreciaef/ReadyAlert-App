@@ -129,12 +129,17 @@ function AlertCard({ alert, expanded, onPress, isDark, colors }: AlertCardProps)
       style={{
         borderRadius: 12,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: isDark ? `${levelColor}44` : `${levelColor}77`,
-        backgroundColor: isDark ? `${levelColor}12` : `${levelColor}0e`,
         marginTop: 8,
       }}
     >
+      <View
+        style={{
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: isDark ? `${levelColor}44` : `${levelColor}77`,
+          backgroundColor: isDark ? `${levelColor}12` : `${levelColor}0e`,
+        }}
+      >
       <View style={{ height: 3, backgroundColor: levelColor }} />
       <View style={{ padding: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
@@ -192,6 +197,7 @@ function AlertCard({ alert, expanded, onPress, isDark, colors }: AlertCardProps)
             <Text style={{ fontSize: 12, lineHeight: 18, color: colors.text }}>{bodyText}</Text>
           </View>
         ) : null}
+      </View>
       </View>
     </Pressable>
   );

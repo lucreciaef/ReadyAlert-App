@@ -34,7 +34,7 @@ function AppContent() {
   }
 
   return (
-    <SafeAreaView className={`${layout.safeArea} ${isDark ? 'dark' : ''}`} edges={['bottom']}>
+    <SafeAreaView className={layout.safeArea} edges={[]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <View className={layout.app}>
         {activeTab === 'home' ? (

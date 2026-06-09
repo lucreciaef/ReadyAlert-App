@@ -48,6 +48,7 @@ async function migration_v1(db: SQLiteDatabase): Promise<void> {
     )
   `);
 
+  // Pharmacy kit task
   await db.runAsync(
     `INSERT OR IGNORE INTO tasks (id, title, category, description, sort_order)
      VALUES (?, ?, ?, ?, ?)`,
@@ -60,8 +61,7 @@ async function migration_v1(db: SQLiteDatabase): Promise<void> {
     ],
   );
 
-  // Check whether the old pharmacy_checklist table still exists so we can carry the user's previous checked state
-    // forward instead of losing it.
+  // Carry forward checked state from the old pharmacy_checklist table if it exists
   const oldTableExists = await db.getFirstAsync<{ name: string }>(
     `SELECT name FROM sqlite_master WHERE type='table' AND name='pharmacy_checklist'`,
   );
@@ -90,6 +90,27 @@ async function migration_v1(db: SQLiteDatabase): Promise<void> {
     );
   }
 
-  // Drop the old table now that data is migrated
+  // Drop the old table when that data is migrated
   await db.runAsync('DROP TABLE IF EXISTS pharmacy_checklist');
+
+  // Weather Emergency Tips task
+  await db.runAsync(
+    `INSERT OR IGNORE INTO tasks (id, title, category, description, sort_order)
+     VALUES (?, ?, ?, ?, ?)`,
+    [
+      'task_weather_tips',
+      'Weather Emergency Tips',
+      'Knowledge',
+      'How to prepare for and stay safe during extreme weather events.',
+      2,
+    ],
+  );
+
+  // Single read-marker item: checked=1 means the user has read it.
+  await db.runAsync(
+    `INSERT OR IGNORE INTO checklist_items
+       (id, task_id, name, group_name, quantity, checked, sort_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ['wet_read', 'task_weather_tips', 'I have read and understood the weather emergency tips', null, null, 0, 0],
+  );
 }

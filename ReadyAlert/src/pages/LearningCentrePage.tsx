@@ -11,8 +11,9 @@ import { getThemeColors } from '../styles/themeColors';
 import { getTopAppBarStyles } from '../styles/appStyles';
 import { LearningCentreCard } from '../components/LearningCentreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
+import { WeatherEmergencyTipsPage } from "./learning/WeatherEmergencyTipsPage";
 
-type SubPage = 'pharmacyKit' | null;
+type SubPage = 'pharmacyKit' | 'weatherEmergencyTips' | null;
 
 export function LearningCentrePage() {
   const insets = useSafeAreaInsets();
@@ -23,6 +24,9 @@ export function LearningCentrePage() {
 
   if (activePage === 'pharmacyKit') {
     return <PharmacyKitPage onBack={() => setActivePage(null)} />;
+  }
+  if (activePage === 'weatherEmergencyTips') {
+    return <WeatherEmergencyTipsPage onBack={() => setActivePage(null)} />;
   }
 
   return (
@@ -46,9 +50,15 @@ export function LearningCentrePage() {
         <LearningCentreCard
           title="Home pharmacy kit"
           description="What you should always have at home for basic emergencies and an emergency kit."
+          iconName="medical-bag"
           onPress={() => setActivePage('pharmacyKit')}
         />
-
+        <LearningCentreCard
+          title="Weather emergency tips"
+          description="How to prepare for and stay safe during extreme weather events like floods and hurricane-like winds."
+          iconName="weather-lightning-rainy"
+          onPress={() => setActivePage('weatherEmergencyTips')}
+        />
       </ScrollView>
     </View>
   );
