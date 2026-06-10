@@ -3,7 +3,7 @@
  * List of items to learn from, and lists of checklists to complete.
  */
 
-import {Pressable, ScrollView, Settings, Text, View} from 'react-native';
+import {ScrollView, Text, View} from 'react-native';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
@@ -39,7 +39,13 @@ export function LearningCentrePage({ onSettingsPress }: LearningCentrePageProps)
       style={{ flex: 1, backgroundColor: isDark ? colors.background : colors.background, paddingTop: insets.top }}
     >
       <View
-        style={{ height: 64, backgroundColor: colors.background, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 }}
+        style={{
+          height: 64,
+          backgroundColor: colors.background,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          gap: 12 }}
       >
         <MaterialCommunityIcons name="school-outline" size={24} color={colors.primary} />
         <Text className={topBar.title} numberOfLines={1}>

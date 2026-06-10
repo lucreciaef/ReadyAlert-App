@@ -3,45 +3,44 @@
  * Contains user preferences, info about licencing and debug tools.
  */
 
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
-import { getTopAppBarStyles, getSideMenuStyles } from '../styles/appStyles';
+import { getSideMenuStyles } from '../styles/appStyles';
+import { DebugMode } from '../context/LocationContext';
 
 interface SettingsPageProps {
-  onBack: () => void;
-  onLearningCentrePress?: () => void;
-  isDebugMode?: boolean;
+  debugMode?: DebugMode;
   onDebugLondonPress?: () => void;
+  onDebugDangerPress?: () => void;
+  onDebug503Press?: () => void;
   onClearDebugPress?: () => void;
 }
 
 export function SettingsPage({
-  onBack,
-  isDebugMode,
+  debugMode,
   onDebugLondonPress,
+  onDebugDangerPress,
+  onDebug503Press,
   onClearDebugPress,
 }: SettingsPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark, toggleTheme } = useTheme();
   const colors = getThemeColors(isDark);
-  const topBar = getTopAppBarStyles(isDark);
   const sideMenu = getSideMenuStyles(isDark);
+
+  const isDebugMode = debugMode !== null && debugMode !== undefined;
+
+  const debugLabel: Record<NonNullable<DebugMode>, string> = {
+    london: 'London, UK',
+    danger: 'Local Danger Alert',
+    '503': '503 Server Response',
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View style={{ height: 64, backgroundColor: colors.background, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 }}>
-        <Pressable
-          onPress={onBack}
-          android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
-        >
-          <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
-        </Pressable>
-        <Text className={topBar.titleMedium} numberOfLines={1}>Settings</Text>
-      </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
 
@@ -86,16 +85,7 @@ export function SettingsPage({
 
         <Text className={sideMenu.sectionLabel}>Debug</Text>
 
-        {!isDebugMode ? (
-          <Pressable
-            className={sideMenu.item}
-            android_ripple={{ color: colors.ripple }}
-            onPress={onDebugLondonPress}
-          >
-            <MaterialCommunityIcons name="bug-outline" size={24} color="#F59E0B" />
-            <Text className={sideMenu.text}>Simulate London, UK</Text>
-          </Pressable>
-        ) : (
+        {isDebugMode ? (
           <Pressable
             className={sideMenu.item}
             android_ripple={{ color: colors.ripple }}
@@ -103,12 +93,41 @@ export function SettingsPage({
           >
             <MaterialCommunityIcons name="bug" size={24} color="#F59E0B" />
             <View style={{ flex: 1 }}>
-              <Text className={sideMenu.text}>Clear Debug Location</Text>
+              <Text className={sideMenu.text}>Clear Debug Mode</Text>
               <Text style={{ fontSize: 11, color: '#F59E0B', marginTop: 2 }}>
-                Currently: London, UK 🐛
+                Currently: {debugLabel[debugMode!]}
               </Text>
             </View>
           </Pressable>
+        ) : (
+          <>
+            <Pressable
+              className={sideMenu.item}
+              android_ripple={{ color: colors.ripple }}
+              onPress={onDebugLondonPress}
+            >
+              <MaterialCommunityIcons name="map-marker-off-outline" size={24} color="#F59E0B" />
+              <Text className={sideMenu.text}>Simulate London, UK</Text>
+            </Pressable>
+
+            <Pressable
+              className={sideMenu.item}
+              android_ripple={{ color: colors.ripple }}
+              onPress={onDebugDangerPress}
+            >
+              <MaterialCommunityIcons name="alert-outline" size={24} color="#F59E0B" />
+              <Text className={sideMenu.text}>Simulate Local Danger Alert</Text>
+            </Pressable>
+
+            <Pressable
+              className={sideMenu.item}
+              android_ripple={{ color: colors.ripple }}
+              onPress={onDebug503Press}
+            >
+              <MaterialCommunityIcons name="server-off" size={24} color="#F59E0B" />
+              <Text className={sideMenu.text}>Simulate 503 Server Response</Text>
+            </Pressable>
+          </>
         )}
 
       </ScrollView>

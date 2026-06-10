@@ -35,6 +35,13 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
   const opacity = useRef(new Animated.Value(0)).current;
   const cfg = CONFIG[type];
 
+  const dismiss = () => {
+    Animated.parallel([
+      Animated.timing(translateY, { toValue: 80, duration: 200, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+    ]).start(() => onHide?.());
+  };
+
   useEffect(() => {
     if (visible) {
       // Slide up from bottom
@@ -53,12 +60,6 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
     }
   }, [visible]);
 
-  const dismiss = () => {
-    Animated.parallel([
-      Animated.timing(translateY, { toValue: 80, duration: 200, useNativeDriver: true }),
-      Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start(() => onHide?.());
-  };
 
   if (!visible) return null;
 

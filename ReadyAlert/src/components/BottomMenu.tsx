@@ -12,10 +12,9 @@ import { useTheme } from '../theme/ThemeContext';
 interface BottomMenuProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  openMoreMenu: () => void;
 }
 
-export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenuProps) {
+export function BottomMenu({ activeTab, setActiveTab }: BottomMenuProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
   const insets = useSafeAreaInsets();
@@ -26,7 +25,7 @@ export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenu
         flexDirection: 'row',
         paddingTop: 16,
         paddingBottom: insets.bottom,
-        backgroundColor: isDark ? colors.surfaceContainer : colors.surfaceContainer,
+        backgroundColor: colors.surfaceContainer,
       }}
     >
       <MenuButton
@@ -61,7 +60,7 @@ export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenu
         label="Settings"
         icon="cog-outline"
         active={activeTab === 'settings'}
-        onPress={()=>setActiveTab('settings')}
+        onPress={() => setActiveTab('settings')}
       />
 
     </View>

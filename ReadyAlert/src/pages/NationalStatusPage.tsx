@@ -24,16 +24,16 @@ import {
   getAlertLevelColor,
   getAlertLevelLabel,
   sortAlertsBySeverity,
+  ServiceUnavailableError,
 } from '../api';
 import { RtrAlert, RtrAlertLevel } from '../api';
-import { mockRtrResponseNoAlerts, mockRtrResponseWithAlerts } from '../api/mockData';
+import { mockRtrResponseWithAlerts } from '../api/mockData';
+import { useLocationContext } from '../context/LocationContext';
 import { APIResultButton } from '../components/APIResultButton';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 
-const USE_MOCK_DATA = false;
-const USE_MOCK_WITH_ALERTS = true;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -257,11 +257,13 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const { debugMode } = useLocationContext();
 
   const [allAlerts, setAllAlerts] = useState<RtrAlert[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeLevels, setActiveLevels] = useState<Set<RtrAlertLevel>>(new Set(ALL_ALERT_LEVELS));
   const [mapRegion, setMapRegion] = useState(AUSTRIA_REGION);
@@ -296,9 +298,14 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
     try {
       setLoading(true);
       setError(null);
+      setServiceUnavailable(false);
       let count: number;
       let data: RtrAlert[];
-      if (USE_MOCK_DATA) {
+      if (debugMode === '503') {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        throw new ServiceUnavailableError();
+      }
+      if (debugMode === 'danger') {
         await new Promise((resolve) => setTimeout(resolve, 600));
         const mock = USE_MOCK_WITH_ALERTS ? mockRtrResponseWithAlerts : mockRtrResponseNoAlerts;
         count = mock.totalCount;
@@ -311,14 +318,21 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
       setTotalCount(count);
       setAllAlerts(sortAlertsBySeverity(data));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load alerts';
-      setError(msg);
+      if (err instanceof ServiceUnavailableError) {
+        setServiceUnavailable(true);
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to load alerts');
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [debugMode]);
 
   useEffect(() => { loadAlerts(); }, [loadAlerts]);
+  useEffect(() => {
+    const interval = setInterval(() => { loadAlerts(); }, 30000);
+    return () => clearInterval(interval);
+  }, [loadAlerts]);
   useEffect(() => { if (!loading) snapSheet(0); }, [loading]);
 
   const toggleLevel = (level: RtrAlertLevel) => {
@@ -336,25 +350,19 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top }}>
-      <View className={topBar.container} style={{ elevation: 0 }}>
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, gap: 8 }}>
-          <MaterialCommunityIcons name="earth" size={20} color={colors.primary} />
-          <Text style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }} numberOfLines={1}>
-            Austria – National Alerts
+      <View className={topBar.container} style={{ elevation: 0, paddingVertical:8 }}>
+        <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            gap: 12 }}
+        >
+          <MaterialCommunityIcons name="map-outline" size={24} color={colors.primary} />
+          <Text className={topBar.title} numberOfLines={1}>
+            National view
           </Text>
         </View>
-        <Pressable
-          onPress={loadAlerts}
-          disabled={loading}
-          android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
-        >
-          <MaterialCommunityIcons
-            name="refresh"
-            size={24}
-            color={loading ? colors.textMuted : colors.primary}
-          />
-        </Pressable>
       </View>
 
       <View style={{ flex: 1 }}>
@@ -395,6 +403,7 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
             shadowOpacity: 0.12,
             shadowRadius: 10,
             elevation: 8,
+            opacity: 0.9,
           }}
         >
           <View {...panResponder.panHandlers} style={{ paddingHorizontal: 16, paddingBottom: 4 }}>
@@ -494,7 +503,8 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
                   loading={loading}
                   hasAlerts={hasAlerts}
                   totalCount={totalCount}
-                  onPress={() => { setSheetView('alerts'); snapSheet(0); }}
+                  isUnavailable={serviceUnavailable}
+                  onPress={serviceUnavailable ? loadAlerts : () => { setSheetView('alerts'); snapSheet(0); }}
                 />
                 <StateWeatherOverview isDark={isDark} colors={colors} />
               </>
@@ -502,8 +512,8 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
               <>
                 {loading && <LoadingState message="Loading alerts…" />}
                 {error && !loading && <ErrorBanner message={error} onRetry={loadAlerts} />}
-                {!loading && !error && !hasAlerts && <EmptyState message="No active alerts in Austria" />}
-                {!loading && !error && hasAlerts && alerts.map((alert) => (
+                {!loading && !error && !serviceUnavailable && !hasAlerts && <EmptyState message="No active alerts in Austria" />}
+                {!loading && !error && !serviceUnavailable && hasAlerts && alerts.map((alert) => (
                   <AlertCard
                     key={alert.consolidation_identifier}
                     alert={alert}

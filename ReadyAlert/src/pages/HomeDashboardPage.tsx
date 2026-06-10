@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   Dimensions,
   PanResponder,
@@ -74,7 +75,7 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
     loading: locationLoading,
     error: locationError,
     requestPermission,
-    isDebugMode,
+    debugMode,
   } = useLocationContext();
 
   const [apiData, setApiData] = useState<GeosphereResponse | null>(null);
@@ -126,8 +127,18 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
   ).current;
 
   useEffect(() => {
-    if (userLocation && !locationLoading) loadWarnings(userLocation.longitude, userLocation.latitude);
-  }, [userLocation, locationLoading]);
+    if (userLocation && !locationLoading) {
+      loadWarnings(userLocation.longitude, userLocation.latitude);
+    }
+  }, [userLocation, locationLoading, debugMode]);
+
+  useEffect(() => {
+    if (!userLocation) return;
+    const interval = setInterval(() => {
+      loadWarnings(userLocation.longitude, userLocation.latitude);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [userLocation, debugMode]);
 
   useEffect(() => {
     if (!loading && (apiData || error)) snapSheet(0);
@@ -139,6 +150,15 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
       setError(null);
       setServiceUnavailable(false);
       setApiData(null);
+      if (debugMode === 'danger') {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        setApiData(mockGeoSphereResponseWithWarnings);
+        return;
+      }
+      if (debugMode === '503') {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        throw new ServiceUnavailableError();
+      }
       const data = await fetchWarningsForLocation(lon, lat, 'en');
       setApiData(data);
     } catch (err) {
@@ -167,16 +187,17 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
   const hasWarnings = warningCount > 0;
   const warnings = apiData?.properties?.warnings || [];
 
-  const REGION_DELTA = 1.2;
-  const mapRegion = userLocation
-    ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA }
-    : { latitude: 48.2082, longitude: 16.3738, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA };
+  const initialMapRegion = { latitude: 47.7, longitude: 13.35, latitudeDelta: 5.0, longitudeDelta: 10.0 };
 
   const headerLabel = locationLoading
     ? 'Locating…'
-    : isDebugMode
+    : debugMode === 'london'
       ? 'London, UK (debug)'
-      : locationDisplayName ?? locationName ?? 'Unknown location';
+      : debugMode === 'danger'
+        ? `${locationDisplayName ?? locationName ?? 'Current location'} (danger debug)`
+        : debugMode === '503'
+          ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
+          : locationDisplayName ?? locationName ?? 'Unknown location';
 
   // Status icon for the sheet header
   const statusIcon = loading || locationLoading
@@ -193,20 +214,36 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top }}>
-      <View className={topBar.container} style={{ elevation: 0 }}>
-        <Pressable
-          onPress={handleRefresh}
-          disabled={loading || locationLoading}
-          android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
+      <View className={topBar.container} style={{ elevation: 0, paddingVertical:8 }}>
+        <View style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          gap: 12 }}
         >
-          <MaterialCommunityIcons
-            name="refresh"
-            size={24}
-            color={loading || locationLoading ? colors.textMuted : colors.primary}
-          />
-        </Pressable>
-        <View style={{ flex: 1 }} />
+          <MaterialCommunityIcons name="home-outline" size={24} color={colors.primary} />
+          <Text className={topBar.title} numberOfLines={1}>
+            Local info
+          </Text>
+          <View style={{ flex: 1 }} />
+          <Pressable
+            onPress={() => Alert.alert('Feature coming up soon')}
+            android_ripple={{ color: colors.ripple }}
+            style={{ borderRadius: 32, overflow: 'hidden' }}
+          >
+            <View style={{
+              paddingHorizontal: 20,
+              paddingVertical: 6,
+              borderRadius: 32,
+              backgroundColor: colors.primary,
+            }}>
+              <Text style={{ color: colors.onPrimary, fontWeight: '600', fontSize: 24 }}>
+                +
+              </Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
 
       <View style={{ flex: 1 }}>
@@ -287,6 +324,7 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
             shadowOpacity: 0.12,
             shadowRadius: 10,
             elevation: 8,
+            opacity: 0.9,
           }}
         >
           <View {...panResponder.panHandlers} style={{ paddingHorizontal: 16, paddingBottom: 4 }}>

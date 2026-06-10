@@ -18,44 +18,35 @@ import { migrateDbIfNeeded } from './src/db/migrations';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
-  const [prevTab, setPrevTab] = useState('home');
   const { isDark } = useTheme();
 
   const layout = getLayoutStyles(isDark);
 
-  const { isDebugMode, setDebugLondon, clearDebugLocation } = useLocationContext();
-
-  function openSettings() {
-    setPrevTab(activeTab);
-    setActiveTab('settings');
-  }
-
-  function closeSettings() {
-    setActiveTab(prevTab);
-  }
+  const {debugMode, setDebugLondon, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
 
   return (
     <SafeAreaView className={layout.safeArea} edges={[]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <View className={layout.app}>
-        {activeTab === 'settings' ? (
-          <SettingsPage
-            onBack={closeSettings}
-            isDebugMode={isDebugMode}
-            onDebugLondonPress={() => { setDebugLondon(); closeSettings(); }}
-            onClearDebugPress={() => { clearDebugLocation(); closeSettings(); }}
-          />
-        ) : activeTab === 'home' ? (
-          <HomeDashboardPage onPreparednessPress={() => setActiveTab('learning')} onSettingsPress={openSettings} />
+        {activeTab === 'home' ? (
+          <HomeDashboardPage onPreparednessPress={() => setActiveTab('learning')} />
         ) : activeTab === 'national' ? (
-          <NationalStatusPage onSettingsPress={openSettings} />
+          <NationalStatusPage />
         ) : activeTab === 'emergency' ? (
-          <EmergencyPage onSettingsPress={openSettings} />
+          <EmergencyPage />
         ) : activeTab === 'learning' ? (
-          <LearningCentrePage onSettingsPress={openSettings} />
+          <LearningCentrePage />
+        ) : activeTab === 'settings' ? (
+          <SettingsPage
+            debugMode={debugMode}
+            onDebugLondonPress={() => setDebugLondon()}
+            onDebugDangerPress={() => setDebugDanger()}
+            onDebug503Press={() => setDebug503()}
+            onClearDebugPress={() => clearDebugLocation()}
+          />
         ) : null}
 
-        <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openSettings} />
+        <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} />
       </View>
     </SafeAreaView>
   );

@@ -5,11 +5,7 @@
 
 import { View } from 'react-native';
 
-interface EmergencyPageProps {
-  onSettingsPress?: () => void;
-}
-
-export function EmergencyPage({ onSettingsPress }: EmergencyPageProps) {
+export function EmergencyPage() {
     // placeholder for future content
   return <View className="flex-1" >
   </View>;
