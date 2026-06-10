@@ -41,7 +41,6 @@ function AppContent() {
         {activeTab === 'settings' ? (
           <SettingsPage
             onBack={closeSettings}
-            onLearningCentrePress={() => { closeSettings(); setActiveTab('learning'); }}
             isDebugMode={isDebugMode}
             onDebugLondonPress={() => { setDebugLondon(); closeSettings(); }}
             onClearDebugPress={() => { clearDebugLocation(); closeSettings(); }}
@@ -56,9 +55,7 @@ function AppContent() {
           <LearningCentrePage onSettingsPress={openSettings} />
         ) : null}
 
-        {activeTab !== 'settings' && (
-          <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openSettings} />
-        )}
+        <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openSettings} />
       </View>
     </SafeAreaView>
   );

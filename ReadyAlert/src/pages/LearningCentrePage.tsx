@@ -13,7 +13,6 @@ import { LearningCentreCard } from '../components/LearningCentreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
 import { WeatherEmergencyTipsPage } from "./learning/WeatherEmergencyTipsPage";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {SettingsButton} from "../components/SettingsButton";
 
 type SubPage = 'pharmacyKit' | 'weatherEmergencyTips' | null;
 
@@ -46,7 +45,6 @@ export function LearningCentrePage({ onSettingsPress }: LearningCentrePageProps)
         <Text className={topBar.title} numberOfLines={1}>
           Learning Centre
         </Text>
-        <SettingsButton onPress={onSettingsPress} />
       </View>
 
       <ScrollView

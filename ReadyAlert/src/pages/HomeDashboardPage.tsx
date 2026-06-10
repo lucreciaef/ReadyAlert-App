@@ -32,7 +32,6 @@ import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 import { ExpandableWarningCard } from '../components/ExpandableWarningCard';
 import { APIResultButton } from '../components/APIResultButton';
-import {SettingsButton} from "../components/SettingsButton";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -208,7 +207,6 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
           />
         </Pressable>
         <View style={{ flex: 1 }} />
-        <SettingsButton onPress={onSettingsPress} />
       </View>
 
       <View style={{ flex: 1 }}>

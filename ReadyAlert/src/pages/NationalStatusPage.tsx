@@ -31,7 +31,6 @@ import { APIResultButton } from '../components/APIResultButton';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
-import {SettingsButton} from "../components/SettingsButton";
 
 const USE_MOCK_DATA = false;
 const USE_MOCK_WITH_ALERTS = true;
@@ -356,7 +355,6 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
             color={loading ? colors.textMuted : colors.primary}
           />
         </Pressable>
-        <SettingsButton onPress={onSettingsPress} />
       </View>
 
       <View style={{ flex: 1 }}>

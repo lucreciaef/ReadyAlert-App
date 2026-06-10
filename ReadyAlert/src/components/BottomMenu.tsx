@@ -53,9 +53,17 @@ export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenu
       <MenuButton
         label="Learning"
         icon="school-outline"
-        active={false}
+        active={activeTab === 'learning'}
         onPress={()=>setActiveTab('learning')}
       />
+
+      <MenuButton
+        label="Settings"
+        icon="cog-outline"
+        active={activeTab === 'settings'}
+        onPress={()=>setActiveTab('settings')}
+      />
+
     </View>
   );
 }
