@@ -55,7 +55,7 @@ export const getSideMenuStyles = (isDark: boolean) => ({
 export const getTopAppBarStyles = (isDark: boolean) => ({
   container: `h-16 ${isDark ? 'bg-surface-dark' : 'bg-surface'} flex-row items-center px-1`,
   // Title Large
-  title: `flex-1 text-[22px] font-normal px-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
+  title: `flex-1 text-[24px] font-normal px-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
   // Title Medium (for sub-page titles with a back button)
   titleMedium: `flex-1 text-[18px] font-medium px-1 ${isDark ? 'text-text-dark' : 'text-text'}`,
   iconButton: 'w-12 h-12 items-center justify-center rounded-full',

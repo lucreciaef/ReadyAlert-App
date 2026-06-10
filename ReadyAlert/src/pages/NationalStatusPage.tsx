@@ -31,6 +31,7 @@ import { APIResultButton } from '../components/APIResultButton';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
+import {SettingsButton} from "../components/SettingsButton";
 
 const USE_MOCK_DATA = false;
 const USE_MOCK_WITH_ALERTS = true;
@@ -248,7 +249,11 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
   );
 }
 
-export function NationalStatusPage() {
+interface NationalStatusPageProps {
+  onSettingsPress?: () => void;
+}
+
+export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
@@ -351,6 +356,7 @@ export function NationalStatusPage() {
             color={loading ? colors.textMuted : colors.primary}
           />
         </Pressable>
+        <SettingsButton onPress={onSettingsPress} />
       </View>
 
       <View style={{ flex: 1 }}>

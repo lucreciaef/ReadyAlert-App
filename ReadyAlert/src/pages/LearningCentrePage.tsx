@@ -3,7 +3,7 @@
  * List of items to learn from, and lists of checklists to complete.
  */
 
-import { ScrollView, Text, View } from 'react-native';
+import {Pressable, ScrollView, Settings, Text, View} from 'react-native';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
@@ -12,10 +12,16 @@ import { getTopAppBarStyles } from '../styles/appStyles';
 import { LearningCentreCard } from '../components/LearningCentreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
 import { WeatherEmergencyTipsPage } from "./learning/WeatherEmergencyTipsPage";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {SettingsButton} from "../components/SettingsButton";
 
 type SubPage = 'pharmacyKit' | 'weatherEmergencyTips' | null;
 
-export function LearningCentrePage() {
+interface LearningCentrePageProps {
+  onSettingsPress?: () => void;
+}
+
+export function LearningCentrePage({ onSettingsPress }: LearningCentrePageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
@@ -34,12 +40,13 @@ export function LearningCentrePage() {
       style={{ flex: 1, backgroundColor: isDark ? colors.background : colors.background, paddingTop: insets.top }}
     >
       <View
-        className={topBar.container}
-        style={{ elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
+        style={{ height: 64, backgroundColor: colors.background, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 }}
       >
+        <MaterialCommunityIcons name="school-outline" size={24} color={colors.primary} />
         <Text className={topBar.title} numberOfLines={1}>
           Learning Centre
         </Text>
+        <SettingsButton onPress={onSettingsPress} />
       </View>
 
       <ScrollView

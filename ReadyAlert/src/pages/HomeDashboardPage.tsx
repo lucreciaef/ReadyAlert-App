@@ -32,6 +32,7 @@ import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 import { ExpandableWarningCard } from '../components/ExpandableWarningCard';
 import { APIResultButton } from '../components/APIResultButton';
+import {SettingsButton} from "../components/SettingsButton";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -62,7 +63,7 @@ function TrophyIcon({ fill, color }: { fill: number; color: string }) {
   );
 }
 
-export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress?: () => void }) {
+export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { onPreparednessPress?: () => void; onSettingsPress?: () => void }) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
@@ -194,15 +195,6 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   return (
     <View style={{ flex: 1, paddingTop: insets.top }}>
       <View className={topBar.container} style={{ elevation: 0 }}>
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, gap: 8 }}>
-          <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
-          <Text
-            style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }}
-            numberOfLines={1}
-          >
-            {headerLabel}
-          </Text>
-        </View>
         <Pressable
           onPress={handleRefresh}
           disabled={loading || locationLoading}
@@ -215,6 +207,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             color={loading || locationLoading ? colors.textMuted : colors.primary}
           />
         </Pressable>
+        <View style={{ flex: 1 }} />
+        <SettingsButton onPress={onSettingsPress} />
       </View>
 
       <View style={{ flex: 1 }}>
@@ -309,10 +303,14 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             }} />
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
-                <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>
-                  Current location
+                <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
+                <Text
+                    style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }}
+                    numberOfLines={1}
+                >
+                  {headerLabel}
                 </Text>
+                <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
               </View>
               <Pressable
                 onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}

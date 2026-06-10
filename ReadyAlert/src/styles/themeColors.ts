@@ -8,7 +8,7 @@ export function getThemeColors(isDark: boolean) {
     return {
       // Surfaces
       background: '#111318',
-      surface: '#1A1C22',
+      surface: '#111318',
       surfaceContainer: '#20232A',
       // Primary
       primary: '#90CAF9',

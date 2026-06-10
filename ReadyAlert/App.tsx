@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { getLayoutStyles } from './src/styles/appStyles';
-import { LeftSideMenu } from './src/components/LeftSideMenu';
+import { SettingsPage } from './src/pages/SettingsPage';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
 import { NationalStatusPage } from './src/pages/NationalStatusPage';
@@ -18,54 +18,46 @@ import { migrateDbIfNeeded } from './src/db/migrations';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [prevTab, setPrevTab] = useState('home');
   const { isDark } = useTheme();
 
   const layout = getLayoutStyles(isDark);
 
   const { isDebugMode, setDebugLondon, clearDebugLocation } = useLocationContext();
 
-  function openMoreMenu() {
-    setIsMenuOpen(true);
+  function openSettings() {
+    setPrevTab(activeTab);
+    setActiveTab('settings');
   }
 
-  function closeMoreMenu() {
-    setIsMenuOpen(false);
+  function closeSettings() {
+    setActiveTab(prevTab);
   }
 
   return (
     <SafeAreaView className={layout.safeArea} edges={[]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <View className={layout.app}>
-        {activeTab === 'home' ? (
-          <HomeDashboardPage onPreparednessPress={() => setActiveTab('learningCentre')} />
+        {activeTab === 'settings' ? (
+          <SettingsPage
+            onBack={closeSettings}
+            onLearningCentrePress={() => { closeSettings(); setActiveTab('learning'); }}
+            isDebugMode={isDebugMode}
+            onDebugLondonPress={() => { setDebugLondon(); closeSettings(); }}
+            onClearDebugPress={() => { clearDebugLocation(); closeSettings(); }}
+          />
+        ) : activeTab === 'home' ? (
+          <HomeDashboardPage onPreparednessPress={() => setActiveTab('learning')} onSettingsPress={openSettings} />
         ) : activeTab === 'national' ? (
-          <NationalStatusPage />
+          <NationalStatusPage onSettingsPress={openSettings} />
         ) : activeTab === 'emergency' ? (
-          <EmergencyPage />
-        ) : activeTab === 'learningCentre' ? (
-          <LearningCentrePage />
+          <EmergencyPage onSettingsPress={openSettings} />
+        ) : activeTab === 'learning' ? (
+          <LearningCentrePage onSettingsPress={openSettings} />
         ) : null}
 
-        <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openMoreMenu} />
-
-        {isMenuOpen && (
-          <LeftSideMenu
-            closeMenu={closeMoreMenu}
-            onLearningCentrePress={() => {
-              setActiveTab('learningCentre');
-              closeMoreMenu();
-            }}
-            isDebugMode={isDebugMode}
-            onDebugLondonPress={() => {
-              setDebugLondon();
-              closeMoreMenu();
-            }}
-            onClearDebugPress={() => {
-              clearDebugLocation();
-              closeMoreMenu();
-            }}
-          />
+        {activeTab !== 'settings' && (
+          <BottomMenu activeTab={activeTab} setActiveTab={setActiveTab} openMoreMenu={openSettings} />
         )}
       </View>
     </SafeAreaView>

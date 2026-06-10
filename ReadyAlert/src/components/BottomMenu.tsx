@@ -51,10 +51,10 @@ export function BottomMenu({ activeTab, setActiveTab, openMoreMenu }: BottomMenu
       />
 
       <MenuButton
-        label="More"
-        icon="dots-horizontal"
+        label="Learning"
+        icon="school-outline"
         active={false}
-        onPress={openMoreMenu}
+        onPress={()=>setActiveTab('learning')}
       />
     </View>
   );
