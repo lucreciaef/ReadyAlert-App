@@ -28,8 +28,6 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
         marginTop: 8,
       }}
     >
-      {/* backgroundColor + border live on this inner View so Android's ripple
-          layer doesn't cache the old colour when the theme changes. */}
       <View
         style={{
           borderRadius: 12,
@@ -38,7 +36,7 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
           backgroundColor: isDark ? 'rgba(239,83,80,0.08)' : '#FFF8F7',
         }}
       >
-      <View style={{ height: 3, backgroundColor: '#EF5350' }} />
+      <View style={{ height: 3, backgroundColor: '#ef9850' }} />
 
       <View style={{ padding: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
@@ -47,7 +45,7 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
               fontSize: 14,
               fontWeight: '500',
               lineHeight: 20,
-              color: isDark ? '#EF9A9A' : '#B71C1C',
+              color: isDark ? '#efca9a' : '#b76a1c',
             }}>
               {warning.properties.text}
             </Text>
