@@ -52,7 +52,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     },
     setDebugDanger: () => {
       console.log('Debug: simulating local danger alert');
-      setDebugCoords(gps.coords);
+      setDebugCoords(null);
       setDebugMode('danger');
     },
     setDebug503: () => {

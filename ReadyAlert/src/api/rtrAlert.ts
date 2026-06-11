@@ -103,11 +103,11 @@ export function getAlertLevelLabel(level: RtrAlertLevel | string): string {
 // Sort a list of RTR alerts from most to least severe.
 // Order: Level1 > Level2 > Level3 > Amber > Level4
 const SEVERITY_ORDER: Record<string, number> = {
-  AlertLevel1: 5, // Emergency Alert   – highest
-  AlertLevel2: 4, // Extreme Threat
-  AlertLevel3: 3, // Severe Threat
-  Amber:       2, // Other, missing persons
-  AlertLevel4: 1, // Threat Information – lowest
+  AlertLevel1: 5,
+  AlertLevel2: 4,
+  AlertLevel3: 3,
+  Amber:       2,
+  AlertLevel4: 1,
 };
 
 export function sortAlertsBySeverity(alerts: RtrAlert[]): RtrAlert[] {

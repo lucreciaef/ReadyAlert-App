@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import MapView, { PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,6 +33,9 @@ import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 import { ExpandableWarningCard } from '../components/ExpandableWarningCard';
 import { APIResultButton } from '../components/APIResultButton';
+import { useNotifications } from '../hooks/useNotifications';
+
+let _prevGeoWarningCount = 0;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -78,13 +81,17 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
     debugMode,
   } = useLocationContext();
 
+  const REGION_DELTA = 0.2;
+
   const [apiData, setApiData] = useState<GeosphereResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [locationDisplayName, setLocationDisplayName] = useState<string | null>(null);
+  const mapRef = useRef<MapView>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
+  const { notifyGeosphereWarnings } = useNotifications();
 
   useEffect(() => {
     if (!userLocation) { setLocationDisplayName(null); return; }
@@ -144,23 +151,52 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
     if (!loading && (apiData || error)) snapSheet(0);
   }, [loading, apiData, error]);
 
+  useEffect(() => {
+    if (!userLocation) return;
+    if (!apiData) return;
+    const coords = apiData.geometry?.coordinates;
+    if (coords?.length) {
+      // Polygon data available — fit the map to show the polygon above the bottom sheet
+      const allCoords = coords
+        .flatMap((polygon) => polygon[0])
+        .map(([lon, lat]) => ({ latitude: lat, longitude: lon }));
+      if (allCoords.length > 0) {
+        setTimeout(() => {
+          mapRef.current?.fitToCoordinates(allCoords, {
+            edgePadding: { top: 40, right: 40, bottom: HALF_HEIGHT + 40, left: 40 },
+            animated: true,
+          });
+        }, 500);
+        return;
+      }
+    }
+    // No polygon — zoom to user location using REGION_DELTA
+    setTimeout(() => {
+      mapRef.current?.animateToRegion(
+        { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA },
+        400,
+      );
+    }, 300);
+  }, [apiData]);
+
   const loadWarnings = async (lon: number, lat: number) => {
     try {
       setLoading(true);
       setError(null);
       setServiceUnavailable(false);
       setApiData(null);
-      if (debugMode === 'danger') {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        setApiData(mockGeoSphereResponseWithWarnings);
-        return;
-      }
       if (debugMode === '503') {
         await new Promise((resolve) => setTimeout(resolve, 600));
         throw new ServiceUnavailableError();
       }
       const data = await fetchWarningsForLocation(lon, lat, 'en');
       setApiData(data);
+      const newCount = data?.properties?.warnings?.length ?? 0;
+      if (newCount > 0 && newCount !== _prevGeoWarningCount) {
+        const name = getLocationName(data);
+        notifyGeosphereWarnings(newCount, name);
+      }
+      _prevGeoWarningCount = newCount;
     } catch (err) {
       if (err instanceof ServiceUnavailableError) {
         setServiceUnavailable(true);
@@ -193,11 +229,9 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
     ? 'Locating…'
     : debugMode === 'london'
       ? 'London, UK (debug)'
-      : debugMode === 'danger'
-        ? `${locationDisplayName ?? locationName ?? 'Current location'} (danger debug)`
-        : debugMode === '503'
-          ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
-          : locationDisplayName ?? locationName ?? 'Unknown location';
+      : debugMode === '503'
+        ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
+        : locationDisplayName ?? locationName ?? 'Unknown location';
 
   // Status icon for the sheet header
   const statusIcon = loading || locationLoading
@@ -248,13 +282,26 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
 
       <View style={{ flex: 1 }}>
         <MapView
+          ref={mapRef}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          region={mapRegion}
+          initialRegion={initialMapRegion}
           showsUserLocation
           showsMyLocationButton={false}
           provider={PROVIDER_DEFAULT}
-          mapPadding={{ top: 0, right: 0, bottom: HALF_HEIGHT, left: 0 }}
-        />
+          mapPadding={{ top: 0, right: 0, bottom: PEEK_HEIGHT, left: 0 }}
+        >
+          {(apiData?.geometry?.coordinates ?? []).flatMap((polygon, polyIdx) =>
+            polygon.map((ring, ringIdx) => (
+              <Polygon
+                key={`geosphere-${polyIdx}-${ringIdx}`}
+                coordinates={ring.map(([lon, lat]) => ({ latitude: lat, longitude: lon }))}
+                fillColor="rgba(255, 165, 0, 0.25)"
+                strokeColor="rgba(255, 165, 0, 0.8)"
+                strokeWidth={2}
+              />
+            ))
+          )}
+        </MapView>
 
         {!prepLoading && (
           <Animated.View

@@ -3,7 +3,7 @@
  * Contains user preferences, info about licencing and debug tools.
  */
 
-import { ScrollView, Text, View, Pressable } from 'react-native';
+import {ScrollView, Text, View, Pressable, Alert} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
@@ -66,6 +66,7 @@ export function SettingsPage({
         </Pressable>
 
         <Pressable
+          onPress={() => Alert.alert('Feature coming up soon')}
           className={sideMenu.item}
           android_ripple={{ color: colors.ripple }}
         >
@@ -74,6 +75,7 @@ export function SettingsPage({
         </Pressable>
 
         <Pressable
+          onPress={() => Alert.alert('Feature coming up soon')}
           className={sideMenu.item}
           android_ripple={{ color: colors.ripple }}
         >
@@ -107,7 +109,7 @@ export function SettingsPage({
               onPress={onDebugLondonPress}
             >
               <MaterialCommunityIcons name="map-marker-off-outline" size={24} color="#F59E0B" />
-              <Text className={sideMenu.text}>Simulate London, UK</Text>
+              <Text className={sideMenu.text}>Simulate Local location to London, UK</Text>
             </Pressable>
 
             <Pressable
@@ -116,7 +118,7 @@ export function SettingsPage({
               onPress={onDebugDangerPress}
             >
               <MaterialCommunityIcons name="alert-outline" size={24} color="#F59E0B" />
-              <Text className={sideMenu.text}>Simulate Local Danger Alert</Text>
+              <Text className={sideMenu.text}>Simulate National Danger Alert</Text>
             </Pressable>
 
             <Pressable

@@ -4,7 +4,8 @@
  */
 
 import { GeosphereResponse } from './types';
-import { mockResponseWithWarnings, mockResponseNoWarnings } from './mockData';
+import { convertGeosphereCoordinates } from '../utils/coordConvert';
+import { mockGeoSphereResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
 // Thrown when the queried coordinates are outside the supported coverage area
 export class OutsideAustriaError extends Error {
@@ -49,7 +50,7 @@ export async function fetchWarningsForLocation(
       console.log('Using mock data mode');
       await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
 
-      const mockData = USE_MOCK_WITH_WARNINGS ? mockResponseWithWarnings : mockResponseNoWarnings;
+      const mockData = USE_MOCK_WITH_WARNINGS ? mockGeoSphereResponseWithWarnings : mockResponseNoWarnings;
       console.log('Mock data returned:', mockData);
       return mockData;
     }
@@ -103,7 +104,11 @@ export async function fetchWarningsForLocation(
     }
 
     console.log('Geosphere API response received:', data);
-    return data as unknown as GeosphereResponse;
+    const parsed = data as unknown as GeosphereResponse;
+    if (parsed?.geometry?.coordinates) {
+      parsed.geometry.coordinates = convertGeosphereCoordinates(parsed.geometry.coordinates);
+    }
+    return parsed;
   } catch (error) {
     console.error('🔴 Error fetching warnings:', error);
     throw error;

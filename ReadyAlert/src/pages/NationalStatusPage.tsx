@@ -33,7 +33,9 @@ import { APIResultButton } from '../components/APIResultButton';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
+import { useNotifications } from '../hooks/useNotifications';
 
+let _prevRtrAlertCount = 0;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -270,7 +272,10 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
 
   const sheetAnim = useRef(new Animated.Value(MAX_TRANSLATE_Y)).current;
   const expandedRef = useRef(false);
+  const { notifyRtrAlerts } = useNotifications();
   const [sheetExpanded, setSheetExpanded] = useState(false);
+  const debugModeRef = useRef(debugMode);
+  useEffect(() => { debugModeRef.current = debugMode; }, [debugMode]);
 
   const snapSheet = (toValue: number) => {
     const isExpanded = toValue === 0;
@@ -301,13 +306,14 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
       setServiceUnavailable(false);
       let count: number;
       let data: RtrAlert[];
-      if (debugMode === '503') {
+      const currentDebugMode = debugModeRef.current;
+      if (currentDebugMode === '503') {
         await new Promise((resolve) => setTimeout(resolve, 600));
         throw new ServiceUnavailableError();
       }
-      if (debugMode === 'danger') {
+      if (currentDebugMode === 'danger') {
         await new Promise((resolve) => setTimeout(resolve, 600));
-        const mock = USE_MOCK_WITH_ALERTS ? mockRtrResponseWithAlerts : mockRtrResponseNoAlerts;
+        const mock = mockRtrResponseWithAlerts;
         count = mock.totalCount;
         data = mock.alerts;
       } else {
@@ -317,6 +323,12 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
       }
       setTotalCount(count);
       setAllAlerts(sortAlertsBySeverity(data));
+      if (count > 0 && count !== _prevRtrAlertCount) {
+        const sorted = sortAlertsBySeverity(data);
+        const highestLevel = sorted[0]?.alert_level ?? 'AlertLevel4';
+        notifyRtrAlerts(count, highestLevel);
+      }
+      _prevRtrAlertCount = count;
     } catch (err) {
       if (err instanceof ServiceUnavailableError) {
         setServiceUnavailable(true);
@@ -326,9 +338,10 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
     } finally {
       setLoading(false);
     }
-  }, [debugMode]);
+  }, []);
 
-  useEffect(() => { loadAlerts(); }, [loadAlerts]);
+  // Initial load and re-load when debugMode changes (but not on every remount)
+  useEffect(() => { loadAlerts(); }, [loadAlerts, debugMode]);
   useEffect(() => {
     const interval = setInterval(() => { loadAlerts(); }, 30000);
     return () => clearInterval(interval);

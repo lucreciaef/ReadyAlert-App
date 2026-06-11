@@ -2,7 +2,7 @@
   "expo": {
     "name": "ReadyAlert",
     "slug": "ReadyAlert",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -19,20 +19,35 @@
           "locationAlwaysAndWhenInUsePermission": "Allow ReadyAlert to access your location."
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-notifications"
     ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.lucreciaef.readyalert",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FAFCFF"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "985174ed-7e09-40c4-80c3-5a95a5f40617"
+      }
+    },
+    "owner": "lucreciaef"
   }
 }
