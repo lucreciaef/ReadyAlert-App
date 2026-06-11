@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
+import { MapView, Polygon, PROVIDER_DEFAULT } from '../components/MapViewWrapper';
 import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,7 +88,7 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
   const [error, setError] = useState<string | null>(null);
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [locationDisplayName, setLocationDisplayName] = useState<string | null>(null);
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<typeof MapView>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
   const { notifyGeosphereWarnings } = useNotifications();

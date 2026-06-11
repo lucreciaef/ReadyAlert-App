@@ -12,7 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
+import { MapView, Polygon, PROVIDER_DEFAULT } from '../components/MapViewWrapper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
@@ -271,6 +271,7 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
   const [mapRegion, setMapRegion] = useState(AUSTRIA_REGION);
 
   const sheetAnim = useRef(new Animated.Value(MAX_TRANSLATE_Y)).current;
+  const [mapBottomPadding, setMapBottomPadding] = useState(PEEK_HEIGHT);
   const expandedRef = useRef(false);
   const { notifyRtrAlerts } = useNotifications();
   const [sheetExpanded, setSheetExpanded] = useState(false);
@@ -281,6 +282,7 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
     const isExpanded = toValue === 0;
     expandedRef.current = isExpanded;
     setSheetExpanded(isExpanded);
+    setMapBottomPadding(isExpanded ? HALF_HEIGHT : PEEK_HEIGHT);
     Animated.spring(sheetAnim, { toValue, useNativeDriver: true, damping: 30, stiffness: 200 }).start();
   };
 
@@ -386,7 +388,7 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
           showsUserLocation={false}
           showsMyLocationButton={false}
           provider={PROVIDER_DEFAULT}
-          mapPadding={{ top: 0, right: 0, bottom: HALF_HEIGHT, left: 0 }}
+          mapPadding={{ top: 0, right: 0, bottom: mapBottomPadding, left: 0 }}
         >
           {alerts.flatMap((alert) => {
             const color = getAlertLevelColor(alert.alert_level);

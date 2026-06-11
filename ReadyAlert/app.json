@@ -16,7 +16,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow ReadyAlert to access your location."
+          "locationAlwaysAndWhenInUsePermission": "Allow ReadyAlert to access your location to see alerts and info near you."
         }
       ],
       "expo-sqlite",
