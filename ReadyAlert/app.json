@@ -20,7 +20,8 @@
         }
       ],
       "expo-sqlite",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-font"
     ],
     "ios": {
       "supportsTablet": true

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts, RobotoFlex_400Regular } from '@expo-google-fonts/roboto-flex';
 import './globals.css';
 import { BottomMenu } from './src/components/BottomMenu';
 import { getLayoutStyles } from './src/styles/appStyles';
@@ -53,6 +54,10 @@ function AppContent() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({ RobotoFlex_400Regular });
+
+  if (!fontsLoaded) return null;
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

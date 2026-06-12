@@ -10,6 +10,9 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['RobotoFlex_400Regular'],
+      },
       colors: {
         background: '#FAFCFF',
         'background-dark': '#111318',
