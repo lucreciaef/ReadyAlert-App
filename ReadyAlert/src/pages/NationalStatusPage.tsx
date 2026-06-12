@@ -4,13 +4,14 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Animated,
-  Dimensions,
-  PanResponder,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
+    Alert,
+    Animated,
+    Dimensions,
+    PanResponder,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
 } from 'react-native';
 import { MapView, Polygon, PROVIDER_DEFAULT } from '../components/MapViewWrapper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -213,38 +214,43 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
   ];
 
   return (
-    <View style={{ marginTop: 4 }}>
+    <View style={{ marginTop: 4 }} >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        
         <MaterialCommunityIcons name="weather-partly-cloudy" size={18} color={colors.primary} />
         <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
           Weather in Austria
         </Text>
       </View>
-
+        
       {states.map((state) => (
-        <View
+        <Pressable
           key={state}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-            borderRadius: 8,
-            marginBottom: 6,
-            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(21,101,192,0.04)',
-          }}
+          onPress={() => Alert.alert('Feature coming up soon')}
         >
-          <Text style={{ fontSize: 14, color: isDark ? colors.text : '#374151' }}>{state}</Text>
           <View
             style={{
-              width: 64,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: isDark ? '#3a3a3a' : '#E3E8F8',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingVertical: 10,
+              paddingHorizontal: 14,
+              borderRadius: 8,
+              marginBottom: 6,
+              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(21,101,192,0.04)',
             }}
-          />
-        </View>
+          >
+            <Text style={{ fontSize: 14, color: isDark ? colors.text : '#374151' }}>{state}</Text>
+            <View
+              style={{
+                width: 64,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: isDark ? '#3a3a3a' : '#E3E8F8',
+              }}
+            />
+          </View>
+        </Pressable>
       ))}
     </View>
   );
