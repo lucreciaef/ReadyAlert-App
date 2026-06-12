@@ -229,9 +229,11 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
     ? 'Locating…'
     : debugMode === 'london'
       ? 'London, UK (debug)'
-      : debugMode === '503'
-        ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
-        : locationDisplayName ?? locationName ?? 'Unknown location';
+      : debugMode === 'graz'
+        ? 'Graz, Austria (debug)'
+        : debugMode === '503'
+          ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
+          : locationDisplayName ?? locationName ?? 'Unknown location';
 
   // Status icon for the sheet header
   const statusIcon = loading || locationLoading

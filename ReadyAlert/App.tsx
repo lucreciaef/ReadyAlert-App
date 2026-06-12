@@ -23,7 +23,7 @@ function AppContent() {
 
   const layout = getLayoutStyles(isDark);
 
-  const {debugMode, setDebugLondon, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
+  const {debugMode, setDebugLondon, setDebugGraz, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
 
   return (
     <SafeAreaView className={layout.safeArea} edges={[]}>
@@ -41,6 +41,7 @@ function AppContent() {
           <SettingsPage
             debugMode={debugMode}
             onDebugLondonPress={() => setDebugLondon()}
+            onDebugGrazPress={() => setDebugGraz()}
             onDebugDangerPress={() => setDebugDanger()}
             onDebug503Press={() => setDebug503()}
             onClearDebugPress={() => clearDebugLocation()}

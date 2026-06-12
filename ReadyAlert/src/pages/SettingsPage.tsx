@@ -14,6 +14,7 @@ import { DebugMode } from '../context/LocationContext';
 interface SettingsPageProps {
   debugMode?: DebugMode;
   onDebugLondonPress?: () => void;
+  onDebugGrazPress?: () => void;
   onDebugDangerPress?: () => void;
   onDebug503Press?: () => void;
   onClearDebugPress?: () => void;
@@ -22,6 +23,7 @@ interface SettingsPageProps {
 export function SettingsPage({
   debugMode,
   onDebugLondonPress,
+  onDebugGrazPress,
   onDebugDangerPress,
   onDebug503Press,
   onClearDebugPress,
@@ -35,7 +37,8 @@ export function SettingsPage({
 
   const debugLabel: Record<NonNullable<DebugMode>, string> = {
     london: 'London, UK',
-    danger: 'Local Danger Alert',
+    graz: 'Graz, Austria',
+    danger: 'Austria-wide danger alert',
     '503': '503 Server Response',
   };
 
@@ -71,7 +74,7 @@ export function SettingsPage({
           android_ripple={{ color: colors.ripple }}
         >
           <MaterialCommunityIcons name="information-outline" size={24} color={colors.textMuted} />
-          <Text className={sideMenu.text}>About</Text>
+          <Text className={sideMenu.text}>License information</Text>
         </Pressable>
 
         <Pressable
@@ -80,7 +83,7 @@ export function SettingsPage({
           android_ripple={{ color: colors.ripple }}
         >
           <MaterialCommunityIcons name="help-circle-outline" size={24} color={colors.textMuted} />
-          <Text className={sideMenu.text}>Help</Text>
+          <Text className={sideMenu.text}>About</Text>
         </Pressable>
 
         <View className={sideMenu.divider} />
@@ -109,7 +112,16 @@ export function SettingsPage({
               onPress={onDebugLondonPress}
             >
               <MaterialCommunityIcons name="map-marker-off-outline" size={24} color="#F59E0B" />
-              <Text className={sideMenu.text}>Simulate Local location to London, UK</Text>
+              <Text className={sideMenu.text}>Simulate Current location to London, UK in Dashboard</Text>
+            </Pressable>
+
+            <Pressable
+              className={sideMenu.item}
+              android_ripple={{ color: colors.ripple }}
+              onPress={onDebugGrazPress}
+            >
+              <MaterialCommunityIcons name="map-marker-outline" size={24} color="#F59E0B" />
+              <Text className={sideMenu.text}>Simulate Forced location to Graz, AT in Dashboard</Text>
             </Pressable>
 
             <Pressable

@@ -2,10 +2,13 @@
  * Context provider that tracks and exposes the active colour scheme (light or dark).
  */
 
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ThemeMode = 'light' | 'dark';
+
+const THEME_STORAGE_KEY = '@readyalert_theme';
 
 interface ThemeContextType {
   isDark: boolean;
@@ -22,8 +25,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     () => (systemColorScheme as ThemeMode) ?? 'light',
   );
 
+  // Load saved preference on mount
+  useEffect(() => {
+    AsyncStorage.getItem(THEME_STORAGE_KEY).then((saved) => {
+      if (saved === 'light' || saved === 'dark') {
+        setTheme(saved);
+      }
+    });
+  }, []);
+
   const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      AsyncStorage.setItem(THEME_STORAGE_KEY, next);
+      return next;
+    });
   }, []);
 
   const value = useMemo<ThemeContextType>(

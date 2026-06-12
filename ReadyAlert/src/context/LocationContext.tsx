@@ -8,8 +8,9 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 import { Coordinates, useLocation } from '../hooks/useLocation';
 
 const LONDON: Coordinates = { latitude: 51.5074, longitude: -0.1278 };
+const GRAZ: Coordinates = { latitude: 47.0679, longitude: 15.4417 };
 
-export type DebugMode = 'london' | 'danger' | '503' | null;
+export type DebugMode = 'london' | 'graz' | 'danger' | '503' | null;
 
 interface LocationContextValue {
   coords: Coordinates | null;
@@ -22,6 +23,8 @@ interface LocationContextValue {
   debugMode: DebugMode;
   /** Override with London coordinates for testing */
   setDebugLondon: () => void;
+  /** Override with Graz coordinates for testing */
+  setDebugGraz: () => void;
   /** Activate the local danger alert simulation */
   setDebugDanger: () => void;
   /** Activate the 503 server unavailable simulation */
@@ -49,6 +52,11 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       console.log('Debug: overriding location to London');
       setDebugCoords(LONDON);
       setDebugMode('london');
+    },
+    setDebugGraz: () => {
+      console.log('Debug: overriding location to Graz');
+      setDebugCoords(GRAZ);
+      setDebugMode('graz');
     },
     setDebugDanger: () => {
       console.log('Debug: simulating local danger alert');
