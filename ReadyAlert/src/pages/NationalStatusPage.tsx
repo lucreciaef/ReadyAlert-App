@@ -13,7 +13,8 @@ import {
     Text,
     View,
 } from 'react-native';
-import { MapView, Polygon, PROVIDER_DEFAULT } from '../components/MapViewWrapper';
+import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
+import { DARK_MAP_STYLE, LIGHT_MAP_STYLE } from '../styles/mapStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
@@ -269,12 +270,11 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
 
   const [allAlerts, setAllAlerts] = useState<RtrAlert[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeLevels, setActiveLevels] = useState<Set<RtrAlertLevel>>(new Set(ALL_ALERT_LEVELS));
-  const [mapRegion, setMapRegion] = useState(AUSTRIA_REGION);
 
   const sheetAnim = useRef(new Animated.Value(MAX_TRANSLATE_Y)).current;
   const [mapBottomPadding, setMapBottomPadding] = useState(PEEK_HEIGHT);
@@ -393,6 +393,7 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
           showsUserLocation={false}
           showsMyLocationButton={false}
           provider={PROVIDER_DEFAULT}
+          customMapStyle={isDark ? DARK_MAP_STYLE : LIGHT_MAP_STYLE}
           mapPadding={{ top: 0, right: 0, bottom: mapBottomPadding, left: 0 }}
         >
           {alerts.flatMap((alert) => {

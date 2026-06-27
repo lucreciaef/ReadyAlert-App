@@ -1,5 +1,6 @@
 /**
  * Context provider that tracks and exposes the active colour scheme (light or dark).
+ * The user's preference is persisted via AsyncStorage so it survives app restarts.
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';

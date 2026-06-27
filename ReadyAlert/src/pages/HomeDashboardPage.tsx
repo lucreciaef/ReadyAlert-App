@@ -9,7 +9,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { MapView, Polygon, PROVIDER_DEFAULT } from '../components/MapViewWrapper';
+import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
+import { DARK_MAP_STYLE, LIGHT_MAP_STYLE } from '../styles/mapStyles';
 import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,7 +89,7 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
   const [error, setError] = useState<string | null>(null);
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [locationDisplayName, setLocationDisplayName] = useState<string | null>(null);
-  const mapRef = useRef<typeof MapView>(null);
+  const mapRef = useRef<MapView>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
   const { notifyGeosphereWarnings } = useNotifications();
@@ -290,6 +291,7 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
           showsUserLocation
           showsMyLocationButton={false}
           provider={PROVIDER_DEFAULT}
+          customMapStyle={isDark ? DARK_MAP_STYLE : LIGHT_MAP_STYLE}
           mapPadding={{ top: 0, right: 0, bottom: PEEK_HEIGHT, left: 0 }}
         >
           {(apiData?.geometry?.coordinates ?? []).flatMap((polygon, polyIdx) =>
