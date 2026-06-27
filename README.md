@@ -38,7 +38,7 @@ Built with [Expo](https://expo.dev) and React Native.
 
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
-- A physical device or emulator (Android / iOS)
+- A physical device or emulator (Android)
 
 ### Installation
 
