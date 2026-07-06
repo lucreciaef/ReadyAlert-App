@@ -35,7 +35,7 @@ export function ContentSectionCard({ icon, title, color, body }: ContentSectionC
         borderColor: colors.border,
         backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
         elevation: 1,
-        shadowColor: '#000',
+        shadowColor: colors.shadow,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.06,
         shadowRadius: 3,

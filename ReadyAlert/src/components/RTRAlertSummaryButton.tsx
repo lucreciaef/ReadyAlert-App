@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColors } from '../styles/themeColors';
 
-interface APIResultButtonProps {
+interface RTRAlertSummaryButtonProps {
   loading: boolean;
   hasAlerts: boolean;
   totalCount: number;
@@ -15,27 +15,21 @@ interface APIResultButtonProps {
   isUnavailable?: boolean;
 }
 
-export function APIResultButton({
+export function RTRAlertSummaryButton({
   loading,
   hasAlerts,
   totalCount,
   onPress,
   isUnavailable = false,
-}: APIResultButtonProps) {
+}: RTRAlertSummaryButtonProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
 
   const bgColor = isUnavailable
-    ? isDark ? 'rgba(245,158,11,0.10)' : '#FFFBEB'
+    ? colors.warningMuted
     : hasAlerts
-      ? isDark ? 'rgba(239,83,80,0.10)' : '#FFF8F7'
-      : isDark ? colors.surfaceContainer : '#F1F3FF';
-
-  const borderColor = isUnavailable
-    ? isDark ? 'rgba(245,158,11,0.28)' : '#FDE68A'
-    : hasAlerts
-      ? isDark ? 'rgba(239,83,80,0.25)' : 'rgba(229,115,115,0.4)'
-      : isDark ? colors.border : colors.border;
+      ? colors.alertBg
+      : colors.surface;
 
   const iconName = isUnavailable
     ? 'alert'
@@ -46,8 +40,8 @@ export function APIResultButton({
         : 'check-circle';
 
   const iconColor = isUnavailable
-    ? '#F59E0B'
-    : hasAlerts ? '#EF5350' : '#4CAF50';
+    ? colors.warning
+    : hasAlerts ? colors.error : colors.success;
 
   return (
     // Pressable only owns geometry + ripple clipping; backgroundColor/border live
@@ -67,7 +61,7 @@ export function APIResultButton({
           borderRadius: 12,
           backgroundColor: bgColor,
           borderWidth: 1,
-          borderColor,
+          borderColor: colors.textMuted,
         }}
       >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -93,13 +87,13 @@ export function APIResultButton({
           flexDirection: 'row',
           alignItems: 'center',
           gap: 4,
-          backgroundColor: '#EF5350',
+          backgroundColor: colors.error,
           paddingHorizontal: 10,
           paddingVertical: 4,
           borderRadius: 20,
         }}>
-          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>{totalCount}</Text>
-          <MaterialCommunityIcons name="chevron-right" size={14} color="#fff" />
+          <Text style={{ color: colors.onPrimary, fontSize: 12, fontWeight: '700' }}>{totalCount}</Text>
+          <MaterialCommunityIcons name="chevron-right" size={14} color={colors.onPrimary} />
         </View>
       )}
 

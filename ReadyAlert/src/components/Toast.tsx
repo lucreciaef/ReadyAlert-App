@@ -7,6 +7,8 @@ import { useEffect, useRef } from 'react';
 import { Animated, Pressable, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../theme/ThemeContext';
+import { getThemeColors } from '../styles/themeColors';
 
 export type ToastType = 'error' | 'warning' | 'success' | 'info';
 
@@ -19,21 +21,24 @@ interface ToastProps {
   onHide?: () => void;
 }
 
-const CONFIG: Record<
-  ToastType,
-  { icon: string; iconColor: string }
-> = {
-  error: { icon: 'alert-circle', iconColor: '#FFB4AB' },
-  warning: { icon: 'alert', iconColor: '#FBBF24' },
-  success: { icon: 'check-circle', iconColor: '#34D399' },
-  info: { icon: 'information', iconColor: '#90CAF9' },
+const CONFIG: Record<ToastType, { icon: string }> = {
+  error:   { icon: 'alert-circle' },
+  warning: { icon: 'alert' },
+  success: { icon: 'check-circle' },
+  info:    { icon: 'information' },
 };
 
 export function Toast({ visible, message, type = 'info', duration = 4000, onHide }: ToastProps) {
   const insets = useSafeAreaInsets();
+  const { isDark } = useTheme();
+  const colors = getThemeColors(isDark);
   const translateY = useRef(new Animated.Value(80)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const cfg = CONFIG[type];
+  const iconColor = type === 'error' ? colors.error
+    : type === 'warning' ? colors.warning
+    : type === 'success' ? colors.success
+    : colors.primary;
 
   const dismiss = () => {
     Animated.parallel([
@@ -72,15 +77,14 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
         bottom: insets.bottom + 8, // Sits just above the navigation bar (bottom safe area + 8dp gap)
         flexDirection: 'row',
         alignItems: 'center',
-        // Snackbar: Inverse Surface (#2E3037 light / #E4E2E9 dark)
-        backgroundColor: '#2E3037',
+        backgroundColor: colors.inverseSurface,
         borderRadius: 4,
         paddingHorizontal: 16,
         paddingVertical: 14,
         gap: 12,
         opacity,
         transform: [{ translateY }],
-        shadowColor: '#000',
+        shadowColor: colors.shadow,
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.25,
         shadowRadius: 8,
@@ -88,14 +92,14 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
         zIndex: 999,
       }}
     >
-      <MaterialCommunityIcons name={cfg.icon as any} size={20} color={cfg.iconColor} />
+      <MaterialCommunityIcons name={cfg.icon as any} size={20} color={iconColor} />
 
       <Text
         style={{
           flex: 1,
           fontSize: 14,
           lineHeight: 20,
-          color: '#E4E2E9',
+          color: colors.inverseOnSurface,
           fontWeight: '400',
         }}
       >
@@ -104,9 +108,9 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
       {onHide && (
         <Pressable
           onPress={dismiss}
-          android_ripple={{ color: 'rgba(255,255,255,0.16)', borderless: true }}
+          android_ripple={{ color: colors.rippleOnPrimary, borderless: true }}
         >
-          <MaterialCommunityIcons name="close" size={18} color="#90CAF9" />
+          <MaterialCommunityIcons name="close" size={18} color={colors.primary} />
         </Pressable>
       )}
     </Animated.View>

@@ -38,6 +38,15 @@ module.exports = {
         // Scrim
         overlay: 'rgba(0,0,0,0.32)',
         'overlay-dark': 'rgba(0,0,0,0.48)',
+        // Semantic
+        warning: '#F59E0B',
+        'warning-dark': '#FFB74D',
+        success: '#4CAF50',
+        'success-dark': '#81C784',
+        error: '#B3261E',
+        'error-dark': '#FFB4AB',
+        'error-container': '#F9DEDC',
+        'error-container-dark': '#93000A',
       },
     },
   },

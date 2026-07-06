@@ -31,7 +31,7 @@ export function SaveProgressButton({ onSave, saving, saved }: SaveProgressButton
         style={{
           borderRadius: 28,
           overflow: 'hidden',
-          backgroundColor: saved ? '#4CAF50' : saving ? colors.border : colors.primary,
+          backgroundColor: saved ? colors.success : saving ? colors.border : colors.primary,
           opacity: saving ? 0.7 : 1,
         }}
       >

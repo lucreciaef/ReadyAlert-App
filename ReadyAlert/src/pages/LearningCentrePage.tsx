@@ -16,11 +16,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 type SubPage = 'pharmacyKit' | 'weatherEmergencyTips' | null;
 
-interface LearningCentrePageProps {
-  onSettingsPress?: () => void;
-}
-
-export function LearningCentrePage({ onSettingsPress }: LearningCentrePageProps) {
+export function LearningCentrePage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
