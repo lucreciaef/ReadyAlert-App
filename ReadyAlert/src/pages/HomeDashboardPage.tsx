@@ -24,7 +24,6 @@ import {
   getWarningCount,
   OutsideAustriaError,
   ServiceUnavailableError,
-  Warning,
 } from '../api';
 import { useLocationContext } from '../context/LocationContext';
 import { usePreparedness } from '../context/PreparednessContext';
@@ -32,9 +31,11 @@ import { Toast } from '../components/Toast';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
-import { ExpandableWarningCard } from '../components/ExpandableWarningCard';
-import { APIResultButton } from '../components/APIResultButton';
+import { WeatherAlertsCard } from '../components/WeatherAlertsCard';
+import { RTRAlertSummaryButton } from '../components/RTRAlertSummaryButton';
 import { useNotifications } from '../hooks/useNotifications';
+import { useAirQuality } from '../hooks/useAirQuality';
+import { AirQualityCard } from '../components/AirQualityCard';
 
 let _prevGeoWarningCount = 0;
 
@@ -67,7 +68,7 @@ function TrophyIcon({ fill, color }: { fill: number; color: string }) {
   );
 }
 
-export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { onPreparednessPress?: () => void; onSettingsPress?: () => void }) {
+export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress?: () => void }) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
@@ -93,6 +94,8 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
   const { notifyGeosphereWarnings } = useNotifications();
+
+  const { data: aqiData, loading: aqiLoading, error: aqiError } = useAirQuality(userLocation);
 
   useEffect(() => {
     if (!userLocation) { setLocationDisplayName(null); return; }
@@ -395,9 +398,8 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
                     style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }}
                     numberOfLines={1}
                 >
-                  {headerLabel}
+                  {headerLabel} <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
                 </Text>
-                <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
               </View>
               <Pressable
                 onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}
@@ -429,16 +431,18 @@ export function HomeDashboardPage({ onPreparednessPress, onSettingsPress }: { on
             )}
 
             {serviceUnavailable && !loading && (
-              <APIResultButton loading={false} hasAlerts={false} totalCount={0} isUnavailable onPress={handleRefresh} />
+              <RTRAlertSummaryButton loading={false} hasAlerts={false} totalCount={0} isUnavailable onPress={handleRefresh} />
             )}
 
             {!loading && apiData && !hasWarnings && (
               <EmptyState message="No active warnings in this area" />
             )}
 
-            {!loading && hasWarnings && warnings.map((warning: Warning, index: number) => (
-              <ExpandableWarningCard key={`${warning.properties.warnid}-${index}`} warning={warning} />
-            ))}
+            {!loading && apiData && (
+              <WeatherAlertsCard warnings={warnings} />
+            )}
+
+            <AirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
 
             <View style={{ height: 24 }} />
           </ScrollView>

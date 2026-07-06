@@ -25,20 +25,20 @@ export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
           gap: 10,
           padding: 14,
           borderRadius: 12,
-          backgroundColor: isDark ? 'rgba(239,83,80,0.10)' : colors.errorContainer,
+          backgroundColor: colors.errorContainer,
         }}
       >
         <MaterialCommunityIcons
           name="alert-outline"
           size={18}
-          color={isDark ? '#EF9A9A' : colors.error}
+          color={colors.error}
         />
         <Text
           style={{
             flex: 1,
             fontSize: 14,
             lineHeight: 20,
-            color: isDark ? '#EF9A9A' : colors.error,
+            color: colors.error,
           }}
         >
           {message}

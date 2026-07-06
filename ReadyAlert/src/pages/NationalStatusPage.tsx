@@ -31,7 +31,7 @@ import {
 import { RtrAlert, RtrAlertLevel } from '../api';
 import { mockRtrResponseWithAlerts } from '../api/mockData';
 import { useLocationContext } from '../context/LocationContext';
-import { APIResultButton } from '../components/APIResultButton';
+import { RTRAlertSummaryButton } from '../components/RTRAlertSummaryButton';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
@@ -257,11 +257,7 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
   );
 }
 
-interface NationalStatusPageProps {
-  onSettingsPress?: () => void;
-}
-
-export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps) {
+export function NationalStatusPage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
@@ -520,7 +516,7 @@ export function NationalStatusPage({ onSettingsPress }: NationalStatusPageProps)
           >
             {sheetView === 'main' ? (
               <>
-                <APIResultButton
+                <RTRAlertSummaryButton
                   loading={loading}
                   hasAlerts={hasAlerts}
                   totalCount={totalCount}

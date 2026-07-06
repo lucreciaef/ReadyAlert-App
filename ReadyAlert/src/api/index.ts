@@ -6,3 +6,4 @@
 export * from './geosphere';
 export * from './rtrAlert';
 export * from './types';
+export * from './airQuality';

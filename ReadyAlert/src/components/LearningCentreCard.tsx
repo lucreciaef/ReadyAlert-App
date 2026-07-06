@@ -26,24 +26,21 @@ export function LearningCentreCard({ title, description, onPress, iconName }: Le
         borderRadius: 12,
         overflow: 'hidden',
         marginBottom: 12,
-        shadowColor: '#000',
+        shadowColor: colors.shadow,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: isDark ? 0.25 : 0.08,
         shadowRadius: 4,
         elevation: 2,
       }}
     >
-      {/* Inner View owns the background so it updates reliably when the theme
-          changes – setting backgroundColor on Pressable+android_ripple can
-          cause Android's native layer to cache the old colour. */}
-      <View style={{ backgroundColor: isDark ? '#27293A' : colors.surface }}>
+      <View style={{ backgroundColor: isDark ? colors.surfaceAlt : colors.surface }}>
       <View
         style={{
           width: '100%',
           height: 160,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: isDark ? colors.surfaceContainer : '#E8F0FE',
+          backgroundColor: isDark ? colors.surfaceContainer : colors.primaryContainerAlt,
         }}
       >
         <MaterialCommunityIcons

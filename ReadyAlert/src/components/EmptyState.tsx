@@ -5,6 +5,7 @@
 import { Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
+import { getThemeColors } from '../styles/themeColors';
 
 interface EmptyStateProps {
   message: string;
@@ -12,6 +13,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ message }: EmptyStateProps) {
   const { isDark } = useTheme();
+  const colors = getThemeColors(isDark);
 
   return (
     <View
@@ -21,20 +23,20 @@ export function EmptyState({ message }: EmptyStateProps) {
         borderRadius: 12,
         marginTop: 8,
         gap: 10,
-        backgroundColor: isDark ? 'rgba(76,175,80,0.10)' : '#F1F8F1',
+        backgroundColor: colors.successMuted,
       }}
     >
       <MaterialCommunityIcons
         name="check-circle"
         size={32}
-        color={isDark ? '#A5D6A7' : '#2E7D32'}
+        color={colors.successOn}
       />
       <Text
         style={{
           fontSize: 14,
           fontWeight: '400',
           textAlign: 'center',
-          color: isDark ? '#A5D6A7' : '#2E7D32',
+          color: colors.successOn,
           lineHeight: 20,
         }}
       >

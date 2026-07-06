@@ -13,15 +13,21 @@ interface ExpandableWarningCardProps {
   warning: Warning;
 }
 
-export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
+export function SingleWeatherWarningCard({ warning }: ExpandableWarningCardProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
   const [expanded, setExpanded] = useState(false);
 
+  const hasDescription = [
+    warning.properties.auswirkungen,
+    warning.properties.empfehlungen,
+    warning.properties.meteotext,
+  ].some((v) => !!v);
+
   return (
     <Pressable
-      onPress={() => setExpanded((prev) => !prev)}
-      android_ripple={{ color: colors.ripple }}
+      onPress={hasDescription ? () => setExpanded((prev) => !prev) : undefined}
+      android_ripple={hasDescription ? { color: colors.ripple } : undefined}
       style={{
         borderRadius: 12,
         overflow: 'hidden',
@@ -32,11 +38,11 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
         style={{
           borderRadius: 12,
           borderWidth: 1,
-          borderColor: isDark ? 'rgba(239,83,80,0.3)' : 'rgba(229,115,115,0.5)',
-          backgroundColor: isDark ? 'rgba(239,83,80,0.08)' : '#FFF8F7',
+          borderColor: colors.alertBorder,
+          backgroundColor: colors.alertBg,
         }}
       >
-      <View style={{ height: 3, backgroundColor: '#ef9850' }} />
+      <View style={{ height: 3, backgroundColor: colors.alertAccent }} />
 
       <View style={{ padding: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
@@ -45,7 +51,7 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
               fontSize: 14,
               fontWeight: '500',
               lineHeight: 20,
-              color: isDark ? '#efca9a' : '#b76a1c',
+              color: colors.alertText,
             }}>
               {warning.properties.text}
             </Text>
@@ -58,11 +64,13 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
               {warning.properties.begin} – {warning.properties.end}
             </Text>
           </View>
-          <MaterialCommunityIcons
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={20}
-            color={colors.textMuted}
-          />
+          {hasDescription && (
+            <MaterialCommunityIcons
+              name={expanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.textMuted}
+            />
+          )}
         </View>
 
         {expanded && (
@@ -70,7 +78,7 @@ export function ExpandableWarningCard({ warning }: ExpandableWarningCardProps) {
             marginTop: 12,
             paddingTop: 12,
             borderTopWidth: 1,
-            borderTopColor: isDark ? 'rgba(239,83,80,0.2)' : 'rgba(229,115,115,0.3)',
+            borderTopColor: colors.alertDivider,
             gap: 10,
           }}>
             {[
