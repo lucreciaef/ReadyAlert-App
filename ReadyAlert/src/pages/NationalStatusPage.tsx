@@ -441,17 +441,6 @@ export function NationalStatusPage() {
                 <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>
                   National Status
                 </Text>
-                <Pressable
-                  onPress={() => snapSheet(sheetExpanded ? MAX_TRANSLATE_Y : 0)}
-                  android_ripple={{ color: colors.ripple, borderless: true }}
-                  style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}
-                >
-                  <MaterialCommunityIcons
-                    name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
-                    size={22}
-                    color={colors.textMuted}
-                  />
-                </Pressable>
               </View>
             ) : (
               <>
@@ -469,7 +458,7 @@ export function NationalStatusPage() {
                     <MaterialCommunityIcons
                       name={hasAlerts ? 'alert-circle' : 'check-circle'}
                       size={18}
-                      color={hasAlerts ? '#EF5350' : '#4CAF50'}
+                      color={hasAlerts ? colors.error : colors.success}
                     />
                     <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
                       {loading ? 'Loading…' : hasAlerts ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}` : 'No Alerts'}

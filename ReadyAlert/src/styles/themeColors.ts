@@ -43,6 +43,13 @@ export function getThemeColors(isDark: boolean) {
       // Inverse surface (Toast / Snackbar)
       inverseSurface: '#2E3037',
       inverseOnSurface: '#E4E2E9',
+      // Preparedness levels
+      prepNotStarted: '#9CA3AF',
+      prepUnprepared: '#EF4444',
+      prepGettingReady: '#F97316',
+      prepPrepared: '#F59E0B',
+      prepWellPrepared: '#3B82F6',
+      prepFullyPrepared: '#22C55E',
       // AQI scale colours (dark)
       aqiGood: '#81C784',
       aqiFair: '#A5D6A7',
@@ -61,7 +68,7 @@ export function getThemeColors(isDark: boolean) {
     surface: '#FFFFFF',
     surfaceContainer: '#fffafa',
     // Primary
-    primary: '#D20A2E',
+    primary: '#e31238',
     primaryContainer: '#FBAFBC',
     onPrimary: '#FFFFFF',
     // Text (On-Surface)
@@ -76,7 +83,7 @@ export function getThemeColors(isDark: boolean) {
     ripple: 'rgba(21,101,192,0.12)',
     rippleOnPrimary: 'rgba(255,255,255,0.16)',
     // Semantic
-    error: '#B3261E',
+    error: '#a61a11',
     errorContainer: '#F9DEDC',
     warning: '#F59E0B',
     warningMuted: '#FFFBEB',
@@ -93,6 +100,13 @@ export function getThemeColors(isDark: boolean) {
     // Inverse surface (Toast / Snackbar)
     inverseSurface: '#2E3037',
     inverseOnSurface: '#E4E2E9',
+    // Preparedness levels
+    prepNotStarted: '#9CA3AF',
+    prepUnprepared: '#EF4444',
+    prepGettingReady: '#F97316',
+    prepPrepared: '#F59E0B',
+    prepWellPrepared: '#3B82F6',
+    prepFullyPrepared: '#22C55E',
     // AQI scale colours (light)
     aqiGood: '#4CAF50',
     aqiFair: '#A8D08D',

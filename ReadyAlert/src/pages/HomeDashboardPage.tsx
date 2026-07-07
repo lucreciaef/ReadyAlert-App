@@ -249,8 +249,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const statusColor = loading || locationLoading
     ? colors.textMuted
     : serviceUnavailable || !!error || (!!locationError && !userLocation)
-      ? '#F59E0B'
-      : '#4CAF50';
+      ? colors.warning
+      : colors.text;
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top }}>
@@ -393,7 +393,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             }} />
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
+                <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />
                 <Text
                     style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }}
                     numberOfLines={1}

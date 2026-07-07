@@ -16,6 +16,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useSQLiteContext } from 'expo-sqlite';
+import { getThemeColors } from '../styles/themeColors';
 
 export interface TaskScore {
   taskId: string;
@@ -40,19 +41,20 @@ interface PreparednessContextType {
   loading: boolean;
 }
 
-function getLevelInfo(score: number): { label: string; color: string } {
-  if (score === 0) return { label: 'Not Started', color: '#9CA3AF' };
-  if (score <= 25) return { label: 'Unprepared', color: '#EF4444' };
-  if (score <= 50) return { label: 'Getting Ready', color: '#F97316' };
-  if (score <= 75) return { label: 'Prepared', color: '#F59E0B' };
-  if (score < 100) return { label: 'Well Prepared', color: '#3B82F6' };
-  return { label: 'Fully Prepared', color: '#22C55E' };
+function getLevelInfo(score: number, isDark: boolean): { label: string; color: string } {
+  const c = getThemeColors(isDark);
+  if (score === 0) return { label: 'Not Started', color: c.prepNotStarted };
+  if (score <= 25) return { label: 'Unprepared', color: c.prepUnprepared };
+  if (score <= 50) return { label: 'Getting Ready', color: c.prepGettingReady };
+  if (score <= 75) return { label: 'Prepared', color: c.prepPrepared };
+  if (score < 100) return { label: 'Well Prepared', color: c.prepWellPrepared };
+  return { label: 'Fully Prepared', color: c.prepFullyPrepared };
 }
 
 const defaultPreparedness: PreparednessLevel = {
   score: 0,
   label: 'Not Started',
-  color: '#9CA3AF',
+  color: getThemeColors(false).prepNotStarted,
   taskScores: [],
 };
 
@@ -97,7 +99,7 @@ export function PreparednessProvider({ children }: { children: React.ReactNode }
 
       const overallScore = taskScores.reduce((sum, t) => sum + t.contribution, 0);
       const rounded = Math.round(overallScore * 10) / 10;
-      const { label, color } = getLevelInfo(Math.round(overallScore));
+      const { label, color } = getLevelInfo(Math.round(overallScore), false);
 
       setPreparedness({ score: rounded, label, color, taskScores });
     } catch (err) {
