@@ -18,13 +18,12 @@ import { DARK_MAP_STYLE, LIGHT_MAP_STYLE } from '../styles/mapStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { getTopAppBarStyles } from '../styles/appStyles';
 import {
   ALL_ALERT_LEVELS,
   fetchRtrAlerts,
-  getAlertLevelColor,
-  getAlertLevelLabel,
+  getAlertLevelColour,
   sortAlertsBySeverity,
   ServiceUnavailableError,
 } from '../api';
@@ -36,6 +35,8 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 import { useNotifications } from '../hooks/useNotifications';
+import { RTRAlertCard } from '../components/RTRAlertCard';
+import { RTRLevelChip } from '../components/RTRLevelChip';
 
 let _prevRtrAlertCount = 0;
 
@@ -51,164 +52,8 @@ const AUSTRIA_REGION = {
   longitudeDelta: 10.0,
 };
 
-interface LevelChipProps {
-  level: RtrAlertLevel;
-  active: boolean;
-  onPress: () => void;
-}
-
-function LevelChip({ level, active, onPress }: LevelChipProps) {
-  const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
-  const color = getAlertLevelColor(level, isDark);
-  const shortLabel: Record<RtrAlertLevel, string> = {
-    AlertLevel1: 'Emergency',
-    AlertLevel2: 'Extreme',
-    AlertLevel3: 'Severe',
-    AlertLevel4: 'Info',
-    Amber: 'Other',
-  };
-
-  return (
-    <Pressable
-      onPress={onPress}
-      android_ripple={{ color: active ? colors.rippleOnPrimary : colors.ripple }}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 8,
-        marginRight: 8,
-        borderWidth: 1.5,
-        borderColor: active ? color : colors.border,
-        backgroundColor: active ? color : 'transparent',
-        overflow: 'hidden',
-      }}
-    >
-      {active && (
-        <MaterialCommunityIcons name="check" size={14} color="#fff" />
-      )}
-      <Text
-        style={{ fontSize: 11, fontWeight: '600', letterSpacing: 0.5, color: active ? '#fff' : color }}
-      >
-        {shortLabel[level]}
-      </Text>
-    </Pressable>
-  );
-}
-
-interface AlertCardProps {
-  alert: RtrAlert;
-  expanded: boolean;
-  onPress: () => void;
-  isDark: boolean;
-  colors: ReturnType<typeof getThemeColors>;
-}
-
-function AlertCard({ alert, expanded, onPress, isDark, colors }: AlertCardProps) {
-  const levelColor = getAlertLevelColor(alert.alert_level, isDark);
-  const levelLabel = getAlertLevelLabel(alert.alert_level);
-
-  const formatTime = (iso?: string) => {
-    if (!iso) return null;
-    try {
-      return new Date(iso).toLocaleString('en-AT', {
-        day: '2-digit', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit',
-      });
-    } catch { return iso; }
-  };
-
-  const startStr = formatTime(alert.begin_date);
-  const endStr = formatTime(alert.end_date);
-  const timeRange = startStr && endStr ? `${startStr} – ${endStr}` : startStr ?? endStr;
-  const bodyText = alert.info_description?.trim() ?? '';
-
-  return (
-    <Pressable
-      onPress={onPress}
-      android_ripple={{ color: colors.ripple }}
-      style={{
-        borderRadius: 12,
-        overflow: 'hidden',
-        marginTop: 8,
-      }}
-    >
-      <View
-        style={{
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: isDark ? `${levelColor}44` : `${levelColor}77`,
-          backgroundColor: isDark ? `${levelColor}12` : `${levelColor}0e`,
-        }}
-      >
-      <View style={{ height: 3, backgroundColor: levelColor }} />
-      <View style={{ padding: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-          <View
-            style={{
-              paddingHorizontal: 8,
-              paddingVertical: 3,
-              borderRadius: 6,
-              backgroundColor: levelColor,
-              alignSelf: 'flex-start',
-              marginTop: 1,
-            }}
-          >
-            <Text
-              style={{ color: '#fff', fontSize: 10, fontWeight: '700', letterSpacing: 0.4 }}
-            >
-              {levelLabel}
-            </Text>
-          </View>
-
-          <View style={{ flex: 1 }}>
-            <Text
-              style={{ fontSize: 14, fontWeight: '500', lineHeight: 20, color: isDark ? '#EF9A9A' : '#B71C1C' }}
-            >
-              {alert.title ?? alert.info_area_description ?? '(No title)'}
-            </Text>
-            {alert.info_area_description && alert.title ? (
-              <Text style={{ fontSize: 11, marginTop: 2, color: colors.textMuted }}>
-                {alert.info_area_description}{alert.sender ? ` · ${alert.sender}` : ''}
-              </Text>
-            ) : alert.sender ? (
-              <Text style={{ fontSize: 11, marginTop: 2, color: colors.textMuted }}>{alert.sender}</Text>
-            ) : null}
-            {timeRange ? (
-              <Text style={{ fontSize: 11, marginTop: 2, color: colors.textMuted }}>{timeRange}</Text>
-            ) : null}
-          </View>
-
-          <MaterialCommunityIcons
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={18}
-            color={colors.textMuted}
-          />
-        </View>
-
-        {expanded && bodyText ? (
-          <View
-            style={{
-              marginTop: 10,
-              paddingTop: 10,
-              borderTopWidth: 1,
-              borderTopColor: isDark ? `${levelColor}33` : `${levelColor}44`,
-            }}
-          >
-            <Text style={{ fontSize: 12, lineHeight: 18, color: colors.text }}>{bodyText}</Text>
-          </View>
-        ) : null}
-      </View>
-      </View>
-    </Pressable>
-  );
-}
-
 // Weather placeholder... until the real API is implemented.
-function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: ReturnType<typeof getThemeColors> }) {
+function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: ReturnType<typeof getThemeColours> }) {
   const states = [
     'Vienna', 'Lower Austria', 'Upper Austria', 'Styria',
     'Tyrol', 'Carinthia', 'Salzburg', 'Vorarlberg', 'Burgenland',
@@ -241,13 +86,13 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
               backgroundColor: colors.surface,
             }}
           >
-            <Text style={{ fontSize: 14, color: isDark ? colors.text : '#374151' }}>{state}</Text>
+            <Text style={{ fontSize: 14, color: colors.text }}>{state}</Text>
             <View
               style={{
                 width: 64,
                 height: 8,
                 borderRadius: 4,
-                backgroundColor: colors.surfaceContainer,
+                backgroundColor: colors.surfaceAlt,
               }}
             />
           </View>
@@ -260,7 +105,7 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
 export function NationalStatusPage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const { debugMode } = useLocationContext();
 
@@ -393,7 +238,7 @@ export function NationalStatusPage() {
           mapPadding={{ top: 0, right: 0, bottom: mapBottomPadding, left: 0 }}
         >
           {alerts.flatMap((alert) => {
-            const color = getAlertLevelColor(alert.alert_level, isDark);
+            const color = getAlertLevelColour(alert.alert_level, isDark);
             return (alert.polygons ?? []).map((ring, polyIdx) => (
               <Polygon
                 key={`${alert.consolidation_identifier}-${polyIdx}`}
@@ -413,9 +258,9 @@ export function NationalStatusPage() {
             height: HALF_HEIGHT,
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
-            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+            backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
             transform: [{ translateY: sheetAnim }],
-            shadowColor: '#000',
+            shadowColor: colors.shadow,
             shadowOffset: { width: 0, height: -3 },
             shadowOpacity: 0.12,
             shadowRadius: 10,
@@ -429,7 +274,7 @@ export function NationalStatusPage() {
                 width: 32,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: isDark ? '#555' : '#CAC4D0',
+                backgroundColor: colors.divider,
                 alignSelf: 'center',
                 marginTop: 12,
                 marginBottom: 12,
@@ -450,8 +295,8 @@ export function NationalStatusPage() {
                     android_ripple={{ color: colors.ripple, borderless: true }}
                     style={{ flexDirection: 'row', alignItems: 'center', gap: 4, padding: 4 }}
                   >
-                    <MaterialCommunityIcons name="chevron-left" size={20} color={colors.primary} />
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.primary }}>Overview</Text>
+                    <MaterialCommunityIcons name="chevron-left" size={20} color={colors.text} />
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>Overview</Text>
                   </Pressable>
 
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -460,38 +305,28 @@ export function NationalStatusPage() {
                       size={18}
                       color={hasAlerts ? colors.error : colors.success}
                     />
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, paddingRight: 16 }}>
                       {loading ? 'Loading…' : hasAlerts ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}` : 'No Alerts'}
                     </Text>
                   </View>
-
-                  <Pressable
-                    onPress={() => snapSheet(sheetExpanded ? MAX_TRANSLATE_Y : 0)}
-                    android_ripple={{ color: colors.ripple, borderless: true }}
-                    style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}
-                  >
-                    <MaterialCommunityIcons
-                      name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
-                      size={22}
-                      color={colors.textMuted}
-                    />
-                  </Pressable>
                 </View>
 
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingBottom: 8 }}
-                >
-                  {ALL_ALERT_LEVELS.map((level) => (
-                    <LevelChip
-                      key={level}
-                      level={level}
-                      active={activeLevels.has(level)}
-                      onPress={() => toggleLevel(level)}
-                    />
-                  ))}
-                </ScrollView>
+                {allAlerts.length > 0 && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 8 }}
+                  >
+                    {ALL_ALERT_LEVELS.map((level) => (
+                      <RTRLevelChip
+                        key={level}
+                        level={level}
+                        active={activeLevels.has(level)}
+                        onPress={() => toggleLevel(level)}
+                      />
+                    ))}
+                  </ScrollView>
+                )}
               </>
             )}
           </View>
@@ -520,7 +355,7 @@ export function NationalStatusPage() {
                 {error && !loading && <ErrorBanner message={error} onRetry={loadAlerts} />}
                 {!loading && !error && !serviceUnavailable && !hasAlerts && <EmptyState message="No active alerts in Austria" />}
                 {!loading && !error && !serviceUnavailable && hasAlerts && alerts.map((alert) => (
-                  <AlertCard
+                  <RTRAlertCard
                     key={alert.consolidation_identifier}
                     alert={alert}
                     expanded={expandedId === alert.consolidation_identifier}

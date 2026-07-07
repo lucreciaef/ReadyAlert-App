@@ -5,7 +5,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 interface RTRAlertSummaryButtonProps {
   loading: boolean;
@@ -23,12 +23,12 @@ export function RTRAlertSummaryButton({
   isUnavailable = false,
 }: RTRAlertSummaryButtonProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
 
   const bgColor = isUnavailable
-    ? colors.warningMuted
+    ? colors.warningContainer
     : hasAlerts
-      ? colors.alertBg
+      ? colors.errorContainer
       : colors.surface;
 
   const iconName = isUnavailable
