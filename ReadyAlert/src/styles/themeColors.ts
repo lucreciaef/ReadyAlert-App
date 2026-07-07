@@ -7,15 +7,15 @@ export function getThemeColors(isDark: boolean) {
   if (isDark) {
     return {
       // Surfaces
-      background: '#111318',
-      surface: '#111318',
-      surfaceContainer: '#20232A',
+      background: '#181112',
+      surface: '#181112',
+      surfaceContainer: '#2a2020',
       // Primary
-      primary: '#90CAF9',
-      primaryContainer: '#003A73',
-      onPrimary: '#003063',
+      primary: '#FA92A5',
+      primaryContainer: '#B94662',
+      onPrimary: '#BB0929',
       // Text (On-Surface)
-      text: '#E3E2E9',
+      text: '#C5C6D0',
       textMuted: '#C5C6D0',
       // Borders
       border: '#44474F',
@@ -43,9 +43,6 @@ export function getThemeColors(isDark: boolean) {
       // Inverse surface (Toast / Snackbar)
       inverseSurface: '#2E3037',
       inverseOnSurface: '#E4E2E9',
-      // Surface variants
-      surfaceAlt: '#27293A',
-      primaryContainerAlt: '#D1E4FF',
       // AQI scale colours (dark)
       aqiGood: '#81C784',
       aqiFair: '#A5D6A7',
@@ -60,15 +57,15 @@ export function getThemeColors(isDark: boolean) {
 
   return {
     // Surfaces
-    background: '#FAFCFF',
-    surface: '#FAFCFF',
-    surfaceContainer: '#ECF0FB',
+    background: '#FFFFFF',
+    surface: '#FFFFFF',
+    surfaceContainer: '#fffafa',
     // Primary
-    primary: '#1565C0',
-    primaryContainer: '#D1E4FF',
+    primary: '#D20A2E',
+    primaryContainer: '#FBAFBC',
     onPrimary: '#FFFFFF',
     // Text (On-Surface)
-    text: '#1A1B21',
+    text: '#44474F',
     textMuted: '#44474F',
     // Borders
     border: '#C5C6D0',
@@ -96,9 +93,6 @@ export function getThemeColors(isDark: boolean) {
     // Inverse surface (Toast / Snackbar)
     inverseSurface: '#2E3037',
     inverseOnSurface: '#E4E2E9',
-    // Surface variants
-    surfaceAlt: '#FAFCFF',
-    primaryContainerAlt: '#E8F0FE',
     // AQI scale colours (light)
     aqiGood: '#4CAF50',
     aqiFair: '#A8D08D',

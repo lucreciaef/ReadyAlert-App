@@ -18,25 +18,11 @@ export const getTypographyStyles = (isDark: boolean) => ({
   cardText: `text-sm font-normal ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
 });
 
-export const getCardStyles = (isDark: boolean) => {
-  const typography = getTypographyStyles(isDark);
-  return {
-    container: `${isDark ? 'bg-surface-dark' : 'bg-surface'} p-4 rounded-xl`,
-    title: typography.cardTitle,
-    text: typography.cardText,
-  };
-};
-
 export const getBottomMenuStyles = (isDark: boolean) => ({
   container: `h-20 ${isDark ? 'bg-surface-container-dark' : 'bg-surface-container'} flex flex-row`,
   button: 'flex-1 items-center justify-center',
   label: `text-[12px] mt-1 font-medium tracking-[0.4px] ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
-  labelActive: `font-bold ${isDark ? 'text-primary-dark' : 'text-primary'}`,
-});
-
-export const getOverlayStyles = (isDark: boolean) => ({
-  container: 'absolute inset-0 flex flex-row z-50',
-  background: `flex-1 ${isDark ? 'bg-overlay-dark' : 'bg-overlay'}`,
+  labelActive: `font-bold colors-primary`,
 });
 
 // Opens from the left side, Width: 360dp max.

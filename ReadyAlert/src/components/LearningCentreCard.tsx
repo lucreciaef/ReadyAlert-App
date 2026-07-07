@@ -26,30 +26,39 @@ export function LearningCentreCard({ title, description, onPress, iconName }: Le
         borderRadius: 12,
         overflow: 'hidden',
         marginBottom: 12,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: isDark ? 0.25 : 0.08,
-        shadowRadius: 4,
+          borderColor: colors.textMuted,
+          borderWidth: 1,
+        // shadowColor: colors.shadow,
+        // shadowOffset: { width: 0, height: 1 },
+        // shadowOpacity: isDark ? 0.25 : 0.08,
+        // shadowRadius: 4,
         elevation: 2,
       }}
     >
-      <View style={{ backgroundColor: isDark ? colors.surfaceAlt : colors.surface }}>
+      <View style={{ backgroundColor: colors.surface }}>
       <View
         style={{
           width: '100%',
-          height: 160,
+          height: 100,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: isDark ? colors.surfaceContainer : colors.primaryContainerAlt,
+          backgroundColor: colors.surfaceContainer,
         }}
       >
         <MaterialCommunityIcons
           name={iconName}
           size={52}
-          color={isDark ? colors.textMuted : colors.primary}
+          color={colors.textMuted}
         />
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
+      <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 16,
+          gap: 12,
+          borderColor: colors.textMuted,
+          borderTopWidth: 1,
+      }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, marginBottom: 2 }}>
             {title}

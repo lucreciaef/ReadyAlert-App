@@ -25,7 +25,9 @@ export function BottomMenu({ activeTab, setActiveTab }: BottomMenuProps) {
         flexDirection: 'row',
         paddingTop: 16,
         paddingBottom: insets.bottom,
-        backgroundColor: colors.surfaceContainer,
+        backgroundColor: colors.surface,
+        // borderTopColor: colors.text,
+        //   borderWidth: 1
       }}
     >
       <MenuButton

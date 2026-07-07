@@ -238,7 +238,7 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
               paddingHorizontal: 14,
               borderRadius: 8,
               marginBottom: 6,
-              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(21,101,192,0.04)',
+              backgroundColor: colors.surface,
             }}
           >
             <Text style={{ fontSize: 14, color: isDark ? colors.text : '#374151' }}>{state}</Text>
@@ -247,7 +247,7 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
                 width: 64,
                 height: 8,
                 borderRadius: 4,
-                backgroundColor: isDark ? '#3a3a3a' : '#E3E8F8',
+                backgroundColor: colors.surfaceContainer,
               }}
             />
           </View>
