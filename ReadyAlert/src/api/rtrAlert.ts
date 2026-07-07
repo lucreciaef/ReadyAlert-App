@@ -12,6 +12,7 @@ import {
   RtrAlertListRequest,
   RtrAlertListResponse,
 } from './types';
+import { getThemeColors } from '../styles/themeColors';
 
 const RTR_BASE_URL = 'https://warnungen.at-alert.at/api/rpc';
 const ALERT_LIST_ENDPOINT = '/alert/list';
@@ -32,13 +33,16 @@ export const ALERT_LEVEL_LABELS: Record<RtrAlertLevel, string> = {
   Amber:       'Other',
 };
 
-export const ALERT_LEVEL_COLORS: Record<RtrAlertLevel, string> = {
-  AlertLevel1: '#EF4444', // red   – Emergency Alert
-  AlertLevel2: '#F97316', // orange – Extreme Threat
-  AlertLevel3: '#EAB308', // yellow – Severe Threat
-  AlertLevel4: '#3B82F6', // blue  – Threat Information
-  Amber:       '#F59E0B', // amber – Missing Person
-};
+export function getAlertLevelColors(isDark: boolean): Record<RtrAlertLevel, string> {
+  const c = getThemeColors(isDark);
+  return {
+    AlertLevel1: c.alertLevelEmergency, // red   – Emergency Alert
+    AlertLevel2: c.alertLevelExtreme,   // orange – Extreme Threat
+    AlertLevel3: c.alertLevelSevere,    // yellow – Severe Threat
+    AlertLevel4: c.alertLevelInfo,      // blue  – Threat Information
+    Amber:       c.alertLevelAmber,     // amber – Missing Person
+  };
+}
 
 //Build the default request body that fetches every active alert across Austria.
 export function buildDefaultAlertRequest(overrides?: Partial<RtrAlertListRequest>): RtrAlertListRequest {
@@ -91,8 +95,8 @@ export async function fetchRtrAlerts(
 }
 
 // Returns the colour token for a given alert level (defaults to a neutral grey for unknown levels).
-export function getAlertLevelColor(level: RtrAlertLevel | string): string {
-  return ALERT_LEVEL_COLORS[level as RtrAlertLevel] ?? '#9CA3AF';
+export function getAlertLevelColor(level: RtrAlertLevel | string, isDark = false): string {
+  return getAlertLevelColors(isDark)[level as RtrAlertLevel] ?? getThemeColors(isDark).alertLevelUnknown;
 }
 
 //Returns the human-readable label for a given alert level.

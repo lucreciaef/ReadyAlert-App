@@ -19,8 +19,8 @@ module.exports = {
         'background-dark': '#181112',
         surface: '#FFFFFF',
         'surface-dark': '#181112',
-        'surface-container': '#fffafa',
-        'surface-container-dark': '#2a2020',
+        'surface-container': '#FAFAFA',
+        'surface-container-dark': '#2A2020',
 
         // Primary
         primary: '#D20A2E',
@@ -28,18 +28,18 @@ module.exports = {
         'primary-container': '#FBAFBC',
         'primary-container-dark': '#B94662',
         'on-primary': '#FFFFFF',
-        'on-primary-dark': '#BB0929',
+        'on-primary-dark': '#2A0A0F',
         // Text (On-Surface)
-        text: '#44474F',
-        'text-dark': '#C5C6D0',
-        'text-muted': '#44474F',
+        text: '#1C1B1F',
+        'text-dark': '#F3F0F0',
+        'text-muted': '#6B6F76',
         'text-muted-dark': '#C5C6D0',
 
         // Borders
-        border: '#C5C6D0',
-        'border-dark': '#44474F',
-        outline: '#73777F',
-        'outline-dark': '#8D9199',
+        border: '#1C1B1F',
+        'border-dark': '#E4E2E9',
+        outline: '#1C1B1F',
+        'outline-dark': '#E4E2E9',
 
         // Scrim / Overlay
         overlay: 'rgba(0,0,0,0.32)',
@@ -58,8 +58,8 @@ module.exports = {
         'success-muted-dark': 'rgba(129,199,132,0.10)',
         'success-on': '#2E7D32',
         'success-on-dark': '#A5D6A7',
-        error: '#B3261E',
-        'error-dark': '#FFB4AB',
+        error: '#e35f62',
+        'error-dark': '#e69597',
         'error-container': '#F9DEDC',
         'error-container-dark': '#93000A',
 

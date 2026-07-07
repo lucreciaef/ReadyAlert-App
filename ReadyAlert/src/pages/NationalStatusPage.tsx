@@ -60,7 +60,7 @@ interface LevelChipProps {
 function LevelChip({ level, active, onPress }: LevelChipProps) {
   const { isDark } = useTheme();
   const colors = getThemeColors(isDark);
-  const color = getAlertLevelColor(level);
+  const color = getAlertLevelColor(level, isDark);
   const shortLabel: Record<RtrAlertLevel, string> = {
     AlertLevel1: 'Emergency',
     AlertLevel2: 'Extreme',
@@ -108,7 +108,7 @@ interface AlertCardProps {
 }
 
 function AlertCard({ alert, expanded, onPress, isDark, colors }: AlertCardProps) {
-  const levelColor = getAlertLevelColor(alert.alert_level);
+  const levelColor = getAlertLevelColor(alert.alert_level, isDark);
   const levelLabel = getAlertLevelLabel(alert.alert_level);
 
   const formatTime = (iso?: string) => {
@@ -393,7 +393,7 @@ export function NationalStatusPage() {
           mapPadding={{ top: 0, right: 0, bottom: mapBottomPadding, left: 0 }}
         >
           {alerts.flatMap((alert) => {
-            const color = getAlertLevelColor(alert.alert_level);
+            const color = getAlertLevelColor(alert.alert_level, isDark);
             return (alert.polygons ?? []).map((ring, polyIdx) => (
               <Polygon
                 key={`${alert.consolidation_identifier}-${polyIdx}`}
