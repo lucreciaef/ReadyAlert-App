@@ -43,15 +43,17 @@ export const getHomeDashboardPageStyles = (isDark: boolean) => ({
   addButtonInner: `px-5 py-1.5 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
   addButtonText: `text-2xl font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
 
-  preparednessPressable: 'rounded-xl overflow-hidden',
-  preparednessCard: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface'}`,
-  preparednessLabel: `mb-2 text-[11px] font-semibold uppercase tracking-widest ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
-  trophyRow: 'flex-row gap-1.5',
-
   sheetHeaderRow: 'flex-row items-center justify-between mb-2',
   sheetHeaderLeft: 'flex-row items-center gap-2',
   sheetTitle: `flex-1 text-lg font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
   chevronButton: 'w-10 h-10 items-center justify-center rounded-full',
+});
+
+export const getPreparednessScoreCardStyles = (isDark: boolean) => ({
+  pressable: 'rounded-xl overflow-hidden',
+  card: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface'}`,
+  label: `mb-2 text-[11px] font-semibold uppercase tracking-widest ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  trophyRow: 'flex-row gap-1.5',
 });
 
 export const getNationalStatusPageStyles = (isDark: boolean) => ({

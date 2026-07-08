@@ -10,6 +10,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
 import { LearningCentreCard } from '../components/LearningCentreCard';
+import { PreparednessScoreCard } from '../components/PreparednessScoreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
 import { WeatherEmergencyTipsPage } from "./learning/WeatherEmergencyTipsPage";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
@@ -45,6 +46,12 @@ export function LearningCentrePage() {
         contentContainerStyle={{ padding: 16 }}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text, marginBottom: 16 }}>
+          Welcome to the ReadyAlert Learning Centre. Complete the tasks to increase your level of preparedness against different environmental issues. Ensure to keep your readiness up to date!
+        </Text>
+        <View style={{ marginBottom: 16 }}>
+          <PreparednessScoreCard />
+        </View>
         <LearningCentreCard
           title="Home pharmacy kit"
           description="What you should always have at home for basic emergencies and an emergency kit."

@@ -36,6 +36,7 @@ import { RTRAlertSummaryButton } from '../components/RTRAlertSummaryButton';
 import { useNotifications } from '../hooks/useNotifications';
 import { useAirQuality } from '../hooks/useAirQuality';
 import { AirQualityCard } from '../components/AirQualityCard';
+import { PreparednessScoreCard } from '../components/PreparednessScoreCard';
 
 let _prevGeoWarningCount = 0;
 
@@ -43,30 +44,6 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
 const HALF_HEIGHT = Math.round(SCREEN_HEIGHT * 0.5);
 const MAX_TRANSLATE_Y = HALF_HEIGHT - PEEK_HEIGHT;
-
-const TROPHY_SIZE = 26;
-
-function TrophyIcon({ fill, color, outlineColor }: { fill: number; color: string; outlineColor: string }) {
-  return (
-    <View style={{ width: TROPHY_SIZE, height: TROPHY_SIZE }}>
-      <MaterialCommunityIcons name="trophy-outline" size={TROPHY_SIZE} color={outlineColor} />
-      {fill > 0 && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: Math.ceil(TROPHY_SIZE * fill),
-            height: TROPHY_SIZE,
-            overflow: 'hidden',
-          }}
-        >
-          <MaterialCommunityIcons name="trophy" size={TROPHY_SIZE} color={color} />
-        </View>
-      )}
-    </View>
-  );
-}
 
 export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress?: () => void }) {
   const insets = useSafeAreaInsets();
@@ -76,7 +53,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const topBar = getTopAppBarStyles(isDark);
   const bottomSheet = getBottomSheetStyles(isDark);
   const styles = getHomeDashboardPageStyles(isDark);
-  const { preparedness, loading: prepLoading } = usePreparedness();
+  const { loading: prepLoading } = usePreparedness();
 
   const {
     coords: userLocation,
@@ -314,33 +291,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               transform: [{ translateY: Animated.subtract(sheetAnim, MAX_TRANSLATE_Y) }],
             }}
           >
-            <Pressable
-              onPress={onPreparednessPress}
-              android_ripple={{ color: colors.ripple }}
-              className={styles.preparednessPressable}
-            >
-              <View
-                className={styles.preparednessCard}
-                style={{
-                  shadowColor: colors.shadow,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: isDark ? 0.3 : 0.10,
-                  shadowRadius: 6,
-                  elevation: 3,
-                }}
-              >
-                <Text className={styles.preparednessLabel}>
-                  Preparedness score
-                </Text>
-                <View className={styles.trophyRow}>
-                  {[0, 1, 2, 3, 4].map((i) => {
-                    const trophyScore = preparedness.score / 20;
-                    const fill = Math.min(1, Math.max(0, trophyScore - i));
-                    return <TrophyIcon key={i} fill={fill} color={preparedness.color} outlineColor={colors.divider} />;
-                  })}
-                </View>
-              </View>
-            </Pressable>
+            <PreparednessScoreCard onPress={onPreparednessPress} />
           </Animated.View>
         )}
 
