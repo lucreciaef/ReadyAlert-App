@@ -8,7 +8,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
-import { getThemeColors } from '../../styles/themeColors';
+import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
 import { usePharmacyChecklist } from '../../hooks/usePharmacyChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
@@ -23,7 +23,7 @@ interface PharmacyKitPageProps {
 export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
 
@@ -46,7 +46,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
       <View
         className={topBar.container}
-        style={{ elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
+        style={{ elevation: 2, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
       >
         <Pressable
           onPress={onBack}
@@ -73,9 +73,9 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
             paddingHorizontal: 16,
             paddingTop: 12,
             paddingBottom: 14,
-            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+            backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
             borderBottomWidth: 1,
-            borderBottomColor: colors.border,
+            borderBottomColor: colors.divider,
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ fontSize: 12, fontWeight: '500', letterSpacing: 0.5, color: colors.textMuted }}>
@@ -84,17 +84,17 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
               <Text style={{
                 fontSize: 12,
                 fontWeight: '700',
-                color: progressPercent === 100 ? '#4CAF50' : colors.primary,
+                color: progressPercent === 100 ? colors.success : colors.primary,
               }}>
                 {Math.round(progressPercent)}%
               </Text>
             </View>
-            <View style={{ height: 4, borderRadius: 2, backgroundColor: isDark ? '#3a3a3a' : colors.primaryContainer }}>
+            <View style={{ height: 4, borderRadius: 2, backgroundColor: isDark ? colors.divider : colors.primaryContainer }}>
               <View
                 style={{
                   height: 4,
                   borderRadius: 2,
-                  backgroundColor: progressPercent === 100 ? '#4CAF50' : colors.primary,
+                  backgroundColor: progressPercent === 100 ? colors.success : colors.primary,
                   width: `${progressPercent}%`,
                 }}
               />
@@ -123,8 +123,8 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
                   borderRadius: 12,
                   overflow: 'hidden',
                   borderWidth: 1,
-                  borderColor: colors.border,
-                  backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+                  borderColor: colors.outline,
+                  backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
                   elevation: 1,
                 }}>
                   {group.items.map((item, idx) => {
@@ -142,7 +142,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
                               paddingHorizontal: 16,
                               paddingVertical: 14,
                               borderBottomWidth: isLast ? 0 : 1,
-                              borderBottomColor: colors.border,
+                              borderBottomColor: colors.divider,
                             }}
                           >
                         <View style={{
@@ -178,7 +178,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
                             paddingHorizontal: 8,
                             paddingVertical: 2,
                             borderRadius: 12,
-                            backgroundColor: isDark ? colors.border : colors.primaryContainer,
+                            backgroundColor: isDark ? colors.surfaceAlt : colors.primaryContainer,
                             flexShrink: 0,
                           }}>
                             <Text style={{

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { Warning } from '../api';
 
 interface ExpandableWarningCardProps {
@@ -15,7 +15,7 @@ interface ExpandableWarningCardProps {
 
 export function SingleWeatherWarningCard({ warning }: ExpandableWarningCardProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
 
   const hasDescription = [
@@ -38,11 +38,11 @@ export function SingleWeatherWarningCard({ warning }: ExpandableWarningCardProps
         style={{
           borderRadius: 12,
           borderWidth: 1,
-          borderColor: colors.alertBorder,
-          backgroundColor: colors.alertBg,
+          borderColor: colors.warningBorder,
+          backgroundColor: colors.warningContainer,
         }}
       >
-      <View style={{ height: 3, backgroundColor: colors.alertAccent }} />
+      {/*<View style={{ height: 3, backgroundColor: colors.warning }} />*/}
 
       <View style={{ padding: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
@@ -51,7 +51,7 @@ export function SingleWeatherWarningCard({ warning }: ExpandableWarningCardProps
               fontSize: 14,
               fontWeight: '500',
               lineHeight: 20,
-              color: colors.alertText,
+              color: colors.warningOnContainer,
             }}>
               {warning.properties.text}
             </Text>
@@ -78,7 +78,7 @@ export function SingleWeatherWarningCard({ warning }: ExpandableWarningCardProps
             marginTop: 12,
             paddingTop: 12,
             borderTopWidth: 1,
-            borderTopColor: colors.alertDivider,
+            borderTopColor: colors.warningBorder,
             gap: 10,
           }}>
             {[

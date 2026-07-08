@@ -5,18 +5,18 @@
  *   - Each task in the DB corresponds to one LearningCentreCard.
  *   - Every task carries equal weight: taskWeight = 100 / totalTasks.
  *   - A task's contribution = (checkedItems / totalItems) * taskWeight.
- *   - Overall score = sum of contributions  (0 – 100).
+ *   - Overall score = sum of contributions (0 – 100).
  *
  * Example with 2 tasks:
  *   taskWeight = 50 each.
- *   Pharmacy kit 10/19 done  → contributes 10/19 * 50 = aprox 26.3 pts
- *   Weather tips  0/1  done  → contributes 0.
+ *   Pharmacy kit 10/19 done -> contributes 10/19 * 50 = aprox 26.3 pts
+ *   Weather tips 0/1 done -> contributes 0.
  *   Overall = aprox 26.3 / 100
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 export interface TaskScore {
   taskId: string;
@@ -42,19 +42,19 @@ interface PreparednessContextType {
 }
 
 function getLevelInfo(score: number, isDark: boolean): { label: string; color: string } {
-  const c = getThemeColors(isDark);
-  if (score === 0) return { label: 'Not Started', color: c.prepNotStarted };
-  if (score <= 25) return { label: 'Unprepared', color: c.prepUnprepared };
-  if (score <= 50) return { label: 'Getting Ready', color: c.prepGettingReady };
-  if (score <= 75) return { label: 'Prepared', color: c.prepPrepared };
-  if (score < 100) return { label: 'Well Prepared', color: c.prepWellPrepared };
-  return { label: 'Fully Prepared', color: c.prepFullyPrepared };
+  const c = getThemeColours(isDark);
+  if (score === 0) return { label: 'Not Started', color: c.textMuted };
+  if (score <= 25) return { label: 'Unprepared', color: c.error };
+  if (score <= 50) return { label: 'Getting Ready', color: c.warning };
+  if (score <= 75) return { label: 'Prepared', color: c.warning };
+  if (score < 100) return { label: 'Well Prepared', color: c.info };
+  return { label: 'Fully Prepared', color: c.success };
 }
 
 const defaultPreparedness: PreparednessLevel = {
   score: 0,
   label: 'Not Started',
-  color: getThemeColors(false).prepNotStarted,
+  color: getThemeColours(false).textMuted,
   taskScores: [],
 };
 

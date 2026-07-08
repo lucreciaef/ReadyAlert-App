@@ -2,7 +2,7 @@ import { ActivityIndicator, Pressable, View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 interface SaveProgressButtonProps {
   onSave: () => Promise<void>;
@@ -13,7 +13,7 @@ interface SaveProgressButtonProps {
 export function SaveProgressButton({ onSave, saving, saved }: SaveProgressButtonProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
 
   return (
     <View style={{
@@ -21,8 +21,8 @@ export function SaveProgressButton({ onSave, saving, saved }: SaveProgressButton
       paddingTop: 12,
       paddingBottom: insets.bottom > 0 ? insets.bottom : 16,
       borderTopWidth: 1,
-      borderTopColor: colors.border,
-      backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+      borderTopColor: colors.divider,
+      backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
     }}>
       <Pressable
         onPress={onSave}
@@ -31,7 +31,7 @@ export function SaveProgressButton({ onSave, saving, saved }: SaveProgressButton
         style={{
           borderRadius: 28,
           overflow: 'hidden',
-          backgroundColor: saved ? colors.success : saving ? colors.border : colors.primary,
+          backgroundColor: saved ? colors.success : saving ? colors.textMuted : colors.primary,
           opacity: saving ? 0.7 : 1,
         }}
       >

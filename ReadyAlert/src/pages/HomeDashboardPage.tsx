@@ -15,7 +15,7 @@ import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { getTopAppBarStyles } from '../styles/appStyles';
 import {
   fetchWarningsForLocation,
@@ -46,10 +46,10 @@ const MAX_TRANSLATE_Y = HALF_HEIGHT - PEEK_HEIGHT;
 
 const TROPHY_SIZE = 26;
 
-function TrophyIcon({ fill, color }: { fill: number; color: string }) {
+function TrophyIcon({ fill, color, outlineColor }: { fill: number; color: string; outlineColor: string }) {
   return (
     <View style={{ width: TROPHY_SIZE, height: TROPHY_SIZE }}>
-      <MaterialCommunityIcons name="trophy-outline" size={TROPHY_SIZE} color="#CFD8DC" />
+      <MaterialCommunityIcons name="trophy-outline" size={TROPHY_SIZE} color={outlineColor} />
       {fill > 0 && (
         <View
           style={{
@@ -71,7 +71,7 @@ function TrophyIcon({ fill, color }: { fill: number; color: string }) {
 export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress?: () => void }) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const { preparedness, loading: prepLoading } = usePreparedness();
 
@@ -302,8 +302,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               <Polygon
                 key={`geosphere-${polyIdx}-${ringIdx}`}
                 coordinates={ring.map(([lon, lat]) => ({ latitude: lat, longitude: lon }))}
-                fillColor="rgba(255, 165, 0, 0.25)"
-                strokeColor="rgba(255, 165, 0, 0.8)"
+                fillColor={`${colors.warning}40`}
+                strokeColor={`${colors.warning}CC`}
                 strokeWidth={2}
               />
             ))
@@ -329,11 +329,11 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             >
               <View
                 style={{
-                  backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+                  backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
                   borderRadius: 12,
                   paddingHorizontal: 16,
                   paddingVertical: 12,
-                  shadowColor: '#000',
+                  shadowColor: colors.shadow,
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: isDark ? 0.3 : 0.10,
                   shadowRadius: 6,
@@ -354,7 +354,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
                   {[0, 1, 2, 3, 4].map((i) => {
                     const trophyScore = preparedness.score / 20;
                     const fill = Math.min(1, Math.max(0, trophyScore - i));
-                    return <TrophyIcon key={i} fill={fill} color={preparedness.color} />;
+                    return <TrophyIcon key={i} fill={fill} color={preparedness.color} outlineColor={colors.divider} />;
                   })}
                 </View>
               </View>
@@ -371,9 +371,9 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             height: HALF_HEIGHT,
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
-            backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+            backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
             transform: [{ translateY: sheetAnim }],
-            shadowColor: '#000',
+            shadowColor: colors.shadow,
             shadowOffset: { width: 0, height: -3 },
             shadowOpacity: 0.12,
             shadowRadius: 10,
@@ -386,7 +386,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               width: 32,
               height: 4,
               borderRadius: 2,
-              backgroundColor: isDark ? '#555' : '#CAC4D0',
+              backgroundColor: colors.divider,
               alignSelf: 'center',
               marginTop: 12,
               marginBottom: 12,

@@ -5,7 +5,7 @@
 
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { MenuButton } from './MenuButton';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -16,7 +16,7 @@ interface BottomMenuProps {
 
 export function BottomMenu({ activeTab, setActiveTab }: BottomMenuProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colours = getThemeColours(isDark);
   const insets = useSafeAreaInsets();
 
   return (
@@ -25,7 +25,7 @@ export function BottomMenu({ activeTab, setActiveTab }: BottomMenuProps) {
         flexDirection: 'row',
         paddingTop: 16,
         paddingBottom: insets.bottom,
-        backgroundColor: colors.surface,
+        backgroundColor: colours.surface,
         // borderTopColor: colors.text,
         //   borderWidth: 1
       }}

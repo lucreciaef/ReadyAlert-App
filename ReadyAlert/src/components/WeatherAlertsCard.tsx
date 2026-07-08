@@ -9,7 +9,7 @@ import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Warning } from '../api';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { SingleWeatherWarningCard } from './SingleWeatherWarningCard';
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 
 export function WeatherAlertsCard({ warnings }: Props) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
 
   const cardBg = colors.surface;

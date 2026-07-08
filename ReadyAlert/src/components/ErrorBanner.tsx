@@ -5,7 +5,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 interface ErrorBannerProps {
   message: string;
@@ -14,7 +14,7 @@ interface ErrorBannerProps {
 
 export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
 
   return (
     <View style={{ marginTop: 8 }}>
@@ -31,14 +31,14 @@ export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
         <MaterialCommunityIcons
           name="alert-outline"
           size={18}
-          color={colors.error}
+          color={colors.errorOnContainer}
         />
         <Text
           style={{
             flex: 1,
             fontSize: 14,
             lineHeight: 20,
-            color: colors.error,
+            color: colors.errorOnContainer,
           }}
         >
           {message}

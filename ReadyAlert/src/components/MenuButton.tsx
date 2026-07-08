@@ -4,7 +4,7 @@
 
 import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { getBottomMenuStyles } from '../styles/appStyles';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -17,7 +17,7 @@ interface MenuButtonProps {
 
 export function MenuButton({ label, icon, active, onPress }: MenuButtonProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const bottomMenu = getBottomMenuStyles(isDark);
 
   return (

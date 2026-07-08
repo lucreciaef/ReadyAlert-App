@@ -5,7 +5,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 interface LearningCentreCardProps {
   title: string;
@@ -16,7 +16,7 @@ interface LearningCentreCardProps {
 
 export function LearningCentreCard({ title, description, onPress, iconName }: LearningCentreCardProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
 
   return (
     <Pressable
@@ -42,7 +42,7 @@ export function LearningCentreCard({ title, description, onPress, iconName }: Le
           height: 100,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: colors.surfaceContainer,
+          backgroundColor: colors.surfaceAlt,
         }}
       >
         <MaterialCommunityIcons

@@ -12,7 +12,7 @@ import {
   RtrAlertListRequest,
   RtrAlertListResponse,
 } from './types';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 const RTR_BASE_URL = 'https://warnungen.at-alert.at/api/rpc';
 const ALERT_LIST_ENDPOINT = '/alert/list';
@@ -29,18 +29,18 @@ export const ALERT_LEVEL_LABELS: Record<RtrAlertLevel, string> = {
   AlertLevel1: 'Emergency Alert',
   AlertLevel2: 'Extreme Threat',
   AlertLevel3: 'Severe Threat',
-  AlertLevel4: 'Threat Information',
+  AlertLevel4: 'Information',
   Amber:       'Other',
 };
 
-export function getAlertLevelColors(isDark: boolean): Record<RtrAlertLevel, string> {
-  const c = getThemeColors(isDark);
+export function getAlertLevelColours(isDark: boolean): Record<RtrAlertLevel, string> {
+  const c = getThemeColours(isDark);
   return {
-    AlertLevel1: c.alertLevelEmergency, // red   – Emergency Alert
-    AlertLevel2: c.alertLevelExtreme,   // orange – Extreme Threat
-    AlertLevel3: c.alertLevelSevere,    // yellow – Severe Threat
-    AlertLevel4: c.alertLevelInfo,      // blue  – Threat Information
-    Amber:       c.alertLevelAmber,     // amber – Missing Person
+    AlertLevel1: c.critical, // purple – Emergency Alert (worst tier)
+    AlertLevel2: c.error,    // red – Extreme Threat
+    AlertLevel3: c.warning,  // amber – Severe Threat
+    AlertLevel4: c.info,     // blue – Threat Information
+    Amber:       c.warning,  // amber – Missing Person
   };
 }
 
@@ -95,8 +95,8 @@ export async function fetchRtrAlerts(
 }
 
 // Returns the colour token for a given alert level (defaults to a neutral grey for unknown levels).
-export function getAlertLevelColor(level: RtrAlertLevel | string, isDark = false): string {
-  return getAlertLevelColors(isDark)[level as RtrAlertLevel] ?? getThemeColors(isDark).alertLevelUnknown;
+export function getAlertLevelColour(level: RtrAlertLevel | string, isDark = false): string {
+  return getAlertLevelColours(isDark)[level as RtrAlertLevel] ?? getThemeColours(isDark).textMuted;
 }
 
 //Returns the human-readable label for a given alert level.

@@ -7,7 +7,7 @@ import {ScrollView, Text, View} from 'react-native';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 import { getTopAppBarStyles } from '../styles/appStyles';
 import { LearningCentreCard } from '../components/LearningCentreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
@@ -19,7 +19,7 @@ type SubPage = 'pharmacyKit' | 'weatherEmergencyTips' | null;
 export function LearningCentrePage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const [activePage, setActivePage] = useState<SubPage>(null);
 

@@ -8,9 +8,9 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
-import { getThemeColors } from '../../styles/themeColors';
+import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
-import { ContentSectionCard } from '../../components/ContentSectionCard';
+import { LearningReadingContentCard } from '../../components/LearningReadingContentCard';
 import { useWeatherReadStatus } from '../../hooks/useWeatherReadStatus';
 import { usePreparedness } from '../../context/PreparednessContext';
 import {SaveProgressButton} from "../../components/SaveProgressButton";
@@ -19,10 +19,17 @@ interface WeatherEmergencyTipsProps {
   onBack: () => void;
 }
 
-const IMMEDIATE_ACTIONS = {
-  icon: 'alert-decagram' as const,
+type AccentKey = 'error' | 'warning' | 'success';
+
+const IMMEDIATE_ACTIONS: {
+  icon: React.ComponentProps<typeof LearningReadingContentCard>['icon'];
+  title: string;
+  accent: AccentKey;
+  body: string[];
+} = {
+  icon: 'alert-decagram',
   title: 'What to do immediately',
-  color: '#EF5350',
+  accent: 'error',
   body: [
     'Switch on the radio and television and pay attention to severe weather warnings.',
     'Move to safety inside buildings.',
@@ -32,15 +39,15 @@ const IMMEDIATE_ACTIONS = {
 };
 
 const TIPS: {
-  icon: React.ComponentProps<typeof ContentSectionCard>['icon'];
+  icon: React.ComponentProps<typeof LearningReadingContentCard>['icon'];
   title: string;
-  color: string;
+  accent: AccentKey;
   body: string[];
 }[] = [
   {
     icon: 'home-alert-outline',
     title: 'Safety!',
-    color: '#F59E0B',
+    accent: 'warning',
     body: [
       'Pay attention to weather forecasts and weather warnings. Follow the instructions of the authorities and emergency services.',
       'Close windows and blinds, as these help protect windowpanes. If you have garden furniture, you should secure it as well. Check non-return valves, and clean inlets and shafts.',
@@ -51,7 +58,7 @@ const TIPS: {
   {
     icon: 'lightning-bolt',
     title: 'Be prepared for power cuts!',
-    color: '#F59E0B',
+    accent: 'warning',
     body: [
       'Use your emergency supplies and devices that do not depend on electricity.',
     ],
@@ -59,7 +66,7 @@ const TIPS: {
   {
     icon: 'hand-heart',
     title: 'Help other people, provide first aid and help with clean-up work!',
-    color: '#4CAF50',
+    accent: 'success',
     body: [
       'Remember that not all of your neighbours may be able to help themselves sufficiently.',
     ],
@@ -67,7 +74,7 @@ const TIPS: {
   {
     icon: 'home-alert-outline',
     title: 'Be careful around damaged buildings!',
-    color: '#F59E0B',
+    accent: 'warning',
     body: [
       'There may be a risk of collapse and danger to life. Consult the emergency services and qualified specialists before entering.',
     ],
@@ -78,7 +85,7 @@ const TIPS: {
 export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
   const { isRead, loading, saving, saved, toggleRead, saveReadStatus } = useWeatherReadStatus();
@@ -92,7 +99,7 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
       <View
         className={topBar.container}
-        style={{ elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
+        style={{ elevation: 2, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
       >
         <Pressable
           onPress={onBack}
@@ -130,10 +137,10 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
               Severe weather, thunderstorms, hail, hurricane-force winds
             </Text>
 
-            <ContentSectionCard
+            <LearningReadingContentCard
               icon={IMMEDIATE_ACTIONS.icon}
               title={IMMEDIATE_ACTIONS.title}
-              color={IMMEDIATE_ACTIONS.color}
+              colour={colors[IMMEDIATE_ACTIONS.accent]}
               body={IMMEDIATE_ACTIONS.body}
             />
 
@@ -150,11 +157,11 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
             </Text>
 
             {TIPS.map((tip) => (
-              <ContentSectionCard
+              <LearningReadingContentCard
                 key={tip.title}
                 icon={tip.icon}
                 title={tip.title}
-                color={tip.color}
+                colour={colors[tip.accent]}
                 body={tip.body}
               />
             ))}
@@ -163,7 +170,7 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
             <View style={{
               flexDirection: 'row', alignItems: 'flex-start', gap: 8,
               padding: 12, borderRadius: 8, marginTop: 4, marginBottom: 8,
-              backgroundColor: isDark ? colors.surfaceContainer : '#F5F5F5',
+              backgroundColor: colors.surfaceAlt,
             }}>
               <MaterialCommunityIcons name="information-outline" size={14} color={colors.textMuted} style={{ marginTop: 1 }} />
               <Text style={{ flex: 1, fontSize: 12, lineHeight: 18, color: colors.textMuted }}>
@@ -188,9 +195,9 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
                 style={{
                   flexDirection: 'row', alignItems: 'center', gap: 14,
                   padding: 16, borderRadius: 12,
-                  backgroundColor: isDark ? colors.surfaceContainer : '#F1F3FF',
+                  backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
                   borderWidth: 1.5,
-                  borderColor: isRead ? colors.primary : colors.border,
+                  borderColor: isRead ? colors.primary : colors.outline,
                 }}
               >
               <View style={{

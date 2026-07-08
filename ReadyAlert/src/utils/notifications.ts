@@ -29,7 +29,7 @@ export async function registerForPushNotifications(): Promise<boolean> {
       name: 'Emergency Alerts',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#EF4444',
+      lightColor: '#DC2626',
       sound: 'default',
     });
   }

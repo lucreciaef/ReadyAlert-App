@@ -4,7 +4,7 @@
 
 import { ActivityIndicator, Text, View } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 interface LoadingStateProps {
   message?: string;
@@ -12,7 +12,7 @@ interface LoadingStateProps {
 
 export function LoadingState({ message = 'Loading…' }: LoadingStateProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
 
   return (
     <View style={{ alignItems: 'center', paddingVertical: 32 }}>

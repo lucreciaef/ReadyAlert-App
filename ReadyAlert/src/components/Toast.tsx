@@ -8,7 +8,7 @@ import { Animated, Pressable, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 export type ToastType = 'error' | 'warning' | 'success' | 'info';
 
@@ -31,7 +31,7 @@ const CONFIG: Record<ToastType, { icon: string }> = {
 export function Toast({ visible, message, type = 'info', duration = 4000, onHide }: ToastProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColours(isDark);
   const translateY = useRef(new Animated.Value(80)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const cfg = CONFIG[type];

@@ -9,7 +9,7 @@ import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AirQualityData } from '../api';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
 // EU EEA threshold bands (µg/m^3, hourly values from EEA 2024 revision)
 // Levels: 0 = good/fair (default), 1 = moderate/poor (yellow), 2 = very poor+ (red)
@@ -40,13 +40,11 @@ function getLevel(key: string, value: number): ThresholdLevel {
 }
 
 // Level colours are resolved at render time from the theme
-function getAqiColor(aqi: number, c: ReturnType<typeof import('../styles/themeColors').getThemeColors>): string {
-  if (aqi <= 20) return c.aqiGood;
-  if (aqi <= 40) return c.aqiFair;
-  if (aqi <= 60) return c.aqiModerate;
-  if (aqi <= 80) return c.aqiPoor;
-  if (aqi <= 100) return c.aqiVeryPoor;
-  return c.aqiExtreme;
+function getAqiColour(aqi: number, c: ReturnType<typeof import('../styles/themeColours').getThemeColours>): string {
+  if (aqi <= 40) return c.success;   // Good + Fair
+  if (aqi <= 60) return c.warning;   // Moderate
+  if (aqi <= 100) return c.error;    // Poor + Very Poor
+  return c.critical;                 // Extreme (worst tier)
 }
 
 function getAqiLabel(aqi: number): string {
@@ -66,15 +64,15 @@ interface Props {
 
 export function AirQualityCard({ data, loading, error }: Props) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colours = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
 
-  const cardBg = colors.surface;
-  const chipBgDefault = isDark ? colors.surfaceContainer : colors.surface;
-  const LEVEL_COLORS: Record<ThresholdLevel, string | null> = {
+  const cardBg = colours.surface;
+  const chipBgDefault = isDark ? colours.surfaceAlt : colours.surface;
+  const LEVEL_COLOURS: Record<ThresholdLevel, string | null> = {
     0: null,
-    1: colors.aqiLevelYellow,
-    2: colors.aqiLevelRed,
+    1: colours.warning,
+    2: colours.error,
   };
 
   const pollutants: { key: keyof AirQualityData; label: string; unit: string }[] = [
@@ -96,42 +94,42 @@ export function AirQualityCard({ data, loading, error }: Props) {
         backgroundColor: cardBg,
         padding: 16,
         borderWidth: 1,
-        borderColor: colors.textMuted,
+        borderColor: colours.textMuted,
       }}
     >
       <Pressable
         onPress={() => setExpanded((v) => !v)}
-        android_ripple={{ color: colors.ripple }}
+        android_ripple={{ color: colours.ripple }}
         style={{ borderRadius: 8, overflow: 'hidden' }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <MaterialCommunityIcons name="air-filter" size={20} color={colors.primary} />
-            <Text style={{ fontSize: 13, fontWeight: '600', letterSpacing: 1.1, textTransform: 'uppercase', color: colors.textMuted }}>
+            <MaterialCommunityIcons name="air-filter" size={20} color={colours.primary} />
+            <Text style={{ fontSize: 13, fontWeight: '600', letterSpacing: 1.1, textTransform: 'uppercase', color: colours.textMuted }}>
               Air Quality Index
             </Text>
           </View>
           <MaterialCommunityIcons
             name={expanded ? 'chevron-up' : 'chevron-down'}
             size={20}
-            color={colors.textMuted}
+            color={colours.textMuted}
           />
         </View>
 
         {loading && !data && (
-          <Text style={{ color: colors.textMuted, fontSize: 14, marginTop: 10 }}>
+          <Text style={{ color: colours.textMuted, fontSize: 14, marginTop: 10 }}>
             Loading air quality data…
           </Text>
         )}
         {error && !data && (
-          <Text style={{ color: colors.warning, fontSize: 14, marginTop: 10 }}>{error}</Text>
+          <Text style={{ color: colours.warning, fontSize: 14, marginTop: 10 }}>{error}</Text>
         )}
         {data && (
           <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
-            <Text style={{ fontSize: 36, fontWeight: '700', color: getAqiColor(data.european_aqi, colors) }}>
+            <Text style={{ fontSize: 36, fontWeight: '700', color: getAqiColour(data.european_aqi, colours) }}>
               {Math.round(data.european_aqi)}
             </Text>
-            <Text style={{ fontSize: 14, color: colors.textMuted }}>
+            <Text style={{ fontSize: 14, color: colours.textMuted }}>
               AQI · {getAqiLabel(data.european_aqi)}
             </Text>
           </View>
@@ -144,13 +142,13 @@ export function AirQualityCard({ data, loading, error }: Props) {
             {pollutants.map(({ key, label, unit }) => {
               const value = data[key] as number;
               const level = getLevel(key as string, value);
-              const levelColor = LEVEL_COLORS[level];
-              const chipBg = levelColor
+              const levelColour = LEVEL_COLOURS[level];
+              const chipBg = levelColour
                 ? isDark
-                  ? `${levelColor}33`   // 20% opacity tint in dark mode
-                  : `${levelColor}22`   // 13% opacity tint in light mode
+                  ? `${levelColour}33`   // 20% opacity tint in dark mode
+                  : `${levelColour}22`   // 13% opacity tint in light mode
                 : chipBgDefault;
-              const valueColor = levelColor ?? colors.text;
+              const valueColour = levelColour ?? colours.text;
 
               return (
                 <View
@@ -162,28 +160,28 @@ export function AirQualityCard({ data, loading, error }: Props) {
                     paddingVertical: 6,
                     minWidth: 80,
                     borderWidth: 1,
-                    borderColor: colors.textMuted,
+                    borderColor: colours.textMuted,
                   }}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-                    <Text style={{ fontSize: 11, color: colors.textMuted }}>{label}</Text>
+                    <Text style={{ fontSize: 11, color: colours.textMuted }}>{label}</Text>
                     {level > 0 && (
                       <MaterialCommunityIcons
                         name={level === 2 ? 'alert-circle' : 'alert'}
                         size={11}
-                        color={levelColor!}
+                        color={levelColour!}
                       />
                     )}
                   </View>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: valueColor }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: valueColour }}>
                     {value.toFixed(1)}{' '}
-                    <Text style={{ fontSize: 10, color: colors.textMuted }}>{unit}</Text>
+                    <Text style={{ fontSize: 10, color: colours.textMuted }}>{unit}</Text>
                   </Text>
                 </View>
               );
             })}
           </View>
-          <Text style={{ fontSize: 10, color: colors.textMuted, fontStyle: 'italic' }}>
+          <Text style={{ fontSize: 10, color: colours.textMuted, fontStyle: 'italic' }}>
             Thresholds based on EU EEA Air Quality Index bands
           </Text>
         </View>

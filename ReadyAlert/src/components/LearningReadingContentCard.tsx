@@ -12,18 +12,18 @@
 import { Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
-import { getThemeColors } from '../styles/themeColors';
+import { getThemeColours } from '../styles/themeColours';
 
-export interface ContentSectionCardProps {
+export interface LearningReadingContentCardProps {
   icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
   title: string;
-  color: string;
+  colour: string;
   body: string[];
 }
 
-export function ContentSectionCard({ icon, title, color, body }: ContentSectionCardProps) {
+export function LearningReadingContentCard({ icon, title, colour, body }: LearningReadingContentCardProps) {
   const { isDark } = useTheme();
-  const colors = getThemeColors(isDark);
+  const colours = getThemeColours(isDark);
 
   return (
     <View
@@ -32,16 +32,15 @@ export function ContentSectionCard({ icon, title, color, body }: ContentSectionC
         overflow: 'hidden',
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: isDark ? colors.surfaceContainer : colors.surface,
+        borderColor: colours.outline,
+        backgroundColor: isDark ? colours.surfaceAlt : colours.surface,
         elevation: 1,
-        shadowColor: colors.shadow,
+        shadowColor: colours.shadow,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.06,
         shadowRadius: 3,
       }}
     >
-      <View style={{ height: 4, backgroundColor: color }} />
       <View style={{ padding: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <View
@@ -49,14 +48,14 @@ export function ContentSectionCard({ icon, title, color, body }: ContentSectionC
               width: 36,
               height: 36,
               borderRadius: 18,
-              backgroundColor: color + '1A',
+              backgroundColor: colour + '1A',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <MaterialCommunityIcons name={icon} size={20} color={color} />
+            <MaterialCommunityIcons name={icon} size={20} color={colour} />
           </View>
-          <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text, flex: 1 }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: colours.text, flex: 1 }}>
             {title}
           </Text>
         </View>
@@ -76,12 +75,12 @@ export function ContentSectionCard({ icon, title, color, body }: ContentSectionC
                 width: 6,
                 height: 6,
                 borderRadius: 3,
-                backgroundColor: color,
+                backgroundColor: colour,
                 marginTop: 8,
                 flexShrink: 0,
               }}
             />
-            <Text style={{ flex: 1, fontSize: 14, lineHeight: 22, color: colors.text }}>
+            <Text style={{ flex: 1, fontSize: 14, lineHeight: 22, color: colours.text }}>
               {point}
             </Text>
           </View>
