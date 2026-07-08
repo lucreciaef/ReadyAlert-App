@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import { getTopAppBarStyles } from '../styles/appStyles';
+import { getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
 import { LearningCentreCard } from '../components/LearningCentreCard';
 import { PharmacyKitPage } from './learning/PharmacyKitPage';
 import { WeatherEmergencyTipsPage } from "./learning/WeatherEmergencyTipsPage";
@@ -20,6 +20,7 @@ export function LearningCentrePage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const [activePage, setActivePage] = useState<SubPage>(null);
 
@@ -31,18 +32,8 @@ export function LearningCentrePage() {
   }
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: isDark ? colors.background : colors.background, paddingTop: insets.top }}
-    >
-      <View
-        style={{
-          height: 64,
-          backgroundColor: colors.background,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-          gap: 12 }}
-      >
+    <View className={layout.safeArea} style={{ paddingTop: insets.top }}>
+      <View className={topBar.containerOnBackground}>
         <MaterialCommunityIcons name="school-outline" size={24} color={colors.primary} />
         <Text className={topBar.title} numberOfLines={1}>
           Learning Centre

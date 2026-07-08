@@ -16,7 +16,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import { getTopAppBarStyles } from '../styles/appStyles';
+import { getBottomSheetStyles, getHomeDashboardPageStyles, getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
 import {
   fetchWarningsForLocation,
   GeosphereResponse,
@@ -72,7 +72,10 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const bottomSheet = getBottomSheetStyles(isDark);
+  const styles = getHomeDashboardPageStyles(isDark);
   const { preparedness, loading: prepLoading } = usePreparedness();
 
   const {
@@ -253,32 +256,21 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       : colors.text;
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <View className={topBar.container} style={{ elevation: 0, paddingVertical:8 }}>
-        <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-          gap: 12 }}
-        >
+    <View className={layout.fill} style={{ paddingTop: insets.top }}>
+      <View className={topBar.container} style={{ elevation: 0 }}>
+        <View className={topBar.contentRow}>
           <MaterialCommunityIcons name="home-outline" size={24} color={colors.primary} />
           <Text className={topBar.title} numberOfLines={1}>
             Local info
           </Text>
-          <View style={{ flex: 1 }} />
+          <View className={styles.headerSpacer} />
           <Pressable
             onPress={() => Alert.alert('Feature coming up soon')}
             android_ripple={{ color: colors.ripple }}
-            style={{ borderRadius: 32, overflow: 'hidden' }}
+            className={styles.addButtonPressable}
           >
-            <View style={{
-              paddingHorizontal: 20,
-              paddingVertical: 6,
-              borderRadius: 32,
-              backgroundColor: colors.primary,
-            }}>
-              <Text style={{ color: colors.onPrimary, fontWeight: '600', fontSize: 24 }}>
+            <View className={styles.addButtonInner}>
+              <Text className={styles.addButtonText}>
                 +
               </Text>
             </View>
@@ -286,7 +278,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
         </View>
       </View>
 
-      <View style={{ flex: 1 }}>
+      <View className={layout.fill}>
         <MapView
           ref={mapRef}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -325,14 +317,11 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             <Pressable
               onPress={onPreparednessPress}
               android_ripple={{ color: colors.ripple }}
-              style={{ borderRadius: 12, overflow: 'hidden' }}
+              className={styles.preparednessPressable}
             >
               <View
+                className={styles.preparednessCard}
                 style={{
-                  backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
                   shadowColor: colors.shadow,
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: isDark ? 0.3 : 0.10,
@@ -340,17 +329,10 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
                   elevation: 3,
                 }}
               >
-                <Text style={{
-                  fontSize: 11,
-                  fontWeight: '600',
-                  letterSpacing: 1.2,
-                  textTransform: 'uppercase',
-                  color: colors.textMuted,
-                  marginBottom: 8,
-                }}>
+                <Text className={styles.preparednessLabel}>
                   Preparedness score
                 </Text>
-                <View style={{ flexDirection: 'row', gap: 6 }}>
+                <View className={styles.trophyRow}>
                   {[0, 1, 2, 3, 4].map((i) => {
                     const trophyScore = preparedness.score / 20;
                     const fill = Math.min(1, Math.max(0, trophyScore - i));
@@ -381,21 +363,13 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             opacity: 0.9,
           }}
         >
-          <View {...panResponder.panHandlers} style={{ paddingHorizontal: 16, paddingBottom: 4 }}>
-            <View style={{
-              width: 32,
-              height: 4,
-              borderRadius: 2,
-              backgroundColor: colors.divider,
-              alignSelf: 'center',
-              marginTop: 12,
-              marginBottom: 12,
-            }} />
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
+            <View className={bottomSheet.handle} />
+            <View className={styles.sheetHeaderRow}>
+              <View className={styles.sheetHeaderLeft}>
                 <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />
                 <Text
-                    style={{ flex: 1, fontSize: 18, fontWeight: '500', color: colors.text }}
+                    className={styles.sheetTitle}
                     numberOfLines={1}
                 >
                   {headerLabel} <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
@@ -404,7 +378,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               <Pressable
                 onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}
                 android_ripple={{ color: colors.ripple, borderless: true }}
-                style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}
+                className={styles.chevronButton}
               >
                 <MaterialCommunityIcons
                   name={sheetExpanded ? 'chevron-down' : 'chevron-up'}

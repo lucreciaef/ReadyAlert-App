@@ -3,7 +3,7 @@
  * Contains user preferences, info about licencing and debug tools.
  */
 
-import {ScrollView, Text, View, Pressable, Alert} from 'react-native';
+import {ScrollView, Text, View, Pressable, Alert, Image} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
@@ -48,7 +48,7 @@ export function SettingsPage({
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
 
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 20 }}>
-          <MaterialCommunityIcons name="shield-alert" size={36} color={colours.primary} />
+          <Image source={require('../../assets/icon.png')} style={{ width: 128, height: 128, borderRadius: 8 }} />
           <Text style={{ fontSize: 22, fontWeight: '400', marginTop: 8, color: colours.text }}>ReadyAlert</Text>
           <Text style={{ fontSize: 14, marginTop: 4, color: colours.textMuted }}>Alerts and preparedness in Austria</Text>
         </View>

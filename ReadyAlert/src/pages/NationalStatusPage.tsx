@@ -19,7 +19,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import { getTopAppBarStyles } from '../styles/appStyles';
+import { getBottomSheetStyles, getLayoutStyles, getNationalStatusPageStyles, getTopAppBarStyles } from '../styles/appStyles';
 import {
   ALL_ALERT_LEVELS,
   fetchRtrAlerts,
@@ -58,43 +58,25 @@ function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: Ret
     'Vienna', 'Lower Austria', 'Upper Austria', 'Styria',
     'Tyrol', 'Carinthia', 'Salzburg', 'Vorarlberg', 'Burgenland',
   ];
+  const styles = getNationalStatusPageStyles(isDark);
 
   return (
-    <View style={{ marginTop: 4 }} >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        
+    <View className={styles.weatherContainer}>
+      <View className={styles.weatherHeaderRow}>
         <MaterialCommunityIcons name="weather-partly-cloudy" size={18} color={colors.primary} />
-        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
+        <Text className={styles.weatherHeaderText}>
           Weather in Austria
         </Text>
       </View>
-        
+
       {states.map((state) => (
         <Pressable
           key={state}
           onPress={() => Alert.alert('Feature coming up soon')}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingVertical: 10,
-              paddingHorizontal: 14,
-              borderRadius: 8,
-              marginBottom: 6,
-              backgroundColor: colors.surface,
-            }}
-          >
-            <Text style={{ fontSize: 14, color: colors.text }}>{state}</Text>
-            <View
-              style={{
-                width: 64,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: colors.surfaceAlt,
-              }}
-            />
+          <View className={styles.weatherStateRow}>
+            <Text className={styles.weatherStateText}>{state}</Text>
+            <View className={styles.weatherStateBar} />
           </View>
         </Pressable>
       ))}
@@ -106,7 +88,10 @@ export function NationalStatusPage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const bottomSheet = getBottomSheetStyles(isDark);
+  const styles = getNationalStatusPageStyles(isDark);
   const { debugMode } = useLocationContext();
 
   const [allAlerts, setAllAlerts] = useState<RtrAlert[]>([]);
@@ -211,15 +196,9 @@ export function NationalStatusPage() {
   const [sheetView, setSheetView] = useState<'main' | 'alerts'>('main');
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <View className={topBar.container} style={{ elevation: 0, paddingVertical:8 }}>
-        <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            gap: 12 }}
-        >
+    <View className={layout.fill} style={{ paddingTop: insets.top }}>
+      <View className={topBar.container} style={{ elevation: 0 }}>
+        <View className={topBar.contentRow}>
           <MaterialCommunityIcons name="map-outline" size={24} color={colors.primary} />
           <Text className={topBar.title} numberOfLines={1}>
             National view
@@ -227,7 +206,7 @@ export function NationalStatusPage() {
         </View>
       </View>
 
-      <View style={{ flex: 1 }}>
+      <View className={layout.fill}>
         <MapView
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           initialRegion={AUSTRIA_REGION}
@@ -268,44 +247,34 @@ export function NationalStatusPage() {
             opacity: 0.9,
           }}
         >
-          <View {...panResponder.panHandlers} style={{ paddingHorizontal: 16, paddingBottom: 4 }}>
-            <View
-              style={{
-                width: 32,
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: colors.divider,
-                alignSelf: 'center',
-                marginTop: 12,
-                marginBottom: 12,
-              }}
-            />
+          <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
+            <View className={bottomSheet.handle} />
 
             {sheetView === 'main' ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>
+              <View className={styles.mainHeaderRow}>
+                <Text className={styles.mainHeaderTitle}>
                   National Status
                 </Text>
               </View>
             ) : (
               <>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <View className={styles.alertsHeaderRow}>
                   <Pressable
                     onPress={() => setSheetView('main')}
                     android_ripple={{ color: colors.ripple, borderless: true }}
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 4, padding: 4 }}
+                    className={styles.backButton}
                   >
                     <MaterialCommunityIcons name="chevron-left" size={20} color={colors.text} />
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>Overview</Text>
+                    <Text className={styles.backButtonText}>Overview</Text>
                   </Pressable>
 
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View className={styles.alertsCountRow}>
                     <MaterialCommunityIcons
                       name={hasAlerts ? 'alert-circle' : 'check-circle'}
                       size={18}
                       color={hasAlerts ? colors.error : colors.success}
                     />
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, paddingRight: 16 }}>
+                    <Text className={styles.alertsCountText}>
                       {loading ? 'Loading…' : hasAlerts ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}` : 'No Alerts'}
                     </Text>
                   </View>
