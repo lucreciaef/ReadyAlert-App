@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { Circle, Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
 import { DARK_MAP_STYLE, LIGHT_MAP_STYLE } from '../styles/mapStyles';
 import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -31,11 +31,14 @@ import { Toast } from '../components/Toast';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
-import { WeatherAlertsCard } from '../components/WeatherAlertsCard';
+import { APIWeatherAlertsCard } from '../components/APIWeatherAlertsCard';
 import { RTRAlertSummaryButton } from '../components/RTRAlertSummaryButton';
 import { useNotifications } from '../hooks/useNotifications';
 import { useAirQuality } from '../hooks/useAirQuality';
-import { AirQualityCard } from '../components/AirQualityCard';
+import { APIAirQualityCard } from '../components/APIAirQualityCard';
+import { useRadiationLevel } from '../hooks/useRadiationLevel';
+import { APIRadiationLevelCard } from '../components/APIRadiationLevelCard';
+import { classifyRadiation } from '../api';
 
 let _prevGeoWarningCount = 0;
 
@@ -99,6 +102,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const { notifyGeosphereWarnings } = useNotifications();
 
   const { data: aqiData, loading: aqiLoading, error: aqiError } = useAirQuality(userLocation);
+  const radiationState = useRadiationLevel(userLocation);
+  const [radiationExpanded, setRadiationExpanded] = useState(false);
 
   useEffect(() => {
     if (!userLocation) { setLocationDisplayName(null); return; }
@@ -300,6 +305,24 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               />
             ))
           )}
+
+          {radiationExpanded && radiationState.nearbyStations.map((station) => {
+            const level = classifyRadiation(station.messwert);
+            const circleColor =
+              level === 'normal'   ? colors.success :
+              level === 'elevated' ? colors.warning :
+              colors.error;
+            return (
+              <Circle
+                key={`rad-${station.nummer}`}
+                center={{ latitude: station.latitude, longitude: station.longitude }}
+                radius={4000}
+                fillColor={`${circleColor}66`}
+                strokeColor={circleColor}
+                strokeWidth={1.5}
+              />
+            );
+          })}
         </MapView>
 
         {!prepLoading && (
@@ -413,10 +436,16 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             )}
 
             {!loading && apiData && (
-              <WeatherAlertsCard warnings={warnings} />
+              <APIWeatherAlertsCard warnings={warnings} />
             )}
 
-            <AirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
+            <APIAirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
+
+            <APIRadiationLevelCard
+              {...radiationState}
+              expanded={radiationExpanded}
+              onToggle={() => setRadiationExpanded((v) => !v)}
+            />
 
             <View style={{ height: 24 }} />
           </ScrollView>

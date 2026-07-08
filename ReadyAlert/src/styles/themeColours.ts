@@ -7,9 +7,9 @@ export function getThemeColours(isDark: boolean) {
   if (isDark) {
     return {
       // Surfaces
-      background: '#181112',
-      surface: '#181112',
-      surfaceAlt: '#2A2020',
+      background: '#110c0d',
+      surface: '#110c0d',
+      surfaceAlt: '#171111',
       // Text (On-Surface)
       text: '#F3F0F0',
       textMuted: '#C5C6D0',

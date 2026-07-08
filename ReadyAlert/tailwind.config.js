@@ -16,11 +16,11 @@ module.exports = {
       colors: {
         // Surfaces
         background: '#FFFFFF',
-        'background-dark': '#181112',
+        'background-dark': '#110c0d',
         surface: '#FFFFFF',
-        'surface-dark': '#181112',
+        'surface-dark': '#110c0d',
         'surface-alt': '#FAFAFA',
-        'surface-alt-dark': '#2A2020',
+        'surface-alt-dark': '#171111',
 
         // Primary (brand — unchanged, reserved for important accents only)
         primary: '#D2042D',

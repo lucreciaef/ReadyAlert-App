@@ -5,11 +5,12 @@
  */
 
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AirQualityData } from '../api';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
+import { ExpandableInfoCard } from './ExpandableInfoCard';
 
 // EU EEA threshold bands (µg/m^3, hourly values from EEA 2024 revision)
 // Levels: 0 = good/fair (default), 1 = moderate/poor (yellow), 2 = very poor+ (red)
@@ -62,12 +63,11 @@ interface Props {
   error: string | null;
 }
 
-export function AirQualityCard({ data, loading, error }: Props) {
+export function APIAirQualityCard({ data, loading, error }: Props) {
   const { isDark } = useTheme();
   const colours = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
 
-  const cardBg = colours.surface;
   const chipBgDefault = isDark ? colours.surfaceAlt : colours.surface;
   const LEVEL_COLOURS: Record<ThresholdLevel, string | null> = {
     0: null,
@@ -87,56 +87,36 @@ export function AirQualityCard({ data, loading, error }: Props) {
   ];
 
   return (
-    <View
-      style={{
-        marginTop: 16,
-        borderRadius: 12,
-        backgroundColor: cardBg,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: colours.textMuted,
-      }}
+    <ExpandableInfoCard
+      icon="air-filter"
+      title="Air Quality Index"
+      expanded={expanded}
+      onToggle={() => setExpanded((v) => !v)}
+      colours={colours}
+      summary={
+        <>
+          {loading && !data && (
+            <Text style={{ color: colours.textMuted, fontSize: 14, marginTop: 10 }}>
+              Loading air quality data…
+            </Text>
+          )}
+          {error && !data && (
+            <Text style={{ color: colours.warning, fontSize: 14, marginTop: 10 }}>{error}</Text>
+          )}
+          {data && (
+            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
+              <Text style={{ fontSize: 36, fontWeight: '700', color: getAqiColour(data.european_aqi, colours) }}>
+                {Math.round(data.european_aqi)}
+              </Text>
+              <Text style={{ fontSize: 14, color: colours.textMuted }}>
+                AQI · {getAqiLabel(data.european_aqi)}
+              </Text>
+            </View>
+          )}
+        </>
+      }
     >
-      <Pressable
-        onPress={() => setExpanded((v) => !v)}
-        android_ripple={{ color: colours.ripple }}
-        style={{ borderRadius: 8, overflow: 'hidden' }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <MaterialCommunityIcons name="air-filter" size={20} color={colours.primary} />
-            <Text style={{ fontSize: 13, fontWeight: '600', letterSpacing: 1.1, textTransform: 'uppercase', color: colours.textMuted }}>
-              Air Quality Index
-            </Text>
-          </View>
-          <MaterialCommunityIcons
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={20}
-            color={colours.textMuted}
-          />
-        </View>
-
-        {loading && !data && (
-          <Text style={{ color: colours.textMuted, fontSize: 14, marginTop: 10 }}>
-            Loading air quality data…
-          </Text>
-        )}
-        {error && !data && (
-          <Text style={{ color: colours.warning, fontSize: 14, marginTop: 10 }}>{error}</Text>
-        )}
-        {data && (
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
-            <Text style={{ fontSize: 36, fontWeight: '700', color: getAqiColour(data.european_aqi, colours) }}>
-              {Math.round(data.european_aqi)}
-            </Text>
-            <Text style={{ fontSize: 14, color: colours.textMuted }}>
-              AQI · {getAqiLabel(data.european_aqi)}
-            </Text>
-          </View>
-        )}
-      </Pressable>
-
-      {expanded && data && (
+      {data && (
         <View style={{ marginTop: 12, gap: 8 }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {pollutants.map(({ key, label, unit }) => {
@@ -186,6 +166,6 @@ export function AirQualityCard({ data, loading, error }: Props) {
           </Text>
         </View>
       )}
-    </View>
+    </ExpandableInfoCard>
   );
 }
