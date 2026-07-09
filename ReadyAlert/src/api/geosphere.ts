@@ -3,7 +3,7 @@
  * Exposes functions to fetch active warnings for given coordinates and to extract summary data from the response.
  */
 
-import { GeosphereResponse } from './types';
+import { GeosphereResponse, Warning } from './types';
 import { convertGeosphereCoordinates } from '../utils/coordConvert';
 import { mockGeoSphereResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
@@ -121,6 +121,21 @@ export async function fetchWarningsForLocation(
 export function getWarningCount(data: GeosphereResponse | null): number {
   if (!data?.properties?.warnings) return 0;
   return data.properties.warnings.length;
+}
+
+/**
+ * Filter warnings whose active period overlaps [now, now + windowHours].
+ * If there are malformed rawinfo timestamps, messages are displayed anyway to avoid filtering real alerts.
+ */
+export function filterWarningsInWindow(warnings: Warning[], windowHours: number): Warning[] {
+  const nowSec = Date.now() / 1000;
+  const windowEndSec = nowSec + windowHours * 60 * 60;
+  return warnings.filter((w) => {
+    const start = Number(w.properties.rawinfo?.start);
+    const end = Number(w.properties.rawinfo?.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end)) return true;
+    return start <= windowEndSec && end >= nowSec;
+  });
 }
 
 /**

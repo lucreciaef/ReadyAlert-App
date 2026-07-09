@@ -19,9 +19,9 @@ import { getThemeColours } from '../styles/themeColours';
 import { getBottomSheetStyles, getHomeDashboardPageStyles, getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
 import {
   fetchWarningsForLocation,
+  filterWarningsInWindow,
   GeosphereResponse,
   getLocationName,
-  getWarningCount,
   OutsideAustriaError,
   ServiceUnavailableError,
 } from '../api';
@@ -39,6 +39,7 @@ import { AirQualityCard } from '../components/AirQualityCard';
 import { PreparednessScoreCard } from '../components/PreparednessScoreCard';
 
 let _prevGeoWarningCount = 0;
+const WARNING_WINDOW_HOURS = 48;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -175,7 +176,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       }
       const data = await fetchWarningsForLocation(lon, lat, 'en');
       setApiData(data);
-      const newCount = data?.properties?.warnings?.length ?? 0;
+      const inWindow = filterWarningsInWindow(data?.properties?.warnings ?? [], WARNING_WINDOW_HOURS);
+      const newCount = inWindow.length;
       if (newCount > 0 && newCount !== _prevGeoWarningCount) {
         const name = getLocationName(data);
         notifyGeosphereWarnings(newCount, name);
@@ -202,10 +204,13 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     else requestPermission();
   };
 
-  const warningCount = getWarningCount(apiData);
   const locationName = getLocationName(apiData);
+  const visibleWarnings = filterWarningsInWindow(
+    apiData?.properties?.warnings ?? [],
+    WARNING_WINDOW_HOURS,
+  );
+  const warningCount = visibleWarnings.length;
   const hasWarnings = warningCount > 0;
-  const warnings = apiData?.properties?.warnings || [];
 
   const initialMapRegion = { latitude: 47.7, longitude: 13.35, latitudeDelta: 5.0, longitudeDelta: 10.0 };
 
@@ -364,7 +369,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             )}
 
             {!loading && apiData && (
-              <WeatherAlertsCard warnings={warnings} />
+              <WeatherAlertsCard warnings={visibleWarnings} />
             )}
 
             <AirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
