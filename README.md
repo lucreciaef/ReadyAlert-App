@@ -8,9 +8,9 @@ Built with [Expo](https://expo.dev) and React Native.
 
 ## Features
 
-- **Home Dashboard** — Detects your GPS location and fetches active weather warnings from the [Geosphere Austria](https://www.geosphere.at/) API, displayed on an interactive map with expandable warning cards.
-- **National Status** — Shows country-wide alerts from the [RTR Austria](https://www.rtr.at/) alerting system, colour-coded by severity, on a national map.
-- **Emergency Page** — Quick-access emergency contacts and guidance for crisis situations.
+- **Home Dashboard** — Detects your GPS location and fetches active weather warnings from the [Geosphere Austria](https://www.geosphere.at/) API, the current weather status and Air Quality Index from [OpenMeteo API](https://open-meteo.com/), and the Radiation level from the [Austrian-BMLUK](https://radiologischesereignis.gv.at/de/home/), displayed on an interactive map with expandable warning cards (Features in progress);
+- **National Status** — Shows country-wide alerts from the [RTR Austria](https://www.rtr.at/) alerting system, colour-coded by severity, on a national map. Shows the daily weather state for each Austrian state (capital city) from the [OpenMeteo API](https://open-meteo.com/).
+- **Emergency Page** — Quick-access emergency contacts and guidance for crisis situations. (Feature in progress)
 - **Learning Centre** — Step-by-step preparedness guides and checklists, with progress tracking.
 - **Push Notifications** — Alerts you when new warnings or alerts are detected, even in the background. (In planning)
 - **Dark / Light Theme** — Follows system preference automatically.
