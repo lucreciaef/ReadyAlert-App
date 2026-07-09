@@ -28,7 +28,7 @@ Built with [Expo](https://expo.dev) and React Native.
 | Location | expo-location |
 | Notifications | expo-notifications |
 | Local Storage | expo-sqlite, AsyncStorage |
-| APIs | Geosphere Austria, RTR Austria (More to come) |
+| APIs | Geosphere Austria, RTR Austria, OpenMeteo, Austrian-BMLUK |
 
 ---
 
@@ -54,8 +54,9 @@ npm install
 ### Running the App
 
 ```bash
-# Run on Android using Expo Go
+# Run on Android using an Expo Development Build
 npx expo start --clean
+# Disclaimer: Expo Go will not be able to show Google Maps and Notifications, so it is not recommended.
 
 ```
 
@@ -67,11 +68,11 @@ npx expo start --clean
 
 ```
 src/
-├── api/          # Geosphere & RTR API integrations, more APIs to come.
+├── api/          # API integrations
 ├── components/   # Reusable UI components
 ├── context/      # Location & Preparedness context providers
 ├── db/           # SQLite migrations
-├── hooks/        # Custom hooks (location, notifications, checklists)
+├── hooks/        # Custom hooks (location, notifications, checklists, etc.)
 ├── pages/        # App screens
 │   └── learning/ # Learning Centre sub-pages
 ├── styles/       # Theme colours, map styles, shared styles
