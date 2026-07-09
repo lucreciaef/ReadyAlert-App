@@ -68,7 +68,7 @@ export function RTRAlertSummaryButton({
         <MaterialCommunityIcons name={iconName as any} size={24} color={iconColor} />
         <View>
           <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
-            {isUnavailable ? 'Service Unavailable' : 'All Alerts'}
+            {isUnavailable ? 'Service Unavailable' : 'Austria disaster alerts'}
           </Text>
           <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
             {isUnavailable
@@ -77,7 +77,7 @@ export function RTRAlertSummaryButton({
                 ? 'Loading…'
                 : hasAlerts
                   ? `${totalCount} active alert${totalCount !== 1 ? 's' : ''} across Austria`
-                  : 'No active alerts'}
+                  : 'No active alerts in Austria'}
           </Text>
         </View>
       </View>

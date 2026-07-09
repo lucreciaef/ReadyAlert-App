@@ -68,7 +68,7 @@ export const getNationalStatusPageStyles = (isDark: boolean) => ({
 
   weatherContainer: 'mt-1',
   weatherHeaderRow: 'flex-row items-center gap-2 mb-3',
-  weatherHeaderText: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  weatherHeaderText: `text-base font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
   weatherStateRow: `flex-row items-center justify-between py-2.5 px-3.5 rounded-lg mb-1.5 ${isDark ? 'bg-surface-dark' : 'bg-surface'}`,
   weatherStateText: `text-sm ${isDark ? 'text-text-dark' : 'text-text'}`,
   weatherStateBar: `w-16 h-2 rounded ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,

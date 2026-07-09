@@ -35,7 +35,9 @@ import { WeatherAlertsCard } from '../components/WeatherAlertsCard';
 import { RTRAlertSummaryButton } from '../components/RTRAlertSummaryButton';
 import { useNotifications } from '../hooks/useNotifications';
 import { useAirQuality } from '../hooks/useAirQuality';
+import { useWeather } from '../hooks/useWeather';
 import { AirQualityCard } from '../components/AirQualityCard';
+import { WeatherCard } from '../components/WeatherCard';
 import { PreparednessScoreCard } from '../components/PreparednessScoreCard';
 
 let _prevGeoWarningCount = 0;
@@ -77,6 +79,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const { notifyGeosphereWarnings } = useNotifications();
 
   const { data: aqiData, loading: aqiLoading, error: aqiError } = useAirQuality(userLocation);
+  const { data: weatherData, loading: weatherLoading, error: weatherError } = useWeather(userLocation);
 
   useEffect(() => {
     if (!userLocation) { setLocationDisplayName(null); return; }
@@ -371,6 +374,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             {!loading && apiData && (
               <WeatherAlertsCard warnings={visibleWarnings} />
             )}
+
+            <WeatherCard data={weatherData} loading={weatherLoading} error={weatherError} />
 
             <AirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
 
