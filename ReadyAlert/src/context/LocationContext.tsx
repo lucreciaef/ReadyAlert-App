@@ -1,11 +1,16 @@
 /**
  * LocationContext
- * Provides the real GPS location from useLocation, but also allows a debug
- * override so any screen downstream stays up-to-date automatically.
+ * Provides the real GPS location from useLocation, plus:
+ *  - a debug override (for testing outside Austria, forced Graz, 503 sim, etc.)
+ *  - a user-selected saved location override (custom city/district from SavedLocationsContext)
+ *
+ * Precedence: debug > saved-location > GPS. Downstream hooks/screens read `coords`
+ * and stay in sync automatically.
  */
 
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { Coordinates, useLocation } from '../hooks/useLocation';
+import { useSavedLocations } from './SavedLocationsContext';
 
 const LONDON: Coordinates = { latitude: 51.5074, longitude: -0.1278 };
 const GRAZ: Coordinates = { latitude: 47.0679, longitude: 15.4417 };
@@ -21,6 +26,8 @@ interface LocationContextValue {
   isDebugMode: boolean;
   /** Active debug mode, or null when not in debug mode */
   debugMode: DebugMode;
+  /** True when the user's selected saved location is providing the coords */
+  isCustomLocation: boolean;
   /** Override with London coordinates for testing */
   setDebugLondon: () => void;
   /** Override with Graz coordinates for testing */
@@ -37,17 +44,25 @@ const LocationContext = createContext<LocationContextValue | null>(null);
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const gps = useLocation();
+  const { selectedLocation } = useSavedLocations();
   const [debugCoords, setDebugCoords] = useState<Coordinates | null>(null);
   const [debugMode, setDebugMode] = useState<DebugMode>(null);
 
+  const savedCoords: Coordinates | null = selectedLocation
+    ? { latitude: selectedLocation.latitude, longitude: selectedLocation.longitude }
+    : null;
+
+  // Debug takes precedence, then a user-picked saved location, then real GPS.
+  const effectiveCoords = debugCoords ?? savedCoords ?? gps.coords;
+
   const value: LocationContextValue = {
-    // When debug mode is active, override coords (loading/error come from GPS still)
-    coords: debugCoords ?? gps.coords,
-    loading: debugCoords ? false : gps.loading,
+    coords: effectiveCoords,
+    loading: debugCoords || savedCoords ? false : gps.loading,
     error: gps.error,
     requestPermission: gps.requestPermission,
     isDebugMode: debugMode !== null,
     debugMode,
+    isCustomLocation: !debugCoords && !!savedCoords,
     setDebugLondon: () => {
       console.log('Debug: overriding location to London');
       setDebugCoords(LONDON);
