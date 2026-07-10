@@ -57,9 +57,8 @@ export const getHomeDashboardPageStyles = (isDark: boolean) => ({
   addButtonInner: `px-5 py-1.5 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
   addButtonText: `text-2xl font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
 
-  locationPillPressable: 'flex-1 rounded-full overflow-hidden self-center',
-  locationPillInner: `flex-row items-center gap-1.5 px-3 py-1.5 rounded-full self-start border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
-  locationPillText: `text-[13px] font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  locationPillInner: `flex-row items-center gap-1.5 px-4 py-1.5 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
+  locationPillText: `text-[14px] font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
 
   sheetHeaderRow: 'flex-row items-center justify-between mb-2',
   sheetHeaderLeft: 'flex-row items-center gap-2',
@@ -81,7 +80,7 @@ export const getSavedLocationsPageStyles = (isDark: boolean) => ({
   addButton: `mx-4 mt-3 flex-row items-center justify-center gap-2 px-4 py-3 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
   addButtonDisabled: 'opacity-40',
   addButtonText: `text-sm font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
-  searchInputWrap: `flex-row items-center gap-2 mx-4 px-3 py-2 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
+  searchInputWrap: `flex-row items-center gap-2 mx-4 px-8 py-2 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
   searchInput: `flex-1 text-sm ${isDark ? 'text-text-dark' : 'text-text'}`,
   emptyText: `text-[13px] text-center px-4 py-6 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
 });

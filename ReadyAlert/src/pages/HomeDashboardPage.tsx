@@ -237,11 +237,7 @@ export function HomeDashboardPage({
       <View className={topBar.container} style={{ elevation: 0 }}>
         <View className={topBar.contentRow}>
           <MaterialCommunityIcons name="home-outline" size={24} color={colors.primary} />
-          <Pressable
-            onPress={onOpenSavedLocations}
-            android_ripple={{ color: colors.ripple }}
-            className={styles.locationPillPressable}
-          >
+          <View className="flex-1 items-center">
             <View className={styles.locationPillInner}>
               <MaterialCommunityIcons
                 name={isCustomLocation ? 'map-marker' : 'crosshairs-gps'}
@@ -252,7 +248,7 @@ export function HomeDashboardPage({
                 {isCustomLocation && selectedLocation ? selectedLocation.name : 'Current location'}
               </Text>
             </View>
-          </Pressable>
+          </View>
           <Pressable
             onPress={onOpenSavedLocations}
             android_ripple={{ color: colors.ripple }}
@@ -347,26 +343,26 @@ export function HomeDashboardPage({
         >
           <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
             <View className={bottomSheet.handle} />
-            <View className={styles.sheetHeaderRow}>
-              <View className={styles.sheetHeaderLeft}>
-                <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />
-                <Text className={styles.sheetTitle} numberOfLines={1}>
-                  {headerLabel}{' '}
-                  <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}
-                android_ripple={{ color: colors.ripple, borderless: true }}
-                className={styles.chevronButton}
-              >
-                <MaterialCommunityIcons
-                  name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
-                  size={22}
-                  color={colors.textMuted}
-                />
-              </Pressable>
-            </View>
+            {/*<View className={styles.sheetHeaderRow}>*/}
+            {/*  /!*<View className={styles.sheetHeaderLeft}>*!/*/}
+            {/*  /!*  <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />*!/*/}
+            {/*  /!*  <Text className={styles.sheetTitle} numberOfLines={1}>*!/*/}
+            {/*  /!*    {headerLabel}{' '}*!/*/}
+            {/*  /!*    <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />*!/*/}
+            {/*  /!*  </Text>*!/*/}
+            {/*  /!*</View>*!/*/}
+            {/*  /!*<Pressable*!/*/}
+            {/*  /!*  onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}*!/*/}
+            {/*  /!*  android_ripple={{ color: colors.ripple, borderless: true }}*!/*/}
+            {/*  /!*  className={styles.chevronButton}*!/*/}
+            {/*  /!*>*!/*/}
+            {/*  /!*  <MaterialCommunityIcons*!/*/}
+            {/*  /!*    name={sheetExpanded ? 'chevron-down' : 'chevron-up'}*!/*/}
+            {/*  /!*    size={22}*!/*/}
+            {/*  /!*    color={colors.textMuted}*!/*/}
+            {/*  /!*  />*!/*/}
+            {/*  /!*</Pressable>*!/*/}
+            {/*</View>*/}
           </View>
 
           <ScrollView
