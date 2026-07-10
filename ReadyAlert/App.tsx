@@ -29,7 +29,7 @@ function AppContent() {
 
   const layout = getLayoutStyles(isDark);
 
-  const {debugMode, setDebugLondon, setDebugGraz, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
+  const { debugMode, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
 
   const openSavedLocations = () => {
     setPendingSettingsSubPage('savedLocations');
@@ -54,8 +54,6 @@ function AppContent() {
         ) : activeTab === 'settings' ? (
           <SettingsPage
             debugMode={debugMode}
-            onDebugLondonPress={() => setDebugLondon()}
-            onDebugGrazPress={() => setDebugGraz()}
             onDebugDangerPress={() => setDebugDanger()}
             onDebug503Press={() => setDebug503()}
             onClearDebugPress={() => clearDebugLocation()}

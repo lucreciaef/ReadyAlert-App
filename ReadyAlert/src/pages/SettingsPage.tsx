@@ -18,21 +18,15 @@ type SubPage = 'licenseInformation' | 'savedLocations' | null;
 
 interface SettingsPageProps {
   debugMode?: DebugMode;
-  onDebugLondonPress?: () => void;
-  onDebugGrazPress?: () => void;
   onDebugDangerPress?: () => void;
   onDebug503Press?: () => void;
   onClearDebugPress?: () => void;
-  /** When set, the settings page opens directly on this subpage. */
-  initialSubPage?: SubPage;
-  /** Called when the initial subpage is closed so the parent can reset the request. */
-  onSubPageClosed?: () => void;
+  initialSubPage?: SubPage; // When set, the settings page opens directly on this subpage.
+  onSubPageClosed?: () => void; // Called when the initial subpage is closed so the parent can reset the request
 }
 
 export function SettingsPage({
   debugMode,
-  onDebugLondonPress,
-  onDebugGrazPress,
   onDebugDangerPress,
   onDebug503Press,
   onClearDebugPress,
@@ -67,8 +61,6 @@ export function SettingsPage({
   const isDebugMode = debugMode !== null && debugMode !== undefined;
 
   const debugLabel: Record<NonNullable<DebugMode>, string> = {
-    london: 'London, UK',
-    graz: 'Graz, Austria',
     danger: 'Austria-wide danger alert',
     '503': '503 Server Response',
   };
@@ -113,7 +105,11 @@ export function SettingsPage({
           className={styles.item}
           android_ripple={{ color: colours.ripple }}
         >
-          <MaterialCommunityIcons name="map-marker-multiple-outline" size={24} color={colours.textMuted} />
+          <MaterialCommunityIcons
+            name="map-marker-multiple-outline"
+            size={24}
+            color={colours.textMuted}
+          />
           <Text className={styles.itemText}>Saved locations</Text>
         </Pressable>
 
@@ -155,32 +151,6 @@ export function SettingsPage({
           </Pressable>
         ) : (
           <>
-            <Pressable
-              className={styles.item}
-              android_ripple={{ color: colours.ripple }}
-              onPress={onDebugLondonPress}
-            >
-              <MaterialCommunityIcons
-                name="map-marker-off-outline"
-                size={24}
-                color={colours.warning}
-              />
-              <Text className={styles.itemText}>
-                Simulate Current location to London, UK in Dashboard
-              </Text>
-            </Pressable>
-
-            <Pressable
-              className={styles.item}
-              android_ripple={{ color: colours.ripple }}
-              onPress={onDebugGrazPress}
-            >
-              <MaterialCommunityIcons name="map-marker-outline" size={24} color={colours.warning} />
-              <Text className={styles.itemText}>
-                Simulate Forced location to Graz, AT in Dashboard
-              </Text>
-            </Pressable>
-
             <Pressable
               className={styles.item}
               android_ripple={{ color: colours.ripple }}

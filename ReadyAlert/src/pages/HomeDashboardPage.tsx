@@ -214,13 +214,9 @@ export function HomeDashboardPage({
 
   const headerLabel = locationLoading
     ? 'Locating…'
-    : debugMode === 'london'
-      ? 'London, UK (debug)'
-      : debugMode === 'graz'
-        ? 'Graz, Austria (debug)'
-        : debugMode === '503'
-          ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
-          : (customLocationLabel ?? locationDisplayName ?? locationName ?? 'Unknown location');
+    : debugMode === '503'
+      ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
+      : (customLocationLabel ?? locationDisplayName ?? locationName ?? 'Unknown location');
 
   const statusIcon =
     warningsLoading || locationLoading
