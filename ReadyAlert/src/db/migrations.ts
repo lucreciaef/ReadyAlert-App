@@ -20,7 +20,6 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
 
   if (version < 1) await migration_v1(db);
 
-  // Set PRAGMA outside any transaction — it modifies the file header directly.
   await db.runAsync(`PRAGMA user_version = ${CURRENT_SCHEMA_VERSION}`);
 }
 

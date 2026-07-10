@@ -43,11 +43,7 @@ export function MenuButton({ label, icon, active, onPress }: MenuButtonProps) {
           color={active ? colors.primary : colors.textMuted}
         />
       </View>
-      <Text
-        className={`${bottomMenu.label} ${active ? bottomMenu.labelActive : ''}`}
-      >
-        {label}
-      </Text>
+      <Text className={`${bottomMenu.label} ${active ? bottomMenu.labelActive : ''}`}>{label}</Text>
     </Pressable>
   );
 }

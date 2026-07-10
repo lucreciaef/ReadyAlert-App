@@ -18,18 +18,18 @@ type ThresholdLevel = 0 | 1 | 2;
 
 interface Thresholds {
   yellow: number; // >= yellow -> level 1
-  red: number;    // >= red -> level 2
+  red: number; // >= red -> level 2
 }
 
 const THRESHOLDS: Record<string, Thresholds> = {
-  pm2_5:            { yellow: 16,   red: 51  },  // moderate >=16, poor >=51
-  pm10:             { yellow: 46,   red: 121 },  // moderate >=46, poor >=121
-  ozone:            { yellow: 101,  red: 161 },  // moderate >=101, very poor >=161
-  nitrogen_dioxide: { yellow: 26,   red: 101 },  // moderate >=26, very poor >=101
-  sulphur_dioxide:  { yellow: 41,   red: 191 },  // moderate >=41, very poor >=191
-  carbon_monoxide:  { yellow: 4400, red: 9400 }, // CO: EU limit is 10 mg/m^3 = 10 000 µg/m^3; use proportional bands
-  dust:             { yellow: 46,   red: 121 }, // Dust: no official EEA band. Use PM10-equivalent thresholds as proxy
-  ammonia:          { yellow: 40,   red: 100 },  // Ammonia: no EEA AQI band. WHO reference ~100 µg/m^3 short-term
+  pm2_5: { yellow: 16, red: 51 }, // moderate >=16, poor >=51
+  pm10: { yellow: 46, red: 121 }, // moderate >=46, poor >=121
+  ozone: { yellow: 101, red: 161 }, // moderate >=101, very poor >=161
+  nitrogen_dioxide: { yellow: 26, red: 101 }, // moderate >=26, very poor >=101
+  sulphur_dioxide: { yellow: 41, red: 191 }, // moderate >=41, very poor >=191
+  carbon_monoxide: { yellow: 4400, red: 9400 }, // CO: EU limit is 10 mg/m^3 = 10 000 µg/m^3; use proportional bands
+  dust: { yellow: 46, red: 121 }, // Dust: no official EEA band. Use PM10-equivalent thresholds as proxy
+  ammonia: { yellow: 40, red: 100 }, // Ammonia: no EEA AQI band. WHO reference ~100 µg/m^3 short-term
 };
 
 function getLevel(key: string, value: number): ThresholdLevel {
@@ -41,11 +41,14 @@ function getLevel(key: string, value: number): ThresholdLevel {
 }
 
 // Level colours are resolved at render time from the theme
-function getAqiColour(aqi: number, c: ReturnType<typeof import('../styles/themeColours').getThemeColours>): string {
-  if (aqi <= 40) return c.success;   // Good + Fair
-  if (aqi <= 60) return c.warning;   // Moderate
-  if (aqi <= 100) return c.error;    // Poor + Very Poor
-  return c.critical;                 // Extreme (worst tier)
+function getAqiColour(
+  aqi: number,
+  c: ReturnType<typeof import('../styles/themeColours').getThemeColours>,
+): string {
+  if (aqi <= 40) return c.success; // Good + Fair
+  if (aqi <= 60) return c.warning; // Moderate
+  if (aqi <= 100) return c.error; // Poor + Very Poor
+  return c.critical; // Extreme (worst tier)
 }
 
 function getAqiLabel(aqi: number): string {
@@ -76,14 +79,14 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
   };
 
   const pollutants: { key: keyof AirQualityData; label: string; unit: string }[] = [
-    { key: 'pm10',             label: 'PM10',  unit: 'µg/m³' },
-    { key: 'pm2_5',            label: 'PM2.5', unit: 'µg/m³' },
-    { key: 'carbon_monoxide',  label: 'CO',    unit: 'µg/m³' },
-    { key: 'nitrogen_dioxide', label: 'NO₂',   unit: 'µg/m³' },
-    { key: 'sulphur_dioxide',  label: 'SO₂',   unit: 'µg/m³' },
-    { key: 'ozone',            label: 'O₃',    unit: 'µg/m³' },
-    { key: 'dust',             label: 'Dust',  unit: 'µg/m³' },
-    { key: 'ammonia',          label: 'NH₃',   unit: 'µg/m³' },
+    { key: 'pm10', label: 'PM10', unit: 'µg/m³' },
+    { key: 'pm2_5', label: 'PM2.5', unit: 'µg/m³' },
+    { key: 'carbon_monoxide', label: 'CO', unit: 'µg/m³' },
+    { key: 'nitrogen_dioxide', label: 'NO₂', unit: 'µg/m³' },
+    { key: 'sulphur_dioxide', label: 'SO₂', unit: 'µg/m³' },
+    { key: 'ozone', label: 'O₃', unit: 'µg/m³' },
+    { key: 'dust', label: 'Dust', unit: 'µg/m³' },
+    { key: 'ammonia', label: 'NH₃', unit: 'µg/m³' },
   ];
 
   return (
@@ -125,8 +128,8 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
               const levelColour = LEVEL_COLOURS[level];
               const chipBg = levelColour
                 ? isDark
-                  ? `${levelColour}33`   // 20% opacity tint in dark mode
-                  : `${levelColour}22`   // 13% opacity tint in light mode
+                  ? `${levelColour}33` // 20% opacity tint in dark mode
+                  : `${levelColour}22` // 13% opacity tint in light mode
                 : chipBgDefault;
               const valueColour = levelColour ?? colours.text;
 
@@ -143,7 +146,9 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
                     borderColor: colours.textMuted,
                   }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+                  <View
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2 }}
+                  >
                     <Text style={{ fontSize: 11, color: colours.textMuted }}>{label}</Text>
                     {level > 0 && (
                       <MaterialCommunityIcons

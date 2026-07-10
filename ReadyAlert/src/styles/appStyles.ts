@@ -39,7 +39,7 @@ export const getLicenseInformationPageStyles = (isDark: boolean) => ({
 
 export const getTopAppBarStyles = (isDark: boolean) => ({
   container: `h-16 ${isDark ? 'bg-surface-dark' : 'bg-surface'} flex-row items-center px-1`,
-  contentRow: 'flex-1 flex-row items-center px-4 gap-3',   // Standard "icon + title" content row inside a top app bar.
+  contentRow: 'flex-1 flex-row items-center px-4 gap-3', // Standard "icon + title" content row inside a top app bar.
   containerOnBackground: `h-16 flex-row items-center px-4 gap-3 ${isDark ? 'bg-background-dark' : 'bg-background'}`,
   title: `flex-1 text-[24px] font-normal px-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
   titleMedium: `flex-1 text-[18px] font-medium px-1 ${isDark ? 'text-text-dark' : 'text-text'}`,
@@ -57,15 +57,17 @@ export const getHomeDashboardPageStyles = (isDark: boolean) => ({
   addButtonInner: `px-5 py-1.5 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
   addButtonText: `text-2xl font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
 
-  preparednessPressable: 'rounded-xl overflow-hidden',
-  preparednessCard: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface'}`,
-  preparednessLabel: `mb-2 text-[11px] font-semibold uppercase tracking-widest ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
-  trophyRow: 'flex-row gap-1.5',
-
   sheetHeaderRow: 'flex-row items-center justify-between mb-2',
   sheetHeaderLeft: 'flex-row items-center gap-2',
   sheetTitle: `flex-1 text-lg font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
   chevronButton: 'w-10 h-10 items-center justify-center rounded-full',
+});
+
+export const getPreparednessScoreCardStyles = (isDark: boolean) => ({
+  pressable: 'rounded-xl overflow-hidden',
+  card: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface'}`,
+  label: `mb-2 text-[11px] font-semibold uppercase tracking-widest ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  trophyRow: 'flex-row gap-1.5',
 });
 
 export const getNationalStatusPageStyles = (isDark: boolean) => ({
@@ -80,7 +82,7 @@ export const getNationalStatusPageStyles = (isDark: boolean) => ({
 
   weatherContainer: 'mt-1',
   weatherHeaderRow: 'flex-row items-center gap-2 mb-3',
-  weatherHeaderText: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  weatherHeaderText: `text-base font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
   weatherStateRow: `flex-row items-center justify-between py-2.5 px-3.5 rounded-lg mb-1.5 ${isDark ? 'bg-surface-dark' : 'bg-surface'}`,
   weatherStateText: `text-sm ${isDark ? 'text-text-dark' : 'text-text'}`,
   weatherStateBar: `w-16 h-2 rounded ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,

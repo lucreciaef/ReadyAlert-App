@@ -26,11 +26,7 @@ export function EmptyState({ message }: EmptyStateProps) {
         backgroundColor: colors.successContainer,
       }}
     >
-      <MaterialCommunityIcons
-        name="check-circle"
-        size={32}
-        color={colors.successOnContainer}
-      />
+      <MaterialCommunityIcons name="check-circle" size={32} color={colors.successOnContainer} />
       <Text
         style={{
           fontSize: 14,
@@ -45,4 +41,3 @@ export function EmptyState({ message }: EmptyStateProps) {
     </View>
   );
 }
-

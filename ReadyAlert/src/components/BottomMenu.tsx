@@ -55,7 +55,7 @@ export function BottomMenu({ activeTab, setActiveTab }: BottomMenuProps) {
         label="Learning"
         icon="school-outline"
         active={activeTab === 'learning'}
-        onPress={()=>setActiveTab('learning')}
+        onPress={() => setActiveTab('learning')}
       />
 
       <MenuButton
@@ -64,7 +64,6 @@ export function BottomMenu({ activeTab, setActiveTab }: BottomMenuProps) {
         active={activeTab === 'settings'}
         onPress={() => setActiveTab('settings')}
       />
-
     </View>
   );
 }

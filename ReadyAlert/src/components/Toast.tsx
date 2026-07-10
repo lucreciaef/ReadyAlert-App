@@ -22,10 +22,10 @@ interface ToastProps {
 }
 
 const CONFIG: Record<ToastType, { icon: string }> = {
-  error:   { icon: 'alert-circle' },
+  error: { icon: 'alert-circle' },
   warning: { icon: 'alert' },
   success: { icon: 'check-circle' },
-  info:    { icon: 'information' },
+  info: { icon: 'information' },
 };
 
 export function Toast({ visible, message, type = 'info', duration = 4000, onHide }: ToastProps) {
@@ -35,10 +35,14 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
   const translateY = useRef(new Animated.Value(80)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const cfg = CONFIG[type];
-  const iconColor = type === 'error' ? colors.error
-    : type === 'warning' ? colors.warning
-    : type === 'success' ? colors.success
-    : colors.primary;
+  const iconColor =
+    type === 'error'
+      ? colors.error
+      : type === 'warning'
+        ? colors.warning
+        : type === 'success'
+          ? colors.success
+          : colors.primary;
 
   const dismiss = () => {
     Animated.parallel([
@@ -51,7 +55,12 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
     if (visible) {
       // Slide up from bottom
       Animated.parallel([
-        Animated.spring(translateY, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 300 }),
+        Animated.spring(translateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          damping: 22,
+          stiffness: 300,
+        }),
         Animated.timing(opacity, { toValue: 1, duration: 150, useNativeDriver: true }),
       ]).start();
 
@@ -64,7 +73,6 @@ export function Toast({ visible, message, type = 'info', duration = 4000, onHide
       opacity.setValue(0);
     }
   }, [visible]);
-
 
   if (!visible) return null;
 

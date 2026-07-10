@@ -3,7 +3,7 @@
  * Exposes functions to fetch active warnings for given coordinates and to extract summary data from the response.
  */
 
-import { GeosphereResponse } from './types';
+import { GeosphereResponse, Warning } from './types';
 import { convertGeosphereCoordinates } from '../utils/coordConvert';
 import { mockGeoSphereResponseWithWarnings, mockResponseNoWarnings } from './mockData';
 
@@ -17,7 +17,9 @@ export class OutsideAustriaError extends Error {
 
 // used when the service is temporarily unavailable ( HTTP 503)
 export class ServiceUnavailableError extends Error {
-  constructor(message = 'The weather warning service is currently unavailable. Please try again later.') {
+  constructor(
+    message = 'The weather warning service is currently unavailable. Please try again later.',
+  ) {
     super(message);
     this.name = 'ServiceUnavailableError';
   }
@@ -30,7 +32,6 @@ const ENDPOINT = '/getWarningsForCoords';
 const USE_MOCK_DATA = false;
 // Toggle this to use mock data WITH warnings
 const USE_MOCK_WITH_WARNINGS = false;
-
 
 /**
  * Fetch warnings for a specific location
@@ -50,7 +51,9 @@ export async function fetchWarningsForLocation(
       console.log('Using mock data mode');
       await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
 
-      const mockData = USE_MOCK_WITH_WARNINGS ? mockGeoSphereResponseWithWarnings : mockResponseNoWarnings;
+      const mockData = USE_MOCK_WITH_WARNINGS
+        ? mockGeoSphereResponseWithWarnings
+        : mockResponseNoWarnings;
       console.log('Mock data returned:', mockData);
       return mockData;
     }
@@ -89,7 +92,9 @@ export async function fetchWarningsForLocation(
     } catch (parseError) {
       console.error('Geosphere JSON parse error:', parseError, '\nRaw text:', rawText);
       // The server returned HTML error instead of json (aka service is currently down or overloaded)
-      throw new Error('The weather warning service is temporarily unavailable. Please try again in a moment.');
+      throw new Error(
+        'The weather warning service is temporarily unavailable. Please try again in a moment.',
+      );
     }
 
     // The API returns HTTP 200 with {type:"Error"} for unsupported coordinates
@@ -121,6 +126,21 @@ export async function fetchWarningsForLocation(
 export function getWarningCount(data: GeosphereResponse | null): number {
   if (!data?.properties?.warnings) return 0;
   return data.properties.warnings.length;
+}
+
+/**
+ * Filter warnings whose active period overlaps [now, now + windowHours].
+ * If there are malformed rawinfo timestamps, messages are displayed anyway to avoid filtering real alerts.
+ */
+export function filterWarningsInWindow(warnings: Warning[], windowHours: number): Warning[] {
+  const nowSec = Date.now() / 1000;
+  const windowEndSec = nowSec + windowHours * 60 * 60;
+  return warnings.filter((w) => {
+    const start = Number(w.properties.rawinfo?.start);
+    const end = Number(w.properties.rawinfo?.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end)) return true;
+    return start <= windowEndSec && end >= nowSec;
+  });
 }
 
 /**

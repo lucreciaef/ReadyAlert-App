@@ -17,12 +17,14 @@ export function LoadingState({ message = 'Loading…' }: LoadingStateProps) {
   return (
     <View style={{ alignItems: 'center', paddingVertical: 32 }}>
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={{
-        marginTop: 16,
-        fontSize: 14,
-        lineHeight: 20,
-        color: colors.textMuted,
-      }}>
+      <Text
+        style={{
+          marginTop: 16,
+          fontSize: 14,
+          lineHeight: 20,
+          color: colors.textMuted,
+        }}
+      >
         {message}
       </Text>
     </View>

@@ -39,9 +39,7 @@ export function RTRAlertSummaryButton({
         ? 'alert-circle'
         : 'check-circle';
 
-  const iconColor = isUnavailable
-    ? colors.warning
-    : hasAlerts ? colors.error : colors.success;
+  const iconColor = isUnavailable ? colors.warning : hasAlerts ? colors.error : colors.success;
 
   return (
     // Pressable only owns geometry + ripple clipping; backgroundColor/border live
@@ -64,46 +62,50 @@ export function RTRAlertSummaryButton({
           borderColor: colors.textMuted,
         }}
       >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <MaterialCommunityIcons name={iconName as any} size={24} color={iconColor} />
-        <View>
-          <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
-            {isUnavailable ? 'Service Unavailable' : 'All Alerts'}
-          </Text>
-          <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
-            {isUnavailable
-              ? 'Warning data could not be loaded'
-              : loading
-                ? 'Loading…'
-                : hasAlerts
-                  ? `${totalCount} active alert${totalCount !== 1 ? 's' : ''} across Austria`
-                  : 'No active alerts'}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <MaterialCommunityIcons name={iconName as any} size={24} color={iconColor} />
+          <View>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
+              {isUnavailable ? 'Service Unavailable' : 'Austria disaster alerts'}
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
+              {isUnavailable
+                ? 'Warning data could not be loaded'
+                : loading
+                  ? 'Loading…'
+                  : hasAlerts
+                    ? `${totalCount} active alert${totalCount !== 1 ? 's' : ''} across Austria`
+                    : 'No active alerts in Austria'}
+            </Text>
+          </View>
         </View>
-      </View>
 
-      {!isUnavailable && !loading && totalCount > 0 && (
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 4,
-          backgroundColor: colors.error,
-          paddingHorizontal: 10,
-          paddingVertical: 4,
-          borderRadius: 20,
-        }}>
-          <Text style={{ color: colors.onPrimary, fontSize: 12, fontWeight: '700' }}>{totalCount}</Text>
-          <MaterialCommunityIcons name="chevron-right" size={14} color={colors.onPrimary} />
-        </View>
-      )}
+        {!isUnavailable && !loading && totalCount > 0 && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              backgroundColor: colors.error,
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: 20,
+            }}
+          >
+            <Text style={{ color: colors.onPrimary, fontSize: 12, fontWeight: '700' }}>
+              {totalCount}
+            </Text>
+            <MaterialCommunityIcons name="chevron-right" size={14} color={colors.onPrimary} />
+          </View>
+        )}
 
-      {!isUnavailable && !loading && totalCount === 0 && (
-        <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted} />
-      )}
+        {!isUnavailable && !loading && totalCount === 0 && (
+          <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted} />
+        )}
 
-      {isUnavailable && (
-        <MaterialCommunityIcons name="refresh" size={20} color={colors.textMuted} />
-      )}
+        {isUnavailable && (
+          <MaterialCommunityIcons name="refresh" size={20} color={colors.textMuted} />
+        )}
       </View>
     </Pressable>
   );
