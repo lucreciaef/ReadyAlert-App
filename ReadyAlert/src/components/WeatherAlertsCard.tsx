@@ -11,12 +11,15 @@ import { Warning } from '../api';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { SingleWeatherWarningCard } from './SingleWeatherWarningCard';
+import { LoadingState } from './LoadingState';
+import { EmptyState } from './EmptyState';
 
 interface Props {
   warnings: Warning[];
+  loading?: boolean;
 }
 
-export function WeatherAlertsCard({ warnings }: Props) {
+export function WeatherAlertsCard({ warnings, loading = false }: Props) {
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
@@ -54,17 +57,23 @@ export function WeatherAlertsCard({ warnings }: Props) {
           />
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
-          <Text style={{ fontSize: 36, fontWeight: '700', color: count > 0 ? colors.warning : colors.success }}>
-            {count}
-          </Text>
-          <Text style={{ fontSize: 14, color: colors.textMuted }}>
-            {count === 1 ? 'active alert' : 'active alerts'}
-          </Text>
-        </View>
+        {!loading && (
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
+            <Text style={{ fontSize: 36, fontWeight: '700', color: count > 0 ? colors.warning : colors.success }}>
+              {count}
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.textMuted }}>
+              {count === 1 ? 'active alert' : 'active alerts'}
+            </Text>
+          </View>
+        )}
       </Pressable>
 
-      {expanded && (
+      {expanded && loading && <LoadingState message="Loading warnings…" />}
+
+      {expanded && !loading && count === 0 && <EmptyState message="No active warnings in this area" />}
+
+      {expanded && !loading && (
         <View style={{ marginTop: 4 }}>
           {warnings.map((warning, index) => (
             <SingleWeatherWarningCard

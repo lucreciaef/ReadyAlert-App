@@ -4,7 +4,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    Alert,
     Animated,
     Dimensions,
     PanResponder,
@@ -13,7 +12,7 @@ import {
     Text,
     View,
 } from 'react-native';
-import MapView, { Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { Marker, Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
 import { DARK_MAP_STYLE, LIGHT_MAP_STYLE } from '../styles/mapStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,8 +34,12 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 import { useNotifications } from '../hooks/useNotifications';
+import { useWeatherBatch } from '../hooks/useWeather';
 import { RTRAlertCard } from '../components/RTRAlertCard';
 import { RTRLevelChip } from '../components/RTRLevelChip';
+import { StateWeatherOverview } from '../components/StateWeatherOverview';
+import { AUSTRIAN_CAPITALS, AUSTRIAN_CAPITAL_COORDS } from '../utils/austrianCapitals';
+import { getWeatherIcon } from '../utils/weatherIcon';
 
 let _prevRtrAlertCount = 0;
 
@@ -52,38 +55,6 @@ const AUSTRIA_REGION = {
   longitudeDelta: 10.0,
 };
 
-// Weather placeholder... until the real API is implemented.
-function StateWeatherOverview({ isDark, colors }: { isDark: boolean; colors: ReturnType<typeof getThemeColours> }) {
-  const states = [
-    'Vienna', 'Lower Austria', 'Upper Austria', 'Styria',
-    'Tyrol', 'Carinthia', 'Salzburg', 'Vorarlberg', 'Burgenland',
-  ];
-  const styles = getNationalStatusPageStyles(isDark);
-
-  return (
-    <View className={styles.weatherContainer}>
-      <View className={styles.weatherHeaderRow}>
-        <MaterialCommunityIcons name="weather-partly-cloudy" size={18} color={colors.primary} />
-        <Text className={styles.weatherHeaderText}>
-          Weather in Austria
-        </Text>
-      </View>
-
-      {states.map((state) => (
-        <Pressable
-          key={state}
-          onPress={() => Alert.alert('Feature coming up soon')}
-        >
-          <View className={styles.weatherStateRow}>
-            <Text className={styles.weatherStateText}>{state}</Text>
-            <View className={styles.weatherStateBar} />
-          </View>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
 export function NationalStatusPage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
@@ -93,6 +64,12 @@ export function NationalStatusPage() {
   const bottomSheet = getBottomSheetStyles(isDark);
   const styles = getNationalStatusPageStyles(isDark);
   const { debugMode } = useLocationContext();
+
+  const {
+    data: weatherData,
+    loading: weatherLoading,
+    error: weatherError,
+  } = useWeatherBatch(AUSTRIAN_CAPITAL_COORDS);
 
   const [allAlerts, setAllAlerts] = useState<RtrAlert[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -225,8 +202,30 @@ export function NationalStatusPage() {
                 fillColor={`${color}40`}
                 strokeColor={color}
                 strokeWidth={2}
+                zIndex={1}
               />
             ));
+          })}
+
+          {weatherData && AUSTRIAN_CAPITALS.map((city, idx) => {
+            const cityData = weatherData[idx];
+            if (!cityData) return null;
+            const iconInfo = getWeatherIcon(cityData.daily.weatherCode, cityData.current.isDay);
+            return (
+              <Marker
+                key={`weather-${city.state}`}
+                coordinate={city.coords}
+                anchor={{ x: 0.5, y: 0.5 }}
+                tracksViewChanges={false}
+                title={city.capital}
+                description={iconInfo.label}
+                zIndex={1000}
+              >
+                <View style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}>
+                  <MaterialCommunityIcons name={iconInfo.icon} size={24} color={colors.text} />
+                </View>
+              </Marker>
+            );
           })}
         </MapView>
 
@@ -253,7 +252,7 @@ export function NationalStatusPage() {
             {sheetView === 'main' ? (
               <View className={styles.mainHeaderRow}>
                 <Text className={styles.mainHeaderTitle}>
-                  National Status
+                  National RTR Alert status
                 </Text>
               </View>
             ) : (
@@ -316,7 +315,7 @@ export function NationalStatusPage() {
                   isUnavailable={serviceUnavailable}
                   onPress={serviceUnavailable ? loadAlerts : () => { setSheetView('alerts'); snapSheet(0); }}
                 />
-                <StateWeatherOverview isDark={isDark} colors={colors} />
+                <StateWeatherOverview data={weatherData} loading={weatherLoading} error={weatherError} />
               </>
             ) : (
               <>
