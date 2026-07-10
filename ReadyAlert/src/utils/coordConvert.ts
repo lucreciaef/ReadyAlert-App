@@ -36,8 +36,6 @@ export function mgiAustriaLambertToWgs84(rawE: number, rawN: number): [number, n
 //Convert all coordinates in a GeosphereResponse geometry from Austrian Lambert to WGS84 in-place.
 export function convertGeosphereCoordinates(coordinates: number[][][][]): number[][][][] {
   return coordinates.map((polygon) =>
-    polygon.map((ring) =>
-      ring.map(([e, n]) => mgiAustriaLambertToWgs84(e, n))
-    )
+    polygon.map((ring) => ring.map(([e, n]) => mgiAustriaLambertToWgs84(e, n))),
   );
 }

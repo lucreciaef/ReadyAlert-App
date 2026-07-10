@@ -13,7 +13,15 @@ import { usePreparedness } from '../context/PreparednessContext';
 
 const TROPHY_SIZE = 26;
 
-function TrophyIcon({ fill, color, outlineColor }: { fill: number; color: string; outlineColor: string }) {
+function TrophyIcon({
+  fill,
+  color,
+  outlineColor,
+}: {
+  fill: number;
+  color: string;
+  outlineColor: string;
+}) {
   return (
     <View style={{ width: TROPHY_SIZE, height: TROPHY_SIZE }}>
       <MaterialCommunityIcons name="trophy-outline" size={TROPHY_SIZE} color={outlineColor} />
@@ -53,7 +61,7 @@ export function PreparednessScoreCard({ onPress }: PreparednessScoreCardProps) {
       style={{
         shadowColor: colors.shadow,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.3 : 0.10,
+        shadowOpacity: isDark ? 0.3 : 0.1,
         shadowRadius: 6,
         elevation: 3,
       }}
@@ -63,7 +71,14 @@ export function PreparednessScoreCard({ onPress }: PreparednessScoreCardProps) {
         {[0, 1, 2, 3, 4].map((i) => {
           const trophyScore = preparedness.score / 20;
           const fill = Math.min(1, Math.max(0, trophyScore - i));
-          return <TrophyIcon key={i} fill={fill} color={preparedness.color} outlineColor={colors.divider} />;
+          return (
+            <TrophyIcon
+              key={i}
+              fill={fill}
+              color={preparedness.color}
+              outlineColor={colors.divider}
+            />
+          );
         })}
       </View>
     </View>

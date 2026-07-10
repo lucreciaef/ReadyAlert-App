@@ -94,10 +94,19 @@ export function PreparednessProvider({ children }: { children: React.ReactNode }
         const completionRatio = total > 0 ? checked / total : 0;
         const score = completionRatio * 100;
         const contribution = completionRatio * taskWeight;
-        taskScores.push({ taskId: task.id, title: task.title, checkedCount: checked, totalCount: total, score, contribution, weight: taskWeight });
+        taskScores.push({
+          taskId: task.id,
+          title: task.title,
+          checkedCount: checked,
+          totalCount: total,
+          score,
+          contribution,
+          weight: taskWeight,
+        });
       }
 
       const overallScore = taskScores.reduce((sum, t) => sum + t.contribution, 0);
+
       const rounded = Math.round(overallScore * 10) / 10;
       const { label, color } = getLevelInfo(Math.round(overallScore), false);
 

@@ -69,10 +69,7 @@ export async function sendGeosphereNotification(
 /**
  * Send a local push notification for RTR Austria national alerts.
  */
-export async function sendRtrNotification(
-  alertCount: number,
-  highestLevel: string,
-): Promise<void> {
+export async function sendRtrNotification(alertCount: number, highestLevel: string): Promise<void> {
   const levelLabels: Record<string, string> = {
     AlertLevel1: 'Emergency Alert',
     AlertLevel2: 'Extreme Threat',

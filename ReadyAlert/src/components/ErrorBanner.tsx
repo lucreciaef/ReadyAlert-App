@@ -28,11 +28,7 @@ export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
           backgroundColor: colors.errorContainer,
         }}
       >
-        <MaterialCommunityIcons
-          name="alert-outline"
-          size={18}
-          color={colors.errorOnContainer}
-        />
+        <MaterialCommunityIcons name="alert-outline" size={18} color={colors.errorOnContainer} />
         <Text
           style={{
             flex: 1,

@@ -56,7 +56,6 @@ function AppContent() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({ RobotoFlex_400Regular });
-
   if (!fontsLoaded) return null;
 
   return (

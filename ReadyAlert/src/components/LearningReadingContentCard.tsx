@@ -21,7 +21,12 @@ export interface LearningReadingContentCardProps {
   body: string[];
 }
 
-export function LearningReadingContentCard({ icon, title, colour, body }: LearningReadingContentCardProps) {
+export function LearningReadingContentCard({
+  icon,
+  title,
+  colour,
+  body,
+}: LearningReadingContentCardProps) {
   const { isDark } = useTheme();
   const colours = getThemeColours(isDark);
 
@@ -89,4 +94,3 @@ export function LearningReadingContentCard({ icon, title, colour, body }: Learni
     </View>
   );
 }
-

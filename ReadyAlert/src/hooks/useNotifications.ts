@@ -22,7 +22,9 @@ export function useNotifications() {
       .then((granted) => {
         _permissionGranted = granted;
         if (!granted) {
-          console.warn('[Notifications] Permission not granted – notifications will be suppressed.');
+          console.warn(
+            '[Notifications] Permission not granted – notifications will be suppressed.',
+          );
         }
       })
       .catch((err) => console.error('[Notifications] Failed to register:', err));

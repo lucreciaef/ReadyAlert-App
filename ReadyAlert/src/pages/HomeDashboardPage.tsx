@@ -16,7 +16,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import { getBottomSheetStyles, getHomeDashboardPageStyles, getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
+import {
+  getBottomSheetStyles,
+  getHomeDashboardPageStyles,
+  getLayoutStyles,
+  getTopAppBarStyles,
+} from '../styles/appStyles';
 import { getLocationName } from '../api';
 import { useLocationContext } from '../context/LocationContext';
 import { usePreparedness } from '../context/PreparednessContext';
@@ -64,7 +69,11 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     refresh,
   } = useGeosphereWarnings(userLocation);
   const { data: aqiData, loading: aqiLoading, error: aqiError } = useAirQuality(userLocation);
-  const { data: weatherData, loading: weatherLoading, error: weatherError } = useWeather(userLocation);
+  const {
+    data: weatherData,
+    loading: weatherLoading,
+    error: weatherError,
+  } = useWeather(userLocation);
 
   const REGION_DELTA = 0.2;
 
@@ -75,17 +84,27 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
 
   // Reverse-geocode user location to a display name
   useEffect(() => {
-    if (!userLocation) { setLocationDisplayName(null); return; }
+    if (!userLocation) {
+      setLocationDisplayName(null);
+      return;
+    }
     let cancelled = false;
-    Location.reverseGeocodeAsync({ latitude: userLocation.latitude, longitude: userLocation.longitude })
+    Location.reverseGeocodeAsync({
+      latitude: userLocation.latitude,
+      longitude: userLocation.longitude,
+    })
       .then((results) => {
         if (cancelled || !results.length) return;
         const place = results[0];
-        const parts = [place.city ?? place.district ?? place.subregion, place.country].filter(Boolean);
+        const parts = [place.city ?? place.district ?? place.subregion, place.country].filter(
+          Boolean,
+        );
         if (parts.length) setLocationDisplayName(parts.join(', '));
       })
       .catch(() => {});
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [userLocation]);
 
   // Bottom sheet animation
@@ -96,7 +115,12 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     const expanded = toValue === 0;
     expandedRef.current = expanded;
     setSheetExpanded(expanded);
-    Animated.spring(sheetAnim, { toValue, useNativeDriver: true, damping: 30, stiffness: 200 }).start();
+    Animated.spring(sheetAnim, {
+      toValue,
+      useNativeDriver: true,
+      damping: 30,
+      stiffness: 200,
+    }).start();
   };
 
   const panResponder = useRef(
@@ -116,7 +140,11 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
 
   // Open the sheet once warnings finish (success, general error, or 503)
   useEffect(() => {
-    if (!warningsLoading && !outsideAustria && (warningsData || warningsError || serviceUnavailable)) {
+    if (
+      !warningsLoading &&
+      !outsideAustria &&
+      (warningsData || warningsError || serviceUnavailable)
+    ) {
       snapSheet(0);
     }
   }, [warningsLoading, warningsData, warningsError, serviceUnavailable, outsideAustria]);
@@ -150,7 +178,12 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     }
     setTimeout(() => {
       mapRef.current?.animateToRegion(
-        { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: REGION_DELTA, longitudeDelta: REGION_DELTA },
+        {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          latitudeDelta: REGION_DELTA,
+          longitudeDelta: REGION_DELTA,
+        },
         400,
       );
     }, 300);
@@ -165,7 +198,12 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   const warningCount = visibleWarnings.length;
   const hasWarnings = warningCount > 0;
 
-  const initialMapRegion = { latitude: 47.7, longitude: 13.35, latitudeDelta: 5.0, longitudeDelta: 10.0 };
+  const initialMapRegion = {
+    latitude: 47.7,
+    longitude: 13.35,
+    latitudeDelta: 5.0,
+    longitudeDelta: 10.0,
+  };
 
   const headerLabel = locationLoading
     ? 'Locating…'
@@ -175,19 +213,21 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
         ? 'Graz, Austria (debug)'
         : debugMode === '503'
           ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
-          : locationDisplayName ?? locationName ?? 'Unknown location';
+          : (locationDisplayName ?? locationName ?? 'Unknown location');
 
-  const statusIcon = warningsLoading || locationLoading
-    ? 'timer-sand'
-    : serviceUnavailable || !!warningsError || (!!locationError && !userLocation)
-      ? 'alert'
-      : 'check-circle';
+  const statusIcon =
+    warningsLoading || locationLoading
+      ? 'timer-sand'
+      : serviceUnavailable || !!warningsError || (!!locationError && !userLocation)
+        ? 'alert'
+        : 'check-circle';
 
-  const statusColor = warningsLoading || locationLoading
-    ? colors.textMuted
-    : serviceUnavailable || !!warningsError || (!!locationError && !userLocation)
-      ? colors.warning
-      : colors.text;
+  const statusColor =
+    warningsLoading || locationLoading
+      ? colors.textMuted
+      : serviceUnavailable || !!warningsError || (!!locationError && !userLocation)
+        ? colors.warning
+        : colors.text;
 
   return (
     <View className={layout.fill} style={{ paddingTop: insets.top }}>
@@ -204,9 +244,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             className={styles.addButtonPressable}
           >
             <View className={styles.addButtonInner}>
-              <Text className={styles.addButtonText}>
-                +
-              </Text>
+              <Text className={styles.addButtonText}>+</Text>
             </View>
           </Pressable>
         </View>
@@ -232,7 +270,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
                 strokeColor={`${colors.warning}CC`}
                 strokeWidth={2}
               />
-            ))
+            )),
           )}
         </MapView>
 
@@ -277,7 +315,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
               <View className={styles.sheetHeaderLeft}>
                 <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />
                 <Text className={styles.sheetTitle} numberOfLines={1}>
-                  {headerLabel} <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
+                  {headerLabel}{' '}
+                  <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
                 </Text>
               </View>
               <Pressable
@@ -301,21 +340,28 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             scrollEnabled={sheetExpanded}
             keyboardShouldPersistTaps="handled"
           >
-            {locationLoading && (
-              <LoadingState message="Getting your location…" />
-            )}
+            {locationLoading && <LoadingState message="Getting your location…" />}
 
             {(warningsError || (locationError && !userLocation)) && !warningsLoading && (
               <ErrorBanner message={warningsError || locationError || ''} />
             )}
 
             {serviceUnavailable && !warningsLoading && (
-              <RTRAlertSummaryButton loading={false} hasAlerts={false} totalCount={0} isUnavailable onPress={handleRefresh} />
+              <RTRAlertSummaryButton
+                loading={false}
+                hasAlerts={false}
+                totalCount={0}
+                isUnavailable
+                onPress={handleRefresh}
+              />
             )}
 
-            {!locationLoading && !warningsError && !serviceUnavailable && !(locationError && !userLocation) && (
-              <WeatherAlertsCard warnings={visibleWarnings} loading={warningsLoading} />
-            )}
+            {!locationLoading &&
+              !warningsError &&
+              !serviceUnavailable &&
+              !(locationError && !userLocation) && (
+                <WeatherAlertsCard warnings={visibleWarnings} loading={warningsLoading} />
+              )}
 
             <WeatherCard data={weatherData} loading={weatherLoading} error={weatherError} />
 

@@ -46,9 +46,15 @@ export function WeatherCard({ data, loading, error }: Props) {
         android_ripple={{ color: colours.ripple }}
         style={{ borderRadius: 8, overflow: 'hidden' }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <MaterialCommunityIcons name="weather-partly-cloudy" size={20} color={colours.primary} />
+            <MaterialCommunityIcons
+              name="weather-partly-cloudy"
+              size={20}
+              color={colours.primary}
+            />
             <Text
               style={{
                 fontSize: 13,
@@ -76,37 +82,38 @@ export function WeatherCard({ data, loading, error }: Props) {
         {error && !data && (
           <Text style={{ color: colours.warning, fontSize: 14, marginTop: 10 }}>{error}</Text>
         )}
-        {data && (() => {
-          const info = getWeatherIcon(data.daily.weatherCode, data.current.isDay);
-          return (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 12 }}>
-              <MaterialCommunityIcons name={info.icon} size={44} color={colours.textMuted} />
-              <Text style={{ fontSize: 36, fontWeight: '700', color: colours.textMuted }}>
-                {formatTemp(data.current.temperature)}
-              </Text>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, color: colours.textMuted, marginBottom: 2 }}>
-                  {info.label}
+        {data &&
+          (() => {
+            const info = getWeatherIcon(data.daily.weatherCode, data.current.isDay);
+            return (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 12 }}>
+                <MaterialCommunityIcons name={info.icon} size={44} color={colours.textMuted} />
+                <Text style={{ fontSize: 36, fontWeight: '700', color: colours.textMuted }}>
+                  {formatTemp(data.current.temperature)}
                 </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <MaterialCommunityIcons name="arrow-up" size={12} color={colours.error} />
-                  <Text style={{ fontSize: 13, color: colours.textMuted }}>
-                    {formatTemp(data.daily.temperatureMax)}
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 13, color: colours.textMuted, marginBottom: 2 }}>
+                    {info.label}
                   </Text>
-                  <MaterialCommunityIcons
-                    name="arrow-down"
-                    size={12}
-                    color={colours.info}
-                    style={{ marginLeft: 6 }}
-                  />
-                  <Text style={{ fontSize: 13, color: colours.textMuted }}>
-                    {formatTemp(data.daily.temperatureMin)}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <MaterialCommunityIcons name="arrow-up" size={12} color={colours.error} />
+                    <Text style={{ fontSize: 13, color: colours.textMuted }}>
+                      {formatTemp(data.daily.temperatureMax)}
+                    </Text>
+                    <MaterialCommunityIcons
+                      name="arrow-down"
+                      size={12}
+                      color={colours.info}
+                      style={{ marginLeft: 6 }}
+                    />
+                    <Text style={{ fontSize: 13, color: colours.textMuted }}>
+                      {formatTemp(data.daily.temperatureMin)}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          );
-        })()}
+            );
+          })()}
       </Pressable>
 
       {expanded && data && (
@@ -114,7 +121,9 @@ export function WeatherCard({ data, loading, error }: Props) {
           <WeatherChip
             icon="water-percent"
             label="Humidity"
-            value={Number.isNaN(data.current.humidity) ? '—' : `${Math.round(data.current.humidity)}%`}
+            value={
+              Number.isNaN(data.current.humidity) ? '—' : `${Math.round(data.current.humidity)}%`
+            }
             colours={colours}
             isDark={isDark}
           />
@@ -122,7 +131,9 @@ export function WeatherCard({ data, loading, error }: Props) {
             icon="weather-pouring"
             label="Precipitation"
             value={
-              Number.isNaN(data.current.precipitation) ? '—' : `${data.current.precipitation.toFixed(1)} mm`
+              Number.isNaN(data.current.precipitation)
+                ? '—'
+                : `${data.current.precipitation.toFixed(1)} mm`
             }
             colours={colours}
             isDark={isDark}

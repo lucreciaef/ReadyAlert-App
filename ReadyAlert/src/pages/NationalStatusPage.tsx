@@ -4,13 +4,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    PanResponder,
-    Pressable,
-    ScrollView,
-    Text,
-    View,
+  Animated,
+  Dimensions,
+  PanResponder,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
 } from 'react-native';
 import MapView, { Marker, Polygon, PROVIDER_DEFAULT } from 'react-native-maps';
 import { DARK_MAP_STYLE, LIGHT_MAP_STYLE } from '../styles/mapStyles';
@@ -18,7 +18,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import { getBottomSheetStyles, getLayoutStyles, getNationalStatusPageStyles, getTopAppBarStyles } from '../styles/appStyles';
+import {
+  getBottomSheetStyles,
+  getLayoutStyles,
+  getNationalStatusPageStyles,
+  getTopAppBarStyles,
+} from '../styles/appStyles';
 import {
   ALL_ALERT_LEVELS,
   fetchRtrAlerts,
@@ -85,14 +90,21 @@ export function NationalStatusPage() {
   const { notifyRtrAlerts } = useNotifications();
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const debugModeRef = useRef(debugMode);
-  useEffect(() => { debugModeRef.current = debugMode; }, [debugMode]);
+  useEffect(() => {
+    debugModeRef.current = debugMode;
+  }, [debugMode]);
 
   const snapSheet = (toValue: number) => {
     const isExpanded = toValue === 0;
     expandedRef.current = isExpanded;
     setSheetExpanded(isExpanded);
     setMapBottomPadding(isExpanded ? HALF_HEIGHT : PEEK_HEIGHT);
-    Animated.spring(sheetAnim, { toValue, useNativeDriver: true, damping: 30, stiffness: 200 }).start();
+    Animated.spring(sheetAnim, {
+      toValue,
+      useNativeDriver: true,
+      damping: 30,
+      stiffness: 200,
+    }).start();
   };
 
   const panResponder = useRef(
@@ -152,18 +164,28 @@ export function NationalStatusPage() {
   }, []);
 
   // Initial load and re-load when debugMode changes (but not on every remount)
-  useEffect(() => { loadAlerts(); }, [loadAlerts, debugMode]);
   useEffect(() => {
-    const interval = setInterval(() => { loadAlerts(); }, 30000);
+    loadAlerts();
+  }, [loadAlerts, debugMode]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadAlerts();
+    }, 30000);
     return () => clearInterval(interval);
   }, [loadAlerts]);
-  useEffect(() => { if (!loading) snapSheet(0); }, [loading]);
+  useEffect(() => {
+    if (!loading) snapSheet(0);
+  }, [loading]);
 
   const toggleLevel = (level: RtrAlertLevel) => {
     setActiveLevels((prev) => {
       const next = new Set(prev);
-      if (next.has(level)) { if (next.size === 1) return prev; next.delete(level); }
-      else { next.add(level); }
+      if (next.has(level)) {
+        if (next.size === 1) return prev;
+        next.delete(level);
+      } else {
+        next.add(level);
+      }
       return next;
     });
   };
@@ -207,32 +229,35 @@ export function NationalStatusPage() {
             ));
           })}
 
-          {weatherData && AUSTRIAN_CAPITALS.map((city, idx) => {
-            const cityData = weatherData[idx];
-            if (!cityData) return null;
-            const iconInfo = getWeatherIcon(cityData.daily.weatherCode, cityData.current.isDay);
-            return (
-              <Marker
-                key={`weather-${city.state}`}
-                coordinate={city.coords}
-                anchor={{ x: 0.5, y: 0.5 }}
-                tracksViewChanges={false}
-                title={city.capital}
-                description={iconInfo.label}
-                zIndex={1000}
-              >
-                <View style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}>
-                  <MaterialCommunityIcons name={iconInfo.icon} size={24} color={colors.text} />
-                </View>
-              </Marker>
-            );
-          })}
+          {weatherData &&
+            AUSTRIAN_CAPITALS.map((city, idx) => {
+              const cityData = weatherData[idx];
+              if (!cityData) return null;
+              const iconInfo = getWeatherIcon(cityData.daily.weatherCode, cityData.current.isDay);
+              return (
+                <Marker
+                  key={`weather-${city.state}`}
+                  coordinate={city.coords}
+                  anchor={{ x: 0.5, y: 0.5 }}
+                  tracksViewChanges={false}
+                  title={city.capital}
+                  description={iconInfo.label}
+                  zIndex={1000}
+                >
+                  <View style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}>
+                    <MaterialCommunityIcons name={iconInfo.icon} size={24} color={colors.text} />
+                  </View>
+                </Marker>
+              );
+            })}
         </MapView>
 
         <Animated.View
           style={{
             position: 'absolute',
-            bottom: 0, left: 0, right: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
             height: HALF_HEIGHT,
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
@@ -251,9 +276,7 @@ export function NationalStatusPage() {
 
             {sheetView === 'main' ? (
               <View className={styles.mainHeaderRow}>
-                <Text className={styles.mainHeaderTitle}>
-                  National RTR Alert status
-                </Text>
+                <Text className={styles.mainHeaderTitle}>National RTR Alert status</Text>
               </View>
             ) : (
               <>
@@ -274,7 +297,11 @@ export function NationalStatusPage() {
                       color={hasAlerts ? colors.error : colors.success}
                     />
                     <Text className={styles.alertsCountText}>
-                      {loading ? 'Loading…' : hasAlerts ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}` : 'No Alerts'}
+                      {loading
+                        ? 'Loading…'
+                        : hasAlerts
+                          ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}`
+                          : 'No Alerts'}
                     </Text>
                   </View>
                 </View>
@@ -313,27 +340,48 @@ export function NationalStatusPage() {
                   hasAlerts={hasAlerts}
                   totalCount={totalCount}
                   isUnavailable={serviceUnavailable}
-                  onPress={serviceUnavailable ? loadAlerts : () => { setSheetView('alerts'); snapSheet(0); }}
+                  onPress={
+                    serviceUnavailable
+                      ? loadAlerts
+                      : () => {
+                          setSheetView('alerts');
+                          snapSheet(0);
+                        }
+                  }
                 />
-                <StateWeatherOverview data={weatherData} loading={weatherLoading} error={weatherError} />
+                <StateWeatherOverview
+                  data={weatherData}
+                  loading={weatherLoading}
+                  error={weatherError}
+                />
               </>
             ) : (
               <>
                 {loading && <LoadingState message="Loading alerts…" />}
                 {error && !loading && <ErrorBanner message={error} onRetry={loadAlerts} />}
-                {!loading && !error && !serviceUnavailable && !hasAlerts && <EmptyState message="No active alerts in Austria" />}
-                {!loading && !error && !serviceUnavailable && hasAlerts && alerts.map((alert) => (
-                  <RTRAlertCard
-                    key={alert.consolidation_identifier}
-                    alert={alert}
-                    expanded={expandedId === alert.consolidation_identifier}
-                    onPress={() => setExpandedId(
-                      expandedId === alert.consolidation_identifier ? null : alert.consolidation_identifier,
-                    )}
-                    isDark={isDark}
-                    colors={colors}
-                  />
-                ))}
+                {!loading && !error && !serviceUnavailable && !hasAlerts && (
+                  <EmptyState message="No active alerts in Austria" />
+                )}
+                {!loading &&
+                  !error &&
+                  !serviceUnavailable &&
+                  hasAlerts &&
+                  alerts.map((alert) => (
+                    <RTRAlertCard
+                      key={alert.consolidation_identifier}
+                      alert={alert}
+                      expanded={expandedId === alert.consolidation_identifier}
+                      onPress={() =>
+                        setExpandedId(
+                          expandedId === alert.consolidation_identifier
+                            ? null
+                            : alert.consolidation_identifier,
+                        )
+                      }
+                      isDark={isDark}
+                      colors={colors}
+                    />
+                  ))}
               </>
             )}
             <View style={{ height: 16 }} />

@@ -66,13 +66,29 @@ export function StateWeatherOverview({ data, loading, error }: Props) {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
                 <MaterialCommunityIcons name="arrow-up" size={12} color={colors.error} />
-                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text, minWidth: 32, textAlign: 'right' }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '600',
+                    color: colors.text,
+                    minWidth: 32,
+                    textAlign: 'right',
+                  }}
+                >
                   {formatTemp(cityData?.daily.temperatureMax)}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
                 <MaterialCommunityIcons name="arrow-down" size={12} color={colors.info} />
-                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text, minWidth: 32, textAlign: 'right' }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '600',
+                    color: colors.text,
+                    minWidth: 32,
+                    textAlign: 'right',
+                  }}
+                >
                   {formatTemp(cityData?.daily.temperatureMin)}
                 </Text>
               </View>

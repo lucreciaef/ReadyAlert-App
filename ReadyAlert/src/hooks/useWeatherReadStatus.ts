@@ -32,7 +32,9 @@ export function useWeatherReadStatus() {
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [db]);
 
   const toggleRead = useCallback(() => {
@@ -43,10 +45,9 @@ export function useWeatherReadStatus() {
   const saveReadStatus = useCallback(async () => {
     setSaving(true);
     try {
-      await db.runAsync(
-        `UPDATE checklist_items SET checked = ? WHERE id = 'wet_read'`,
-        [isRead ? 1 : 0],
-      );
+      await db.runAsync(`UPDATE checklist_items SET checked = ? WHERE id = 'wet_read'`, [
+        isRead ? 1 : 0,
+      ]);
       setSaved(true);
     } catch (err) {
       console.error('[useWeatherReadStatus] save error:', err);
@@ -57,4 +58,3 @@ export function useWeatherReadStatus() {
 
   return { isRead, loading, saving, saved, toggleRead, saveReadStatus };
 }
-

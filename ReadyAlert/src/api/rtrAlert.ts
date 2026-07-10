@@ -6,12 +6,7 @@
  * This module wraps that endpoint and exposes typed helpers used by the UI layer.
  */
 
-import {
-  RtrAlert,
-  RtrAlertLevel,
-  RtrAlertListRequest,
-  RtrAlertListResponse,
-} from './types';
+import { RtrAlert, RtrAlertLevel, RtrAlertListRequest, RtrAlertListResponse } from './types';
 import { getThemeColours } from '../styles/themeColours';
 
 const RTR_BASE_URL = 'https://warnungen.at-alert.at/api/rpc';
@@ -30,22 +25,24 @@ export const ALERT_LEVEL_LABELS: Record<RtrAlertLevel, string> = {
   AlertLevel2: 'Extreme Threat',
   AlertLevel3: 'Severe Threat',
   AlertLevel4: 'Information',
-  Amber:       'Other',
+  Amber: 'Other',
 };
 
 export function getAlertLevelColours(isDark: boolean): Record<RtrAlertLevel, string> {
   const c = getThemeColours(isDark);
   return {
     AlertLevel1: c.critical, // purple – Emergency Alert (worst tier)
-    AlertLevel2: c.error,    // red – Extreme Threat
-    AlertLevel3: c.warning,  // amber – Severe Threat
-    AlertLevel4: c.info,     // blue – Threat Information
-    Amber:       c.warning,  // amber – Missing Person
+    AlertLevel2: c.error, // red – Extreme Threat
+    AlertLevel3: c.warning, // amber – Severe Threat
+    AlertLevel4: c.info, // blue – Threat Information
+    Amber: c.warning, // amber – Missing Person
   };
 }
 
 //Build the default request body that fetches every active alert across Austria.
-export function buildDefaultAlertRequest(overrides?: Partial<RtrAlertListRequest>): RtrAlertListRequest {
+export function buildDefaultAlertRequest(
+  overrides?: Partial<RtrAlertListRequest>,
+): RtrAlertListRequest {
   return {
     regions: [],
     alertLevels: ALL_ALERT_LEVELS,
@@ -80,7 +77,9 @@ export async function fetchRtrAlerts(
 
   if (!response.ok) {
     const text = await response.text().catch(() => '');
-    throw new Error(`RTR API error ${response.status}: ${response.statusText}${text ? ` – ${text}` : ''}`);
+    throw new Error(
+      `RTR API error ${response.status}: ${response.statusText}${text ? ` – ${text}` : ''}`,
+    );
   }
 
   const envelope: RtrAlertListResponse = await response.json();
@@ -90,7 +89,9 @@ export async function fetchRtrAlerts(
     throw new Error('RTR API returned an unexpected response shape');
   }
 
-  console.log(`[RTR] Received ${payload.totalCount} alert(s) (page contains ${payload.alerts.length})`);
+  console.log(
+    `[RTR] Received ${payload.totalCount} alert(s) (page contains ${payload.alerts.length})`,
+  );
   return payload;
 }
 
@@ -110,7 +111,7 @@ const SEVERITY_ORDER: Record<string, number> = {
   AlertLevel1: 5,
   AlertLevel2: 4,
   AlertLevel3: 3,
-  Amber:       2,
+  Amber: 2,
   AlertLevel4: 1,
 };
 

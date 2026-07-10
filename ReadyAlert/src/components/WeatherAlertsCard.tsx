@@ -43,10 +43,24 @@ export function WeatherAlertsCard({ warnings, loading = false }: Props) {
         android_ripple={{ color: colors.ripple }}
         style={{ borderRadius: 8, overflow: 'hidden' }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <MaterialCommunityIcons name="weather-lightning-rainy" size={20} color={colors.primary} />
-            <Text style={{ fontSize: 13, fontWeight: '600', letterSpacing: 1.1, textTransform: 'uppercase', color: colors.textMuted }}>
+            <MaterialCommunityIcons
+              name="weather-lightning-rainy"
+              size={20}
+              color={colors.primary}
+            />
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: '600',
+                letterSpacing: 1.1,
+                textTransform: 'uppercase',
+                color: colors.textMuted,
+              }}
+            >
               Weather Alerts
             </Text>
           </View>
@@ -59,7 +73,13 @@ export function WeatherAlertsCard({ warnings, loading = false }: Props) {
 
         {!loading && (
           <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
-            <Text style={{ fontSize: 36, fontWeight: '700', color: count > 0 ? colors.warning : colors.success }}>
+            <Text
+              style={{
+                fontSize: 36,
+                fontWeight: '700',
+                color: count > 0 ? colors.warning : colors.success,
+              }}
+            >
               {count}
             </Text>
             <Text style={{ fontSize: 14, color: colors.textMuted }}>
@@ -71,7 +91,9 @@ export function WeatherAlertsCard({ warnings, loading = false }: Props) {
 
       {expanded && loading && <LoadingState message="Loading warnings…" />}
 
-      {expanded && !loading && count === 0 && <EmptyState message="No active warnings in this area" />}
+      {expanded && !loading && count === 0 && (
+        <EmptyState message="No active warnings in this area" />
+      )}
 
       {expanded && !loading && (
         <View style={{ marginTop: 4 }}>

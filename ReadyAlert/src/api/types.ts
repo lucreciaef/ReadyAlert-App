@@ -59,8 +59,7 @@ export interface GeosphereResponse {
 
 /**
  * Type definitions for the RTR Austria Alerting System API
-**/
-
+ **/
 export type RtrAlertLevel = 'AlertLevel1' | 'AlertLevel2' | 'AlertLevel3' | 'AlertLevel4' | 'Amber';
 export type RtrRegion = string;
 export interface RtrAlertListRequest {

@@ -26,7 +26,10 @@ const AIR_QUALITY_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality';
  * @param longitude - Longitude of the location
  * @returns Promise with AirQualityData
  */
-export async function fetchAirQuality(latitude: number, longitude: number): Promise<AirQualityData> {
+export async function fetchAirQuality(
+  latitude: number,
+  longitude: number,
+): Promise<AirQualityData> {
   const params = {
     latitude,
     longitude,

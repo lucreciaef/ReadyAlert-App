@@ -25,7 +25,7 @@ export const getSettingsPageStyles = (isDark: boolean) => ({
 
 export const getTopAppBarStyles = (isDark: boolean) => ({
   container: `h-16 ${isDark ? 'bg-surface-dark' : 'bg-surface'} flex-row items-center px-1`,
-  contentRow: 'flex-1 flex-row items-center px-4 gap-3',   // Standard "icon + title" content row inside a top app bar.
+  contentRow: 'flex-1 flex-row items-center px-4 gap-3', // Standard "icon + title" content row inside a top app bar.
   containerOnBackground: `h-16 flex-row items-center px-4 gap-3 ${isDark ? 'bg-background-dark' : 'bg-background'}`,
   title: `flex-1 text-[24px] font-normal px-2 ${isDark ? 'text-text-dark' : 'text-text'}`,
   titleMedium: `flex-1 text-[18px] font-medium px-1 ${isDark ? 'text-text-dark' : 'text-text'}`,

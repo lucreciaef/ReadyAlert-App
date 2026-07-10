@@ -22,9 +22,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
 
-  const [theme, setTheme] = useState<ThemeMode>(
-    () => (systemColorScheme as ThemeMode) ?? 'light',
-  );
+  const [theme, setTheme] = useState<ThemeMode>(() => (systemColorScheme as ThemeMode) ?? 'light');
 
   // Load saved preference on mount
   useEffect(() => {

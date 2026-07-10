@@ -27,14 +27,19 @@ export interface WeatherIconInfo {
   label: string;
 }
 
-export function getWeatherIcon(code: number | null | undefined, isDay: boolean = true): WeatherIconInfo {
+export function getWeatherIcon(
+  code: number | null | undefined,
+  isDay: boolean = true,
+): WeatherIconInfo {
   if (code === null || code === undefined || Number.isNaN(code)) {
     return { icon: 'weather-cloudy', label: 'Unknown' };
   }
 
   // Clear
   if (code === 0) {
-    return isDay ? { icon: 'weather-sunny', label: 'Clear' } : { icon: 'weather-night', label: 'Clear' };
+    return isDay
+      ? { icon: 'weather-sunny', label: 'Clear' }
+      : { icon: 'weather-night', label: 'Clear' };
   }
   // Mainly clear
   if (code === 1) {
