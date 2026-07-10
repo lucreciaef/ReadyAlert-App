@@ -1,7 +1,7 @@
 /**
  * Saved Locations page
- * Lets the user save up to 3 custom cities/districts, choose which one drives
- * the Home Dashboard, or switch back to their real GPS location.
+ * Lets the user save up to 3 custom cities, choose which one is used for the Home Dashboard,
+ * or switch back to their real GPS location.
  * Has two modes: list of saved locations, and city search when adding a new one.
  */
 
@@ -20,10 +20,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
 import { getSavedLocationsPageStyles, getTopAppBarStyles } from '../../styles/appStyles';
-import {
-  MAX_SAVED_LOCATIONS,
-  useSavedLocations,
-} from '../../context/SavedLocationsContext';
+import { MAX_SAVED_LOCATIONS, useSavedLocations } from '../../context/SavedLocationsContext';
 import { GeocodingResult, searchCities } from '../../api/geocoding';
 
 interface SavedLocationsPageProps {
@@ -38,14 +35,8 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
   const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const styles = getSavedLocationsPageStyles(isDark);
-  const {
-    savedLocations,
-    selectedId,
-    canAddMore,
-    addLocation,
-    removeLocation,
-    selectLocation,
-  } = useSavedLocations();
+  const { savedLocations, selectedId, canAddMore, addLocation, removeLocation, selectLocation } =
+    useSavedLocations();
 
   const [mode, setMode] = useState<Mode>('list');
   const [query, setQuery] = useState('');
@@ -168,8 +159,8 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
           keyboardShouldPersistTaps="handled"
         >
           <Text className={styles.helper}>
-            Save up to {MAX_SAVED_LOCATIONS} cities or districts. Pick one to see its weather and
-            alerts on the home dashboard, or switch back to your current GPS location at any time.
+            Save up to {MAX_SAVED_LOCATIONS} cities. Pick one to see its regional information and
+            alerts on the home dashboard, or switch back to your current GPS location.
           </Text>
 
           <Text className={styles.sectionLabel}>Active location</Text>
@@ -186,13 +177,8 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
               />
               <View className={styles.rowMain} style={{ marginLeft: 12 }}>
                 <Text className={styles.rowTitle}>Use my current GPS location</Text>
-                <Text className={styles.rowSubtitle}>Automatic — updates as you move</Text>
               </View>
-              <MaterialCommunityIcons
-                name="crosshairs-gps"
-                size={20}
-                color={colors.textMuted}
-              />
+              <MaterialCommunityIcons name="crosshairs-gps" size={20} color={colors.textMuted} />
             </Pressable>
           </View>
 
@@ -220,9 +206,7 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
                     />
                     <View className={styles.rowMain} style={{ marginLeft: 12 }}>
                       <Text className={styles.rowTitle}>{loc.name}</Text>
-                      {!!loc.subtitle && (
-                        <Text className={styles.rowSubtitle}>{loc.subtitle}</Text>
-                      )}
+                      {!!loc.subtitle && <Text className={styles.rowSubtitle}>{loc.subtitle}</Text>}
                     </View>
                     <Pressable
                       onPress={() => handleRemove(loc.id, loc.name)}
@@ -253,9 +237,7 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
               color={isDark ? colors.onPrimary : colors.onPrimary}
             />
             <Text className={styles.addButtonText}>
-              {canAddMore
-                ? 'Add a location'
-                : `Limit of ${MAX_SAVED_LOCATIONS} reached`}
+              {canAddMore ? 'Add a location' : `Limit of ${MAX_SAVED_LOCATIONS} reached`}
             </Text>
           </Pressable>
         </ScrollView>
@@ -295,17 +277,12 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
                 <ActivityIndicator color={colors.primary} />
               </View>
             )}
-            {!searching && searchError && (
-              <Text className={styles.emptyText}>{searchError}</Text>
-            )}
+            {!searching && searchError && <Text className={styles.emptyText}>{searchError}</Text>}
             {!searching && !searchError && query.trim().length >= 2 && results.length === 0 && (
               <Text className={styles.emptyText}>No matches. Try a different name.</Text>
             )}
             {!searching && query.trim().length < 2 && (
-              <Text className={styles.emptyText}>
-                Type at least 2 characters to search. Only cities and districts are shown — street
-                addresses are not supported.
-              </Text>
+              <Text className={styles.emptyText}>Type at least 2 characters to search.</Text>
             )}
 
             {results.length > 0 && (
@@ -326,15 +303,9 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
                       />
                       <View className={styles.rowMain} style={{ marginLeft: 12 }}>
                         <Text className={styles.rowTitle}>{r.name}</Text>
-                        {!!r.subtitle && (
-                          <Text className={styles.rowSubtitle}>{r.subtitle}</Text>
-                        )}
+                        {!!r.subtitle && <Text className={styles.rowSubtitle}>{r.subtitle}</Text>}
                       </View>
-                      <MaterialCommunityIcons
-                        name="plus"
-                        size={20}
-                        color={colors.primary}
-                      />
+                      <MaterialCommunityIcons name="plus" size={20} color={colors.primary} />
                     </Pressable>
                   );
                 })}

@@ -25,6 +25,9 @@ function AppContent() {
   const [pendingSettingsSubPage, setPendingSettingsSubPage] = useState<
     'savedLocations' | null
   >(null);
+  // Tab to restore when a deep-linked subpage closes, so the back arrow returns
+  // to where the user came from instead of the Settings root.
+  const [subPageReturnTab, setSubPageReturnTab] = useState<string | null>(null);
   const { isDark } = useTheme();
 
   const layout = getLayoutStyles(isDark);
@@ -32,8 +35,17 @@ function AppContent() {
   const { debugMode, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
 
   const openSavedLocations = () => {
+    setSubPageReturnTab(activeTab);
     setPendingSettingsSubPage('savedLocations');
     setActiveTab('settings');
+  };
+
+  const handleSubPageClosed = () => {
+    setPendingSettingsSubPage(null);
+    if (subPageReturnTab && subPageReturnTab !== 'settings') {
+      setActiveTab(subPageReturnTab);
+    }
+    setSubPageReturnTab(null);
   };
 
   return (
@@ -58,7 +70,7 @@ function AppContent() {
             onDebug503Press={() => setDebug503()}
             onClearDebugPress={() => clearDebugLocation()}
             initialSubPage={pendingSettingsSubPage}
-            onSubPageClosed={() => setPendingSettingsSubPage(null)}
+            onSubPageClosed={handleSubPageClosed}
           />
         ) : null}
 

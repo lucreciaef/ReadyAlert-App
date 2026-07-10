@@ -69,7 +69,6 @@ export function SavedLocationsProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Persist list whenever it changes (after initial hydration).
   useEffect(() => {
     if (!hydrated) return;
     AsyncStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(savedLocations)).catch((err) =>
@@ -77,7 +76,6 @@ export function SavedLocationsProvider({ children }: { children: ReactNode }) {
     );
   }, [savedLocations, hydrated]);
 
-  // Persist selected id.
   useEffect(() => {
     if (!hydrated) return;
     if (selectedId === null) {
@@ -87,25 +85,22 @@ export function SavedLocationsProvider({ children }: { children: ReactNode }) {
     }
   }, [selectedId, hydrated]);
 
-  const addLocation = useCallback(
-    (loc: Omit<SavedLocation, 'id'>): SavedLocation | null => {
-      let created: SavedLocation | null = null;
-      setSavedLocations((prev) => {
-        if (prev.length >= MAX_SAVED_LOCATIONS) return prev;
-        // Skip duplicates by coordinates within ~100m
-        const isDup = prev.some(
-          (p) =>
-            Math.abs(p.latitude - loc.latitude) < 0.001 &&
-            Math.abs(p.longitude - loc.longitude) < 0.001,
-        );
-        if (isDup) return prev;
-        created = { id: makeId(), ...loc };
-        return [...prev, created];
-      });
-      return created;
-    },
-    [],
-  );
+  const addLocation = useCallback((loc: Omit<SavedLocation, 'id'>): SavedLocation | null => {
+    let created: SavedLocation | null = null;
+    setSavedLocations((prev) => {
+      if (prev.length >= MAX_SAVED_LOCATIONS) return prev;
+      // Skip duplicates by coordinates within ~100m
+      const isDup = prev.some(
+        (p) =>
+          Math.abs(p.latitude - loc.latitude) < 0.001 &&
+          Math.abs(p.longitude - loc.longitude) < 0.001,
+      );
+      if (isDup) return prev;
+      created = { id: makeId(), ...loc };
+      return [...prev, created];
+    });
+    return created;
+  }, []);
 
   const removeLocation = useCallback((id: string) => {
     setSavedLocations((prev) => prev.filter((p) => p.id !== id));
@@ -116,8 +111,7 @@ export function SavedLocationsProvider({ children }: { children: ReactNode }) {
     setSelectedId(id);
   }, []);
 
-  const selectedLocation =
-    (selectedId && savedLocations.find((l) => l.id === selectedId)) || null;
+  const selectedLocation = (selectedId && savedLocations.find((l) => l.id === selectedId)) || null;
 
   const value: SavedLocationsContextValue = {
     savedLocations,
@@ -129,9 +123,7 @@ export function SavedLocationsProvider({ children }: { children: ReactNode }) {
     canAddMore: savedLocations.length < MAX_SAVED_LOCATIONS,
   };
 
-  return (
-    <SavedLocationsContext.Provider value={value}>{children}</SavedLocationsContext.Provider>
-  );
+  return <SavedLocationsContext.Provider value={value}>{children}</SavedLocationsContext.Provider>;
 }
 
 export function useSavedLocations(): SavedLocationsContextValue {

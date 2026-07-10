@@ -249,9 +249,7 @@ export function HomeDashboardPage({
                 color={isCustomLocation ? colors.primary : colors.textMuted}
               />
               <Text className={styles.locationPillText} numberOfLines={1}>
-                {isCustomLocation && selectedLocation
-                  ? selectedLocation.name
-                  : 'Current location'}
+                {isCustomLocation && selectedLocation ? selectedLocation.name : 'Current location'}
               </Text>
             </View>
           </Pressable>
