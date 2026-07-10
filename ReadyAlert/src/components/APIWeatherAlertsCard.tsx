@@ -11,6 +11,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { SingleWeatherWarningCard } from './SingleWeatherWarningCard';
 import { ExpandableInfoCard } from './ExpandableInfoCard';
+import { EmptyState } from './EmptyState';
 
 interface Props {
   warnings: Warning[];
@@ -41,14 +42,18 @@ export function APIWeatherAlertsCard({ warnings }: Props) {
         </View>
       }
     >
-      <View style={{ marginTop: 4 }}>
-        {warnings.map((warning, index) => (
-          <SingleWeatherWarningCard
-            key={`${warning.properties.warnid}-${index}`}
-            warning={warning}
-          />
-        ))}
-      </View>
+      {count === 0 ? (
+        <EmptyState message="No active warnings in this area" />
+      ) : (
+        <View style={{ marginTop: 4 }}>
+          {warnings.map((warning, index) => (
+            <SingleWeatherWarningCard
+              key={`${warning.properties.warnid}-${index}`}
+              warning={warning}
+            />
+          ))}
+        </View>
+      )}
     </ExpandableInfoCard>
   );
 }
