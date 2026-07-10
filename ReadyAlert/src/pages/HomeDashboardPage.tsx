@@ -28,7 +28,6 @@ import { usePreparedness } from '../context/PreparednessContext';
 import { useGeosphereWarnings } from '../hooks/useGeosphereWarnings';
 import { useAirQuality } from '../hooks/useAirQuality';
 import { useWeather } from '../hooks/useWeather';
-import { Toast } from '../components/Toast';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { APIWeatherAlertsCard } from '../components/APIWeatherAlertsCard';
@@ -83,8 +82,7 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
 
   const [locationDisplayName, setLocationDisplayName] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
-  const [sheetExpanded, setSheetExpanded] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
+  const [sheetExpanded, setSheetExpanded] = useState(true);
   const [radiationExpanded, setRadiationExpanded] = useState(false);
 
   useEffect(() => {
@@ -112,8 +110,8 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
   }, [userLocation]);
 
   // Bottom sheet animation
-  const sheetAnim = useRef(new Animated.Value(MAX_TRANSLATE_Y)).current;
-  const expandedRef = useRef(false);
+  const sheetAnim = useRef(new Animated.Value(0)).current;
+  const expandedRef = useRef(true);
 
   const snapSheet = (toValue: number) => {
     const expanded = toValue === 0;
@@ -141,25 +139,6 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       },
     }),
   ).current;
-
-  // Open the sheet once warnings finish (success, general error, or 503)
-  useEffect(() => {
-    if (
-      !warningsLoading &&
-      !outsideAustria &&
-      (warningsData || warningsError || serviceUnavailable)
-    ) {
-      snapSheet(0);
-    }
-  }, [warningsLoading, warningsData, warningsError, serviceUnavailable, outsideAustria]);
-
-  // Peek sheet and show toast when user is outside Austria
-  useEffect(() => {
-    if (outsideAustria && outsideAustriaMessage) {
-      snapSheet(MAX_TRANSLATE_Y);
-      setToast({ message: outsideAustriaMessage, type: 'warning' });
-    }
-  }, [outsideAustria, outsideAustriaMessage]);
 
   // Fit map to warning polygon or zoom to user location when data changes
   useEffect(() => {
@@ -365,51 +344,51 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
             scrollEnabled={sheetExpanded}
             keyboardShouldPersistTaps="handled"
           >
-            {locationLoading && <LoadingState message="Getting your location…" />}
+            {locationLoading ? (
+              <LoadingState message="Getting your location…" />
+            ) : (
+              <>
+                {(warningsError || (locationError && !userLocation)) && !warningsLoading && (
+                  <ErrorBanner message={warningsError || locationError || ''} />
+                )}
 
-            {(warningsError || (locationError && !userLocation)) && !warningsLoading && (
-              <ErrorBanner message={warningsError || locationError || ''} />
+                {outsideAustria && outsideAustriaMessage && !warningsLoading && (
+                  <ErrorBanner message={outsideAustriaMessage} />
+                )}
+
+                {serviceUnavailable && !warningsLoading && (
+                  <RTRAlertSummaryButton
+                    loading={false}
+                    hasAlerts={false}
+                    totalCount={0}
+                    isUnavailable
+                    onPress={handleRefresh}
+                  />
+                )}
+
+                {!warningsError &&
+                  !serviceUnavailable &&
+                  !outsideAustria &&
+                  !(locationError && !userLocation) && (
+                    <APIWeatherAlertsCard warnings={visibleWarnings} />
+                  )}
+
+                <APIWeatherCard data={weatherData} loading={weatherLoading} error={weatherError} />
+
+                <APIAirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
+
+                <APIRadiationLevelCard
+                  {...radiationState}
+                  expanded={radiationExpanded}
+                  onToggle={() => setRadiationExpanded((v) => !v)}
+                />
+              </>
             )}
-
-            {serviceUnavailable && !warningsLoading && (
-              <RTRAlertSummaryButton
-                loading={false}
-                hasAlerts={false}
-                totalCount={0}
-                isUnavailable
-                onPress={handleRefresh}
-              />
-            )}
-
-            {!locationLoading &&
-              !warningsError &&
-              !serviceUnavailable &&
-              !(locationError && !userLocation) && (
-                <APIWeatherAlertsCard warnings={visibleWarnings} />
-              )}
-
-            <APIWeatherCard data={weatherData} loading={weatherLoading} error={weatherError} />
-
-            <APIAirQualityCard data={aqiData} loading={aqiLoading} error={aqiError} />
-
-            <APIRadiationLevelCard
-              {...radiationState}
-              expanded={radiationExpanded}
-              onToggle={() => setRadiationExpanded((v) => !v)}
-            />
 
             <View style={{ height: 24 }} />
           </ScrollView>
         </Animated.View>
       </View>
-
-      <Toast
-        visible={!!toast}
-        message={toast?.message ?? ''}
-        type={toast?.type ?? 'warning'}
-        duration={5000}
-        onHide={() => setToast(null)}
-      />
     </View>
   );
 }
