@@ -4,12 +4,16 @@
  */
 
 import { ScrollView, Text, View, Pressable, Alert, Image } from 'react-native';
+import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { getSettingsPageStyles } from '../styles/appStyles';
 import { DebugMode } from '../context/LocationContext';
+import { LicenseInformationPage } from './settings/LicenseInformationPage';
+
+type SubPage = 'licenseInformation' | null;
 
 interface SettingsPageProps {
   debugMode?: DebugMode;
@@ -32,6 +36,11 @@ export function SettingsPage({
   const { isDark, toggleTheme } = useTheme();
   const colours = getThemeColours(isDark);
   const styles = getSettingsPageStyles(isDark);
+  const [activePage, setActivePage] = useState<SubPage>(null);
+
+  if (activePage === 'licenseInformation') {
+    return <LicenseInformationPage onBack={() => setActivePage(null)} />;
+  }
 
   const isDebugMode = debugMode !== null && debugMode !== undefined;
 
@@ -78,7 +87,7 @@ export function SettingsPage({
         </Pressable>
 
         <Pressable
-          onPress={() => Alert.alert('Feature coming up soon')}
+          onPress={() => setActivePage('licenseInformation')}
           className={styles.item}
           android_ripple={{ color: colours.ripple }}
         >

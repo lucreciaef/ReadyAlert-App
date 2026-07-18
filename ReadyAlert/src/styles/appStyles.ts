@@ -23,6 +23,20 @@ export const getSettingsPageStyles = (isDark: boolean) => ({
   divider: `h-px mx-4 my-2 ${isDark ? 'bg-divider-dark' : 'bg-divider'}`,
 });
 
+export const getLicenseInformationPageStyles = (isDark: boolean) => ({
+  sectionLabel: `text-[11px] font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  card: `rounded-xl overflow-hidden border ${isDark ? 'border-outline-dark bg-surface-alt-dark' : 'border-outline bg-surface'}`,
+  cardSpacing: 'mb-6',
+  rowDivider: `border-b ${isDark ? 'border-divider-dark' : 'border-divider'}`,
+  libraryRow: 'flex-row items-center px-4 py-3',
+  libraryName: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  libraryLicense: `text-xs mt-0.5 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  creditRow: 'px-4 py-3.5',
+  creditTitle: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  creditDescription: `text-[13px] leading-[18px] mt-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  creditUrl: `text-xs mt-1.5 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
+});
+
 export const getTopAppBarStyles = (isDark: boolean) => ({
   container: `h-16 ${isDark ? 'bg-surface-dark' : 'bg-surface'} flex-row items-center px-1`,
   contentRow: 'flex-1 flex-row items-center px-4 gap-3', // Standard "icon + title" content row inside a top app bar.

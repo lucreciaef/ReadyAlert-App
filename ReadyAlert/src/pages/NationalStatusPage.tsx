@@ -53,8 +53,9 @@ const PEEK_HEIGHT = 88;
 const HALF_HEIGHT = Math.round(SCREEN_HEIGHT * 0.5);
 const MAX_TRANSLATE_Y = HALF_HEIGHT - PEEK_HEIGHT;
 
+// Latitude is shifted south of Austria's true centre (47.7) so the country is visible above the fixed mid-height bottom sheet.
 const AUSTRIA_REGION = {
-  latitude: 47.7,
+  latitude: 43.45,
   longitude: 13.35,
   latitudeDelta: 5.0,
   longitudeDelta: 10.0,
@@ -84,11 +85,11 @@ export function NationalStatusPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeLevels, setActiveLevels] = useState<Set<RtrAlertLevel>>(new Set(ALL_ALERT_LEVELS));
 
-  const sheetAnim = useRef(new Animated.Value(MAX_TRANSLATE_Y)).current;
-  const [mapBottomPadding, setMapBottomPadding] = useState(PEEK_HEIGHT);
-  const expandedRef = useRef(false);
+  const sheetAnim = useRef(new Animated.Value(0)).current;
+  const [mapBottomPadding, setMapBottomPadding] = useState(HALF_HEIGHT);
+  const expandedRef = useRef(true);
   const { notifyRtrAlerts } = useNotifications();
-  const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [sheetExpanded, setSheetExpanded] = useState(true);
   const debugModeRef = useRef(debugMode);
   useEffect(() => {
     debugModeRef.current = debugMode;
@@ -163,7 +164,7 @@ export function NationalStatusPage() {
     }
   }, []);
 
-  // Initial load and re-load when debugMode changes (but not on every remount)
+  // Initial load and re-load when debugMode changes
   useEffect(() => {
     loadAlerts();
   }, [loadAlerts, debugMode]);
@@ -173,10 +174,6 @@ export function NationalStatusPage() {
     }, 30000);
     return () => clearInterval(interval);
   }, [loadAlerts]);
-  useEffect(() => {
-    if (!loading) snapSheet(0);
-  }, [loading]);
-
   const toggleLevel = (level: RtrAlertLevel) => {
     setActiveLevels((prev) => {
       const next = new Set(prev);

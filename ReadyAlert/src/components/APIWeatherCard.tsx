@@ -23,7 +23,7 @@ function formatTemp(value: number | undefined | null): string {
   return `${Math.round(value)}°`;
 }
 
-export function WeatherCard({ data, loading, error }: Props) {
+export function APIWeatherCard({ data, loading, error }: Props) {
   const { isDark } = useTheme();
   const colours = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
