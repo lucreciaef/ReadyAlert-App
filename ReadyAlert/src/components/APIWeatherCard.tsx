@@ -33,10 +33,10 @@ export function APIWeatherCard({ data, loading, error }: Props) {
   return (
     <View
       style={{
-        marginTop: 16,
+        marginTop: 8,
         borderRadius: 12,
         backgroundColor: cardBg,
-        padding: 16,
+        padding: 10,
         borderWidth: 1,
         borderColor: colours.textMuted,
       }}
@@ -86,9 +86,9 @@ export function APIWeatherCard({ data, loading, error }: Props) {
           (() => {
             const info = getWeatherIcon(data.daily.weatherCode, data.current.isDay);
             return (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 12 }}>
-                <MaterialCommunityIcons name={info.icon} size={44} color={colours.textMuted} />
-                <Text style={{ fontSize: 36, fontWeight: '700', color: colours.textMuted }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 }}>
+                <MaterialCommunityIcons name={info.icon} size={32} color={colours.textMuted} />
+                <Text style={{ fontSize: 26, fontWeight: '700', color: colours.textMuted }}>
                   {formatTemp(data.current.temperature)}
                 </Text>
                 <View style={{ flex: 1 }}>

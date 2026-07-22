@@ -21,10 +21,10 @@ export function ExpandableInfoCard({ icon, title, expanded, onToggle, colours, s
   return (
     <View
       style={{
-        marginTop: 16,
+        marginTop: 8,
         borderRadius: 12,
         backgroundColor: colours.surface,
-        padding: 16,
+        padding: 10,
         borderWidth: 1,
         borderColor: colours.textMuted,
       }}

@@ -72,11 +72,11 @@ export function APIRadiationLevelCard({
           )}
 
           {closestStation && (
-            <View style={{ marginTop: 10, gap: 4 }}>
+            <View style={{ marginTop: 6, gap: 4 }}>
               <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
                 <Text
                   style={{
-                    fontSize: 36,
+                    fontSize: 26,
                     fontWeight: '700',
                     color: radiationColour(closestStation.messwert, colours),
                   }}
@@ -124,7 +124,7 @@ export function APIRadiationLevelCard({
             </Text>
           </View>
 
-          {nearbyStations.map((s) => {
+          {nearbyStations.slice(0, 10).map((s) => {
             const col = radiationColour(s.messwert, colours);
             return (
               <View

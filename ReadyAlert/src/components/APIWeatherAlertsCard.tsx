@@ -32,8 +32,8 @@ export function APIWeatherAlertsCard({ warnings }: Props) {
       onToggle={() => setExpanded((v) => !v)}
       colours={colors}
       summary={
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
-          <Text style={{ fontSize: 36, fontWeight: '700', color: count > 0 ? colors.warning : colors.success }}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
+          <Text style={{ fontSize: 26, fontWeight: '700', color: count > 0 ? colors.warning : colors.success }}>
             {count}
           </Text>
           <Text style={{ fontSize: 14, color: colors.textMuted }}>
