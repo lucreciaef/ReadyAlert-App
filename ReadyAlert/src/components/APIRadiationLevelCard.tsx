@@ -123,8 +123,9 @@ export function APIRadiationLevelCard({
               Distance
             </Text>
           </View>
-
+                      
           {nearbyStations.slice(0, 10).map((s) => {
+
             const col = radiationColour(s.messwert, colours);
             return (
               <View

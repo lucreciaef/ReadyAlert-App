@@ -109,6 +109,7 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
           {data && (
             <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
               <Text style={{ fontSize: 26, fontWeight: '700', color: getAqiColour(data.european_aqi, colours) }}>
+
                 {Math.round(data.european_aqi)}
               </Text>
               <Text style={{ fontSize: 14, color: colours.textMuted }}>
