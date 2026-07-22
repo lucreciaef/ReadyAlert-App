@@ -14,23 +14,49 @@ import { NationalStatusPage } from './src/pages/NationalStatusPage';
 import { EmergencyPage } from "./src/pages/EmergencyPage";
 import { LearningCentrePage } from './src/pages/LearningCentrePage';
 import { LocationProvider, useLocationContext } from './src/context/LocationContext';
+import { SavedLocationsProvider } from './src/context/SavedLocationsContext';
 import { PreparednessProvider } from './src/context/PreparednessContext';
 import { migrateDbIfNeeded } from './src/db/migrations';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
+  // When the "+" on the Home Dashboard is tapped, we jump to the Settings tab
+  // and open Saved Locations directly. This flag gets consumed on subpage close.
+  const [pendingSettingsSubPage, setPendingSettingsSubPage] = useState<
+    'savedLocations' | null
+  >(null);
+  // Tab to restore when a deep-linked subpage closes, so the back arrow returns
+  // to where the user came from instead of the Settings root.
+  const [subPageReturnTab, setSubPageReturnTab] = useState<string | null>(null);
   const { isDark } = useTheme();
 
   const layout = getLayoutStyles(isDark);
 
-  const {debugMode, setDebugLondon, setDebugGraz, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
+  const { debugMode, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
+
+  const openSavedLocations = () => {
+    setSubPageReturnTab(activeTab);
+    setPendingSettingsSubPage('savedLocations');
+    setActiveTab('settings');
+  };
+
+  const handleSubPageClosed = () => {
+    setPendingSettingsSubPage(null);
+    if (subPageReturnTab && subPageReturnTab !== 'settings') {
+      setActiveTab(subPageReturnTab);
+    }
+    setSubPageReturnTab(null);
+  };
 
   return (
     <SafeAreaView className={layout.safeArea} edges={[]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <View className={layout.app}>
         {activeTab === 'home' ? (
-          <HomeDashboardPage onPreparednessPress={() => setActiveTab('learning')} />
+          <HomeDashboardPage
+            onPreparednessPress={() => setActiveTab('learning')}
+            onOpenSavedLocations={openSavedLocations}
+          />
         ) : activeTab === 'national' ? (
           <NationalStatusPage />
         ) : activeTab === 'emergency' ? (
@@ -40,11 +66,11 @@ function AppContent() {
         ) : activeTab === 'settings' ? (
           <SettingsPage
             debugMode={debugMode}
-            onDebugLondonPress={() => setDebugLondon()}
-            onDebugGrazPress={() => setDebugGraz()}
             onDebugDangerPress={() => setDebugDanger()}
             onDebug503Press={() => setDebug503()}
             onClearDebugPress={() => clearDebugLocation()}
+            initialSubPage={pendingSettingsSubPage}
+            onSubPageClosed={handleSubPageClosed}
           />
         ) : null}
 
@@ -61,13 +87,15 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <LocationProvider>
-          <SQLiteProvider databaseName="readyalert.db" onInit={migrateDbIfNeeded}>
-            <PreparednessProvider>
-              <AppContent />
-            </PreparednessProvider>
-          </SQLiteProvider>
-        </LocationProvider>
+        <SavedLocationsProvider>
+          <LocationProvider>
+            <SQLiteProvider databaseName="readyalert.db" onInit={migrateDbIfNeeded}>
+              <PreparednessProvider>
+                <AppContent />
+              </PreparednessProvider>
+            </SQLiteProvider>
+          </LocationProvider>
+        </SavedLocationsProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

@@ -1,16 +1,18 @@
 /**
  * LocationContext
- * Provides the real GPS location from useLocation, but also allows a debug
- * override so any screen downstream stays up-to-date automatically.
+ * Provides the real GPS location from useLocation, plus a user-selected saved
+ * location override (custom city/district from SavedLocationsContext).
+ *
+ * Precedence: saved-location > GPS. Downstream hooks/screens read `coords`
+ * and stay in sync automatically. `debugMode` is exposed as a signal for
+ * simulation flows but does not override coords.
  */
 
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { Coordinates, useLocation } from '../hooks/useLocation';
+import { useSavedLocations } from './SavedLocationsContext';
 
-const LONDON: Coordinates = { latitude: 51.5074, longitude: -0.1278 };
-const GRAZ: Coordinates = { latitude: 47.0679, longitude: 15.4417 };
-
-export type DebugMode = 'london' | 'graz' | 'danger' | '503' | null;
+export type DebugMode = 'danger' | '503' | null;
 
 interface LocationContextValue {
   coords: Coordinates | null;
@@ -21,15 +23,13 @@ interface LocationContextValue {
   isDebugMode: boolean;
   /** Active debug mode, or null when not in debug mode */
   debugMode: DebugMode;
-  /** Override with London coordinates for testing */
-  setDebugLondon: () => void;
-  /** Override with Graz coordinates for testing */
-  setDebugGraz: () => void;
-  /** Activate the local danger alert simulation */
+  /** True when the user's selected saved location is providing the coords */
+  isCustomLocation: boolean;
+  /** Activate the Austria-wide danger alert simulation */
   setDebugDanger: () => void;
   /** Activate the 503 server unavailable simulation */
   setDebug503: () => void;
-  /** Clear the override and go back to real GPS */
+  /** Clear the active debug mode */
   clearDebugLocation: () => void;
 }
 
@@ -37,40 +37,34 @@ const LocationContext = createContext<LocationContextValue | null>(null);
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const gps = useLocation();
-  const [debugCoords, setDebugCoords] = useState<Coordinates | null>(null);
+  const { selectedLocation } = useSavedLocations();
   const [debugMode, setDebugMode] = useState<DebugMode>(null);
 
+  const savedCoords: Coordinates | null = selectedLocation
+    ? { latitude: selectedLocation.latitude, longitude: selectedLocation.longitude }
+    : null;
+
+  // A user-picked saved location wins over real GPS.
+  const effectiveCoords = savedCoords ?? gps.coords;
+
   const value: LocationContextValue = {
-    // When debug mode is active, override coords (loading/error come from GPS still)
-    coords: debugCoords ?? gps.coords,
-    loading: debugCoords ? false : gps.loading,
+    coords: effectiveCoords,
+    loading: savedCoords ? false : gps.loading,
     error: gps.error,
     requestPermission: gps.requestPermission,
     isDebugMode: debugMode !== null,
     debugMode,
-    setDebugLondon: () => {
-      console.log('Debug: overriding location to London');
-      setDebugCoords(LONDON);
-      setDebugMode('london');
-    },
-    setDebugGraz: () => {
-      console.log('Debug: overriding location to Graz');
-      setDebugCoords(GRAZ);
-      setDebugMode('graz');
-    },
+    isCustomLocation: !!savedCoords,
     setDebugDanger: () => {
       console.log('Debug: simulating local danger alert');
-      setDebugCoords(null);
       setDebugMode('danger');
     },
     setDebug503: () => {
       console.log('Debug: simulating 503 server unavailable');
-      setDebugCoords(gps.coords);
       setDebugMode('503');
     },
     clearDebugLocation: () => {
       console.log('Debug: cleared debug mode, back to GPS');
-      setDebugCoords(null);
       setDebugMode(null);
     },
   };

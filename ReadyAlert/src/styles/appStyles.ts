@@ -57,10 +57,32 @@ export const getHomeDashboardPageStyles = (isDark: boolean) => ({
   addButtonInner: `px-5 py-1.5 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
   addButtonText: `text-2xl font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
 
+  locationPillInner: `flex-row items-center gap-1.5 px-4 py-1.5 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
+  locationPillText: `text-[14px] font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+
   sheetHeaderRow: 'flex-row items-center justify-between mb-2',
   sheetHeaderLeft: 'flex-row items-center gap-2',
   sheetTitle: `flex-1 text-lg font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
   chevronButton: 'w-10 h-10 items-center justify-center rounded-full',
+});
+
+export const getSavedLocationsPageStyles = (isDark: boolean) => ({
+  screen: `flex-1 ${isDark ? 'bg-background-dark' : 'bg-background'}`,
+  sectionLabel: `text-[11px] font-bold uppercase tracking-widest mb-2 mt-4 px-4 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  helper: `text-[13px] leading-[18px] px-4 mb-2 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  card: `mx-4 rounded-xl overflow-hidden border ${isDark ? 'border-outline-dark bg-surface-alt-dark' : 'border-outline bg-surface'}`,
+  row: 'flex-row items-center px-4 py-3',
+  rowDivider: `border-b ${isDark ? 'border-divider-dark' : 'border-divider'}`,
+  rowMain: 'flex-1',
+  rowTitle: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
+  rowSubtitle: `text-xs mt-0.5 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  rowIconBtn: 'w-10 h-10 items-center justify-center rounded-full ml-2',
+  addButton: `mx-4 mt-3 flex-row items-center justify-center gap-2 px-4 py-3 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
+  addButtonDisabled: 'opacity-40',
+  addButtonText: `text-sm font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
+  searchInputWrap: `flex-row items-center gap-2 mx-4 px-8 py-2 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
+  searchInput: `flex-1 text-sm ${isDark ? 'text-text-dark' : 'text-text'}`,
+  emptyText: `text-[13px] text-center px-4 py-6 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
 });
 
 export const getPreparednessScoreCardStyles = (isDark: boolean) => ({

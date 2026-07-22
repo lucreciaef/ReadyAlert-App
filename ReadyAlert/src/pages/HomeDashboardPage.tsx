@@ -1,6 +1,14 @@
+/*
+ * Home Dashboard
+ *
+ * The HomeDashboardPage component is the main page of the app.
+ * It displays the user's current location, weather, air quality, and geosphere warnings.
+ * It is especially designed for Austria, but some information like weather can also work in other countries,
+ * as the API returns valid info.
+ */
+
 import { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
   Animated,
   Dimensions,
   PanResponder,
@@ -24,6 +32,7 @@ import {
 } from '../styles/appStyles';
 import { getLocationName } from '../api';
 import { useLocationContext } from '../context/LocationContext';
+import { useSavedLocations } from '../context/SavedLocationsContext';
 import { usePreparedness } from '../context/PreparednessContext';
 import { useGeosphereWarnings } from '../hooks/useGeosphereWarnings';
 import { useAirQuality } from '../hooks/useAirQuality';
@@ -44,7 +53,13 @@ const PEEK_HEIGHT = 88;
 const HALF_HEIGHT = Math.round(SCREEN_HEIGHT * 0.5);
 const MAX_TRANSLATE_Y = HALF_HEIGHT - PEEK_HEIGHT;
 
-export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress?: () => void }) {
+export function HomeDashboardPage({
+  onPreparednessPress,
+  onOpenSavedLocations,
+}: {
+  onPreparednessPress?: () => void;
+  onOpenSavedLocations?: () => void;
+}) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
@@ -59,7 +74,9 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     error: locationError,
     requestPermission,
     debugMode,
+    isCustomLocation,
   } = useLocationContext();
+  const { selectedLocation } = useSavedLocations();
   const {
     data: warningsData,
     visibleWarnings,
@@ -188,15 +205,18 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
     longitudeDelta: 10.0,
   };
 
+  const customLocationLabel =
+    isCustomLocation && selectedLocation
+      ? selectedLocation.subtitle
+        ? `${selectedLocation.name}, ${selectedLocation.subtitle}`
+        : selectedLocation.name
+      : null;
+
   const headerLabel = locationLoading
     ? 'Locating…'
-    : debugMode === 'london'
-      ? 'London, UK (debug)'
-      : debugMode === 'graz'
-        ? 'Graz, Austria (debug)'
-        : debugMode === '503'
-          ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
-          : (locationDisplayName ?? locationName ?? 'Unknown location');
+    : debugMode === '503'
+      ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
+      : (customLocationLabel ?? locationDisplayName ?? locationName ?? 'Unknown location');
 
   const statusIcon =
     warningsLoading || locationLoading
@@ -217,12 +237,20 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
       <View className={topBar.container} style={{ elevation: 0 }}>
         <View className={topBar.contentRow}>
           <MaterialCommunityIcons name="home-outline" size={24} color={colors.primary} />
-          <Text className={topBar.title} numberOfLines={1}>
-            Local info
-          </Text>
-          <View className={styles.headerSpacer} />
+          <View className="flex-1 items-center">
+            <View className={styles.locationPillInner}>
+              <MaterialCommunityIcons
+                name={isCustomLocation ? 'map-marker' : 'crosshairs-gps'}
+                size={14}
+                color={isCustomLocation ? colors.primary : colors.textMuted}
+              />
+              <Text className={styles.locationPillText} numberOfLines={1}>
+                {isCustomLocation && selectedLocation ? selectedLocation.name : 'Current location'}
+              </Text>
+            </View>
+          </View>
           <Pressable
-            onPress={() => Alert.alert('Feature coming up soon')}
+            onPress={onOpenSavedLocations}
             android_ripple={{ color: colors.ripple }}
             className={styles.addButtonPressable}
           >
@@ -315,26 +343,26 @@ export function HomeDashboardPage({ onPreparednessPress }: { onPreparednessPress
         >
           <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
             <View className={bottomSheet.handle} />
-            <View className={styles.sheetHeaderRow}>
-              <View className={styles.sheetHeaderLeft}>
-                <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />
-                <Text className={styles.sheetTitle} numberOfLines={1}>
-                  {headerLabel}{' '}
-                  <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}
-                android_ripple={{ color: colors.ripple, borderless: true }}
-                className={styles.chevronButton}
-              >
-                <MaterialCommunityIcons
-                  name={sheetExpanded ? 'chevron-down' : 'chevron-up'}
-                  size={22}
-                  color={colors.textMuted}
-                />
-              </Pressable>
-            </View>
+            {/*<View className={styles.sheetHeaderRow}>*/}
+            {/*  /!*<View className={styles.sheetHeaderLeft}>*!/*/}
+            {/*  /!*  <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />*!/*/}
+            {/*  /!*  <Text className={styles.sheetTitle} numberOfLines={1}>*!/*/}
+            {/*  /!*    {headerLabel}{' '}*!/*/}
+            {/*  /!*    <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />*!/*/}
+            {/*  /!*  </Text>*!/*/}
+            {/*  /!*</View>*!/*/}
+            {/*  /!*<Pressable*!/*/}
+            {/*  /!*  onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}*!/*/}
+            {/*  /!*  android_ripple={{ color: colors.ripple, borderless: true }}*!/*/}
+            {/*  /!*  className={styles.chevronButton}*!/*/}
+            {/*  /!*>*!/*/}
+            {/*  /!*  <MaterialCommunityIcons*!/*/}
+            {/*  /!*    name={sheetExpanded ? 'chevron-down' : 'chevron-up'}*!/*/}
+            {/*  /!*    size={22}*!/*/}
+            {/*  /!*    color={colors.textMuted}*!/*/}
+            {/*  /!*  />*!/*/}
+            {/*  /!*</Pressable>*!/*/}
+            {/*</View>*/}
           </View>
 
           <ScrollView

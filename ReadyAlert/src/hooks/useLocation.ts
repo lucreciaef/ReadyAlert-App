@@ -18,6 +18,7 @@ export interface LocationState {
 }
 
 const DEFAULT_COORDS: Coordinates = {
+  // Default to Vienna, Austria
   latitude: 48.248611,
   longitude: 16.356388,
 };

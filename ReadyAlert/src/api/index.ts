@@ -9,3 +9,4 @@ export * from './types';
 export * from './airQuality';
 export * from './radiation';
 export * from './weather';
+export * from './geocoding';

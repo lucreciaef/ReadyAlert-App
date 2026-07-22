@@ -4,7 +4,7 @@
  */
 
 import { ScrollView, Text, View, Pressable, Alert, Image } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
@@ -12,41 +12,55 @@ import { getThemeColours } from '../styles/themeColours';
 import { getSettingsPageStyles } from '../styles/appStyles';
 import { DebugMode } from '../context/LocationContext';
 import { LicenseInformationPage } from './settings/LicenseInformationPage';
+import { SavedLocationsPage } from './settings/SavedLocationsPage';
 
-type SubPage = 'licenseInformation' | null;
+type SubPage = 'licenseInformation' | 'savedLocations' | null;
 
 interface SettingsPageProps {
   debugMode?: DebugMode;
-  onDebugLondonPress?: () => void;
-  onDebugGrazPress?: () => void;
   onDebugDangerPress?: () => void;
   onDebug503Press?: () => void;
   onClearDebugPress?: () => void;
+  initialSubPage?: SubPage; // When set, the settings page opens directly on this subpage.
+  onSubPageClosed?: () => void; // Called when the initial subpage is closed so the parent can reset the request
 }
 
 export function SettingsPage({
   debugMode,
-  onDebugLondonPress,
-  onDebugGrazPress,
   onDebugDangerPress,
   onDebug503Press,
   onClearDebugPress,
+  initialSubPage,
+  onSubPageClosed,
 }: SettingsPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark, toggleTheme } = useTheme();
   const colours = getThemeColours(isDark);
   const styles = getSettingsPageStyles(isDark);
-  const [activePage, setActivePage] = useState<SubPage>(null);
+  const [activePage, setActivePage] = useState<SubPage>(initialSubPage ?? null);
+
+  // Honour later prop changes (e.g. user taps the "+" on the home dashboard
+  // while the settings tab was already the previous tab).
+  useEffect(() => {
+    if (initialSubPage) setActivePage(initialSubPage);
+  }, [initialSubPage]);
+
+  const closeSubPage = () => {
+    setActivePage(null);
+    onSubPageClosed?.();
+  };
 
   if (activePage === 'licenseInformation') {
-    return <LicenseInformationPage onBack={() => setActivePage(null)} />;
+    return <LicenseInformationPage onBack={closeSubPage} />;
+  }
+
+  if (activePage === 'savedLocations') {
+    return <SavedLocationsPage onBack={closeSubPage} />;
   }
 
   const isDebugMode = debugMode !== null && debugMode !== undefined;
 
   const debugLabel: Record<NonNullable<DebugMode>, string> = {
-    london: 'London, UK',
-    graz: 'Graz, Austria',
     danger: 'Austria-wide danger alert',
     '503': '503 Server Response',
   };
@@ -87,6 +101,19 @@ export function SettingsPage({
         </Pressable>
 
         <Pressable
+          onPress={() => setActivePage('savedLocations')}
+          className={styles.item}
+          android_ripple={{ color: colours.ripple }}
+        >
+          <MaterialCommunityIcons
+            name="map-marker-multiple-outline"
+            size={24}
+            color={colours.textMuted}
+          />
+          <Text className={styles.itemText}>Saved locations</Text>
+        </Pressable>
+
+        <Pressable
           onPress={() => setActivePage('licenseInformation')}
           className={styles.item}
           android_ripple={{ color: colours.ripple }}
@@ -124,32 +151,6 @@ export function SettingsPage({
           </Pressable>
         ) : (
           <>
-            <Pressable
-              className={styles.item}
-              android_ripple={{ color: colours.ripple }}
-              onPress={onDebugLondonPress}
-            >
-              <MaterialCommunityIcons
-                name="map-marker-off-outline"
-                size={24}
-                color={colours.warning}
-              />
-              <Text className={styles.itemText}>
-                Simulate Current location to London, UK in Dashboard
-              </Text>
-            </Pressable>
-
-            <Pressable
-              className={styles.item}
-              android_ripple={{ color: colours.ripple }}
-              onPress={onDebugGrazPress}
-            >
-              <MaterialCommunityIcons name="map-marker-outline" size={24} color={colours.warning} />
-              <Text className={styles.itemText}>
-                Simulate Forced location to Graz, AT in Dashboard
-              </Text>
-            </Pressable>
-
             <Pressable
               className={styles.item}
               android_ripple={{ color: colours.ripple }}
