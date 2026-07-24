@@ -12,7 +12,8 @@ import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
 import { usePharmacyChecklist } from '../../hooks/usePharmacyChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
-import { SaveProgressButton } from "../../components/SaveProgressButton";
+import { SaveProgressButton } from '../../components/SaveProgressButton';
+import { LearningSourceCitation } from '../../components/LearningSourceCitation';
 
 const GROUP_ORDER = ['Medicines', 'Other items', 'First-aid dressing packs'];
 
@@ -46,12 +47,24 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
       <View
         className={topBar.container}
-        style={{ elevation: 2, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
+        style={{
+          elevation: 2,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.08,
+          shadowRadius: 3,
+        }}
       >
         <Pressable
           onPress={onBack}
           android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
+          style={{
+            width: 48,
+            height: 48,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 24,
+          }}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>
@@ -69,27 +82,51 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
         </View>
       ) : (
         <>
-          <View style={{
-            paddingHorizontal: 16,
-            paddingTop: 12,
-            paddingBottom: 14,
-            backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.divider,
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: '500', letterSpacing: 0.5, color: colors.textMuted }}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingTop: 12,
+              paddingBottom: 14,
+              backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.divider,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 8,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: '500',
+                  letterSpacing: 0.5,
+                  color: colors.textMuted,
+                }}
+              >
                 {checkedCount} / {totalCount} items ready at home
               </Text>
-              <Text style={{
-                fontSize: 12,
-                fontWeight: '700',
-                color: progressPercent === 100 ? colors.success : colors.primary,
-              }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: '700',
+                  color: progressPercent === 100 ? colors.success : colors.primary,
+                }}
+              >
                 {Math.round(progressPercent)}%
               </Text>
             </View>
-            <View style={{ height: 4, borderRadius: 2, backgroundColor: isDark ? colors.divider : colors.primaryContainer }}>
+            <View
+              style={{
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: isDark ? colors.divider : colors.primaryContainer,
+              }}
+            >
               <View
                 style={{
                   height: 4,
@@ -108,97 +145,118 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
           >
             {groups.map((group) => (
               <View key={group.name} style={{ marginBottom: 20 }}>
-                <Text style={{
-                  fontSize: 11,
-                  fontWeight: '700',
-                  letterSpacing: 1.5,
-                  textTransform: 'uppercase',
-                  color: colors.textMuted,
-                  marginBottom: 8,
-                }}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: '700',
+                    letterSpacing: 1.5,
+                    textTransform: 'uppercase',
+                    color: colors.textMuted,
+                    marginBottom: 8,
+                  }}
+                >
                   {group.name}
                 </Text>
 
-                <View style={{
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  borderWidth: 1,
-                  borderColor: colors.outline,
-                  backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-                  elevation: 1,
-                }}>
+                <View
+                  style={{
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    borderWidth: 1,
+                    borderColor: colors.outline,
+                    backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
+                    elevation: 1,
+                  }}
+                >
                   {group.items.map((item, idx) => {
                     const isLast = idx === group.items.length - 1;
-                      return (
-                        <Pressable
-                          key={item.id}
-                          onPress={() => toggleItem(item.id)}
-                          android_ripple={{ color: colors.ripple }}
+                    return (
+                      <Pressable
+                        key={item.id}
+                        onPress={() => toggleItem(item.id)}
+                        android_ripple={{ color: colors.ripple }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingHorizontal: 16,
+                            paddingVertical: 14,
+                            borderBottomWidth: isLast ? 0 : 1,
+                            borderBottomColor: colors.divider,
+                          }}
                         >
                           <View
                             style={{
-                              flexDirection: 'row',
+                              width: 24,
+                              height: 24,
+                              borderRadius: 12,
                               alignItems: 'center',
-                              paddingHorizontal: 16,
-                              paddingVertical: 14,
-                              borderBottomWidth: isLast ? 0 : 1,
-                              borderBottomColor: colors.divider,
+                              justifyContent: 'center',
+                              borderWidth: 2,
+                              marginRight: 14,
+                              flexShrink: 0,
+                              borderColor: item.checked ? colors.primary : colors.outline,
+                              backgroundColor: item.checked ? colors.primary : 'transparent',
                             }}
                           >
-                        <View style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 12,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderWidth: 2,
-                          marginRight: 14,
-                          flexShrink: 0,
-                          borderColor: item.checked ? colors.primary : colors.outline,
-                          backgroundColor: item.checked ? colors.primary : 'transparent',
-                        }}>
-                          {item.checked && (
-                            <MaterialCommunityIcons name="check" size={14} color={colors.onPrimary} />
+                            {item.checked && (
+                              <MaterialCommunityIcons
+                                name="check"
+                                size={14}
+                                color={colors.onPrimary}
+                              />
+                            )}
+                          </View>
+
+                          <Text
+                            style={{
+                              flex: 1,
+                              fontSize: 14,
+                              lineHeight: 20,
+                              color: item.checked ? colors.textMuted : colors.text,
+                              textDecorationLine: item.checked ? 'line-through' : 'none',
+                            }}
+                          >
+                            {item.name}
+                          </Text>
+
+                          {item.quantity && (
+                            <View
+                              style={{
+                                marginLeft: 8,
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 12,
+                                backgroundColor: isDark
+                                  ? colors.surfaceAlt
+                                  : colors.primaryContainer,
+                                flexShrink: 0,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 11,
+                                  fontWeight: '600',
+                                  color: isDark ? colors.textMuted : colors.primary,
+                                }}
+                              >
+                                ×{item.quantity}
+                              </Text>
+                            </View>
                           )}
                         </View>
-
-                        <Text style={{
-                          flex: 1,
-                          fontSize: 14,
-                          lineHeight: 20,
-                          color: item.checked ? colors.textMuted : colors.text,
-                          textDecorationLine: item.checked ? 'line-through' : 'none',
-                        }}>
-                          {item.name}
-                        </Text>
-
-                        {item.quantity && (
-                          <View style={{
-                            marginLeft: 8,
-                            paddingHorizontal: 8,
-                            paddingVertical: 2,
-                            borderRadius: 12,
-                            backgroundColor: isDark ? colors.surfaceAlt : colors.primaryContainer,
-                            flexShrink: 0,
-                          }}>
-                            <Text style={{
-                              fontSize: 11,
-                              fontWeight: '600',
-                              color: isDark ? colors.textMuted : colors.primary,
-                            }}>
-                              ×{item.quantity}
-                            </Text>
-                          </View>
-                        )}
-                          </View>
-                        </Pressable>
+                      </Pressable>
                     );
                   })}
                 </View>
               </View>
             ))}
+            <LearningSourceCitation
+              source="Österreichisches Rotes Kreuz (Austrian Red Cross)"
+              url="https://www.roteskreuz.at"
+            />
           </ScrollView>
-
           <SaveProgressButton onSave={handleSave} saving={saving} saved={saved} />
         </>
       )}

@@ -11,6 +11,8 @@ import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
 import { LearningReadingContentCard } from '../../components/LearningReadingContentCard';
+import { LearningSourceCitation } from '../../components/LearningSourceCitation';
+import { LearningMarkAsReadCheckbox } from '../../components/LearningMarkAsReadCheckbox';
 import { useWeatherReadStatus } from '../../hooks/useWeatherReadStatus';
 import { usePreparedness } from '../../context/PreparednessContext';
 import {SaveProgressButton} from "../../components/SaveProgressButton";
@@ -166,54 +168,16 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
               />
             ))}
 
-            {/* Source box - TODO: make it a reusable component later */}
-            <View style={{
-              flexDirection: 'row', alignItems: 'flex-start', gap: 8,
-              padding: 12, borderRadius: 8, marginTop: 4, marginBottom: 8,
-              backgroundColor: colors.surfaceAlt,
-            }}>
-              <MaterialCommunityIcons name="information-outline" size={14} color={colors.textMuted} style={{ marginTop: 1 }} />
-              <Text style={{ flex: 1, fontSize: 12, lineHeight: 18, color: colors.textMuted }}>
-                Source: Österreichisches Rotes Kreuz (Austrian Red Cross){'\n'}
-                <Text style={{ color: colors.primary }}>
-                  https://www.roteskreuz.at/unwetter
-                </Text>
-              </Text>
-            </View>
+            <LearningSourceCitation
+              source="Österreichisches Rotes Kreuz (Austrian Red Cross)"
+              url="https://www.roteskreuz.at/unwetter"
+            />
 
-
-            {/* "Mark as read" checkbox row - TODO: make this a reusable component later */}
-            <Pressable
-              onPress={toggleRead}
-              android_ripple={{ color: colors.ripple }}
-              style={{
-                borderRadius: 12, marginTop: 4, marginBottom: 8,
-                overflow: 'hidden',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row', alignItems: 'center', gap: 14,
-                  padding: 16, borderRadius: 12,
-                  backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-                  borderWidth: 1.5,
-                  borderColor: isRead ? colors.primary : colors.outline,
-                }}
-              >
-              <View style={{
-                width: 24, height: 24, borderRadius: 12, overflow: 'hidden',
-                alignItems: 'center', justifyContent: 'center',
-                borderWidth: 2, flexShrink: 0,
-                borderColor: isRead ? colors.primary : colors.outline,
-                backgroundColor: isRead ? colors.primary : 'transparent',
-              }}>
-                {isRead && <MaterialCommunityIcons name="check" size={14} color={colors.onPrimary} />}
-              </View>
-              <Text style={{ flex: 1, fontSize: 14, fontWeight: '500', color: colors.text, lineHeight: 20 }}>
-                I have read and understood the weather emergency tips
-              </Text>
-              </View>
-            </Pressable>
+            <LearningMarkAsReadCheckbox
+              label="I have read and understood the weather emergency tips"
+              isRead={isRead}
+              onToggle={toggleRead}
+            />
           </ScrollView>
 
           <SaveProgressButton onSave={handleSave} saving={saving} saved={saved} />
