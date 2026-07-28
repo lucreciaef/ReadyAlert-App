@@ -1,49 +1,48 @@
 /**
  * Context provider that tracks and exposes the active colour scheme (light or dark).
  * The user's preference is persisted via AsyncStorage so it survives app restarts.
+ * Modes: 'light', 'dark', or 'system' (follows the OS setting).
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 const THEME_STORAGE_KEY = '@readyalert_theme';
 
 interface ThemeContextType {
   isDark: boolean;
-  theme: ThemeMode;
-  toggleTheme: () => void;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
-
-  const [theme, setTheme] = useState<ThemeMode>(() => (systemColorScheme as ThemeMode) ?? 'light');
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
 
   // Load saved preference on mount
   useEffect(() => {
     AsyncStorage.getItem(THEME_STORAGE_KEY).then((saved) => {
-      if (saved === 'light' || saved === 'dark') {
-        setTheme(saved);
+      if (saved === 'light' || saved === 'dark' || saved === 'system') {
+        setThemeModeState(saved);
       }
     });
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === 'light' ? 'dark' : 'light';
-      AsyncStorage.setItem(THEME_STORAGE_KEY, next);
-      return next;
-    });
+  const setThemeMode = useCallback((mode: ThemeMode) => {
+    setThemeModeState(mode);
+    AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
   }, []);
 
+  const isDark = themeMode === 'system' ? systemColorScheme === 'dark' : themeMode === 'dark';
+
   const value = useMemo<ThemeContextType>(
-    () => ({ isDark: theme === 'dark', theme, toggleTheme }),
-    [theme, toggleTheme],
+    () => ({ isDark, themeMode, setThemeMode }),
+    [isDark, themeMode, setThemeMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

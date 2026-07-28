@@ -30,6 +30,9 @@ export function RTRAlertSummaryButton({
     : hasAlerts
       ? colors.errorContainer
       : colors.surface;
+  // Match the outer sheet on the "no alerts" case so the row reads as a list item;
+  // keep the tinted container fills when there IS an alert since colour is the signal.
+  const showTonalFill = isUnavailable || hasAlerts;
 
   const iconName = isUnavailable
     ? 'alert'
@@ -37,9 +40,23 @@ export function RTRAlertSummaryButton({
       ? 'timer-sand'
       : hasAlerts
         ? 'alert-circle'
-        : 'check-circle';
+        : 'check';
 
-  const iconColor = isUnavailable ? colors.warning : hasAlerts ? colors.error : colors.success;
+  const iconColor = isUnavailable
+    ? colors.warningOnContainer
+    : hasAlerts
+      ? colors.errorOnContainer
+      : loading
+        ? colors.textMuted
+        : colors.successOnContainer;
+
+  const iconContainerBg = isUnavailable
+    ? colors.warningContainer
+    : hasAlerts
+      ? colors.errorContainer
+      : loading
+        ? colors.surfaceAlt
+        : colors.successContainer;
 
   return (
     // Pressable only owns geometry + ripple clipping; backgroundColor/border live
@@ -57,13 +74,22 @@ export function RTRAlertSummaryButton({
           paddingVertical: 14,
           paddingHorizontal: 16,
           borderRadius: 12,
-          backgroundColor: bgColor,
-          borderWidth: 1,
-          borderColor: colors.textMuted,
+          backgroundColor: showTonalFill ? bgColor : colors.surface,
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <MaterialCommunityIcons name={iconName as any} size={24} color={iconColor} />
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: iconContainerBg,
+            }}
+          >
+            <MaterialCommunityIcons name={iconName as any} size={22} color={iconColor} />
+          </View>
           <View>
             <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
               {isUnavailable ? 'Service Unavailable' : 'Austria disaster alerts'}

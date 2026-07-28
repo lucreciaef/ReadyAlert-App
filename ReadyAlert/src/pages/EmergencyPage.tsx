@@ -8,7 +8,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { getTopAppBarStyles } from '../styles/appStyles';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export function EmergencyPage() {
   const insets = useSafeAreaInsets();
@@ -28,7 +27,6 @@ export function EmergencyPage() {
           gap: 12,
         }}
       >
-        <MaterialCommunityIcons name="alert-circle-outline" size={24} color={colors.primary} />
         <Text className={topBar.title} numberOfLines={1}>
           Emergency
         </Text>

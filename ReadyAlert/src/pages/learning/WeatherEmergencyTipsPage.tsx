@@ -128,13 +128,13 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
             showsVerticalScrollIndicator={false}
           >
             <Text style={{
-              fontSize: 11,
-              fontWeight: '700',
-              letterSpacing: 1.5,
-              textTransform: 'uppercase',
-              color: colors.textMuted,
+              fontSize: 14,
+              fontWeight: '500',
+              letterSpacing: 0.1,
+              color: colors.primary,
               marginTop: 8,
               marginBottom: 12,
+              paddingHorizontal: 4,
             }}>
               Severe weather, thunderstorms, hail, hurricane-force winds
             </Text>
@@ -147,13 +147,13 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
             />
 
             <Text style={{
-              fontSize: 11,
-              fontWeight: '700',
-              letterSpacing: 1.5,
-              textTransform: 'uppercase',
-              color: colors.textMuted,
+              fontSize: 14,
+              fontWeight: '500',
+              letterSpacing: 0.1,
+              color: colors.primary,
               marginTop: 8,
               marginBottom: 12,
+              paddingHorizontal: 4,
             }}>
               Tips and advice
             </Text>

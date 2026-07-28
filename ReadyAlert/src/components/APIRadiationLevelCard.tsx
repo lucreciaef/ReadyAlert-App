@@ -76,8 +76,8 @@ export function APIRadiationLevelCard({
               <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
                 <Text
                   style={{
-                    fontSize: 26,
-                    fontWeight: '700',
+                    fontSize: 22,
+                    fontWeight: '500',
                     color: radiationColour(closestStation.messwert, colours),
                   }}
                 >

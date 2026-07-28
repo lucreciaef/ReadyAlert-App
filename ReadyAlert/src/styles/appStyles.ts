@@ -18,14 +18,13 @@ export const getBottomMenuStyles = (isDark: boolean) => ({
 
 export const getSettingsPageStyles = (isDark: boolean) => ({
   item: 'flex flex-row items-center py-3 px-4 mx-3 gap-4 rounded-full',
-  sectionLabel: `text-[11px] font-bold uppercase tracking-widest px-6 pt-4 pb-1 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  sectionLabel: `text-[14px] font-medium px-4 pt-4 pb-1 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
   itemText: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
-  divider: `h-px mx-4 my-2 ${isDark ? 'bg-divider-dark' : 'bg-divider'}`,
 });
 
 export const getLicenseInformationPageStyles = (isDark: boolean) => ({
-  sectionLabel: `text-[11px] font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
-  card: `rounded-xl overflow-hidden border ${isDark ? 'border-outline-dark bg-surface-alt-dark' : 'border-outline bg-surface'}`,
+  sectionLabel: `text-[14px] font-medium mb-2 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
+  card: `rounded-xl overflow-hidden ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
   cardSpacing: 'mb-6',
   rowDivider: `border-b ${isDark ? 'border-divider-dark' : 'border-divider'}`,
   libraryRow: 'flex-row items-center px-4 py-3',
@@ -51,44 +50,30 @@ export const getBottomSheetStyles = (isDark: boolean) => ({
   handle: `w-8 h-1 self-center mt-3 mb-3 rounded-full ${isDark ? 'bg-divider-dark' : 'bg-divider'}`,
 });
 
-export const getHomeDashboardPageStyles = (isDark: boolean) => ({
-  headerSpacer: 'flex-1',
-  addButtonPressable: 'rounded-full overflow-hidden',
-  addButtonInner: `px-5 py-1.5 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
-  addButtonText: `text-2xl font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
-
-  locationPillInner: `flex-row items-center gap-1.5 px-4 py-1.5 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
-  locationPillText: `text-[14px] font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
-
-  sheetHeaderRow: 'flex-row items-center justify-between mb-2',
-  sheetHeaderLeft: 'flex-row items-center gap-2',
-  sheetTitle: `flex-1 text-lg font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
-  chevronButton: 'w-10 h-10 items-center justify-center rounded-full',
-});
-
 export const getSavedLocationsPageStyles = (isDark: boolean) => ({
   screen: `flex-1 ${isDark ? 'bg-background-dark' : 'bg-background'}`,
-  sectionLabel: `text-[11px] font-bold uppercase tracking-widest mb-2 mt-4 px-4 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  sectionLabel: `text-[14px] font-medium mb-2 mt-4 px-5 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
   helper: `text-[13px] leading-[18px] px-4 mb-2 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
-  card: `mx-4 rounded-xl overflow-hidden border ${isDark ? 'border-outline-dark bg-surface-alt-dark' : 'border-outline bg-surface'}`,
+  card: `mx-4 rounded-xl overflow-hidden ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
   row: 'flex-row items-center px-4 py-3',
-  rowDivider: `border-b ${isDark ? 'border-divider-dark' : 'border-divider'}`,
+  rowDivider: '',
   rowMain: 'flex-1',
   rowTitle: `text-sm font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
   rowSubtitle: `text-xs mt-0.5 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
   rowIconBtn: 'w-10 h-10 items-center justify-center rounded-full ml-2',
   addButton: `mx-4 mt-3 flex-row items-center justify-center gap-2 px-4 py-3 rounded-full ${isDark ? 'bg-primary-dark' : 'bg-primary'}`,
-  addButtonDisabled: 'opacity-40',
+  addButtonDisabled: `mx-4 mt-3 flex-row items-center justify-center gap-2 px-4 py-3 rounded-full ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
   addButtonText: `text-sm font-semibold ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
-  searchInputWrap: `flex-row items-center gap-2 mx-4 px-8 py-2 rounded-full border ${isDark ? 'border-divider-dark bg-surface-alt-dark' : 'border-divider bg-surface-alt'}`,
+  addButtonTextDisabled: `text-sm font-medium ${isDark ? 'text-text-muted-dark' : 'text-text-muted'} opacity-60`,
+  searchInputWrap: `flex-row items-center gap-2 mx-4 px-8 py-2 rounded-full ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
   searchInput: `flex-1 text-sm ${isDark ? 'text-text-dark' : 'text-text'}`,
   emptyText: `text-[13px] text-center px-4 py-6 ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
 });
 
 export const getPreparednessScoreCardStyles = (isDark: boolean) => ({
   pressable: 'rounded-xl overflow-hidden',
-  card: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface'}`,
-  label: `mb-2 text-[11px] font-semibold uppercase tracking-widest ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  card: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
+  label: `mb-2 text-[14px] font-medium ${isDark ? 'text-primary-dark' : 'text-primary'}`,
   trophyRow: 'flex-row gap-1.5',
 });
 
@@ -105,7 +90,8 @@ export const getNationalStatusPageStyles = (isDark: boolean) => ({
   weatherContainer: 'mt-1',
   weatherHeaderRow: 'flex-row items-center gap-2 mb-3',
   weatherHeaderText: `text-base font-medium ${isDark ? 'text-text-dark' : 'text-text'}`,
-  weatherStateRow: `flex-row items-center justify-between py-2.5 px-3.5 rounded-lg mb-1.5 ${isDark ? 'bg-surface-dark' : 'bg-surface'}`,
+  weatherGroup: `rounded-xl overflow-hidden ${isDark ? 'bg-surface-dark' : 'bg-surface'}`,
+  weatherStateRow: 'flex-row items-center justify-between py-3 px-3.5',
   weatherStateText: `text-sm ${isDark ? 'text-text-dark' : 'text-text'}`,
   weatherStateBar: `w-16 h-2 rounded ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
 });

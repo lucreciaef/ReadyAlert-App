@@ -15,43 +15,41 @@ interface Props {
   colours: ReturnType<typeof getThemeColours>;
   summary: ReactNode;
   children?: ReactNode;
+  isFirst?: boolean;
 }
 
-export function ExpandableInfoCard({ icon, title, expanded, onToggle, colours, summary, children }: Props) {
+export function ExpandableInfoCard({ icon, title, expanded, onToggle, colours, summary, children, isFirst }: Props) {
   return (
     <View
       style={{
-        marginTop: 8,
-        borderRadius: 12,
-        backgroundColor: colours.surface,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: colours.textMuted,
+        borderTopWidth: isFirst ? 0 : 1,
+        borderTopColor: colours.divider,
       }}
     >
       <Pressable
         onPress={onToggle}
         android_ripple={{ color: colours.ripple }}
-        style={{ borderRadius: 8, overflow: 'hidden' }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <MaterialCommunityIcons name={icon} size={20} color={colours.primary} />
-            <Text style={{ fontSize: 13, fontWeight: '600', letterSpacing: 1.1, textTransform: 'uppercase', color: colours.textMuted }}>
-              {title}
-            </Text>
+        <View style={{ paddingVertical: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+              <MaterialCommunityIcons name={icon} size={22} color={colours.text} />
+              <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.1, color: colours.text }}>
+                {title}
+              </Text>
+            </View>
+            <MaterialCommunityIcons
+              name={expanded ? 'chevron-up' : 'chevron-down'}
+              size={22}
+              color={colours.textMuted}
+            />
           </View>
-          <MaterialCommunityIcons
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={20}
-            color={colours.textMuted}
-          />
-        </View>
 
-        {summary}
+          {summary}
+        </View>
       </Pressable>
 
-      {expanded && children}
+      {expanded && <View style={{ paddingBottom: 12 }}>{children}</View>}
     </View>
   );
 }

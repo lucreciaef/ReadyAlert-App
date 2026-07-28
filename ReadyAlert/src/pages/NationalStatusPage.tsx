@@ -195,7 +195,6 @@ export function NationalStatusPage() {
     <View className={layout.fill} style={{ paddingTop: insets.top }}>
       <View className={topBar.container} style={{ elevation: 0 }}>
         <View className={topBar.contentRow}>
-          <MaterialCommunityIcons name="map-outline" size={24} color={colors.primary} />
           <Text className={topBar.title} numberOfLines={1}>
             National view
           </Text>
@@ -241,8 +240,22 @@ export function NationalStatusPage() {
                   description={iconInfo.label}
                   zIndex={1000}
                 >
-                  <View style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}>
-                    <MaterialCommunityIcons name={iconInfo.icon} size={24} color={colors.text} />
+                  <View
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: colors.surfaceAlt,
+                      elevation: 2,
+                      shadowColor: colors.shadow,
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 2,
+                    }}
+                  >
+                    <MaterialCommunityIcons name={iconInfo.icon} size={20} color={colors.text} />
                   </View>
                 </Marker>
               );
@@ -258,14 +271,13 @@ export function NationalStatusPage() {
             height: HALF_HEIGHT,
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
-            backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
+            backgroundColor: colors.surfaceAlt,
             transform: [{ translateY: sheetAnim }],
             shadowColor: colors.shadow,
             shadowOffset: { width: 0, height: -3 },
             shadowOpacity: 0.12,
             shadowRadius: 10,
             elevation: 8,
-            opacity: 0.9,
           }}
         >
           <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
@@ -273,7 +285,7 @@ export function NationalStatusPage() {
 
             {sheetView === 'main' ? (
               <View className={styles.mainHeaderRow}>
-                <Text className={styles.mainHeaderTitle}>National RTR Alert status</Text>
+                <Text className={styles.mainHeaderTitle}>National RTR alert status</Text>
               </View>
             ) : (
               <>

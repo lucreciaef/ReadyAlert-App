@@ -1,22 +1,38 @@
 /**
- * Elevated Card – tappable card displayed on the Learning Centre main page.
+ * Learning Centre list item — compact tappable row with a 40dp leading icon,
+ * title/description, and a trailing progress indicator sourced from the
+ * preparedness score for the topic's task.
  */
 
 import { Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
+import { usePreparedness } from '../context/PreparednessContext';
 
 interface LearningCentreCardProps {
   title: string;
   description: string;
   onPress: () => void;
   iconName: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+  taskId: string;
 }
 
-export function LearningCentreCard({ title, description, onPress, iconName }: LearningCentreCardProps) {
+export function LearningCentreCard({
+  title,
+  description,
+  onPress,
+  iconName,
+  taskId,
+}: LearningCentreCardProps) {
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const { preparedness } = usePreparedness();
+  const task = preparedness.taskScores.find((t) => t.taskId === taskId);
+
+  const complete = task && task.totalCount > 0 && task.checkedCount === task.totalCount;
+  const started = task && task.checkedCount > 0;
+  const progressPercent = task && task.totalCount > 0 ? task.checkedCount / task.totalCount : 0;
 
   return (
     <Pressable
@@ -25,50 +41,83 @@ export function LearningCentreCard({ title, description, onPress, iconName }: Le
       style={{
         borderRadius: 12,
         overflow: 'hidden',
-        marginBottom: 12,
-          borderColor: colors.textMuted,
-          borderWidth: 1,
-        // shadowColor: colors.shadow,
-        // shadowOffset: { width: 0, height: 1 },
-        // shadowOpacity: isDark ? 0.25 : 0.08,
-        // shadowRadius: 4,
-        elevation: 2,
+        marginBottom: 8,
+        backgroundColor: colors.surfaceAlt,
       }}
     >
-      <View style={{ backgroundColor: colors.surface }}>
       <View
         style={{
-          width: '100%',
-          height: 100,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: colors.surfaceAlt,
-        }}
-      >
-        <MaterialCommunityIcons
-          name={iconName}
-          size={52}
-          color={colors.textMuted}
-        />
-      </View>
-      <View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          padding: 16,
-          gap: 12,
-          borderColor: colors.textMuted,
-          borderTopWidth: 1,
-      }}>
+          paddingVertical: 12,
+          paddingHorizontal: 16,
+          gap: 16,
+        }}
+      >
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: complete ? colors.successContainer : colors.primaryContainer,
+          }}
+        >
+          <MaterialCommunityIcons
+            name={iconName}
+            size={22}
+            color={complete ? colors.successOnContainer : colors.primary}
+          />
+        </View>
+
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text, marginBottom: 2 }}>
-            {title}
-          </Text>
-          <Text style={{ fontSize: 14, lineHeight: 20, color: colors.textMuted }}>
+          <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>{title}</Text>
+          <Text
+            style={{ fontSize: 13, lineHeight: 18, color: colors.textMuted, marginTop: 2 }}
+            numberOfLines={2}
+          >
             {description}
           </Text>
         </View>
-        <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted} />
-      </View>
+
+        {task && task.totalCount > 0 && (
+          <View style={{ alignItems: 'flex-end', minWidth: 48 }}>
+            {complete ? (
+              <MaterialCommunityIcons name="check-circle" size={20} color={colors.success} />
+            ) : (
+              <>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '600',
+                    color: started ? colors.primary : colors.textMuted,
+                  }}
+                >
+                  {task.checkedCount} / {task.totalCount}
+                </Text>
+                <View
+                  style={{
+                    height: 3,
+                    width: 48,
+                    borderRadius: 2,
+                    backgroundColor: colors.divider,
+                    marginTop: 4,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 3,
+                      width: `${progressPercent * 100}%`,
+                      backgroundColor: colors.primary,
+                    }}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+        )}
       </View>
     </Pressable>
   );

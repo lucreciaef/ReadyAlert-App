@@ -189,15 +189,14 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
             </Text>
           ) : (
             <View className={styles.card}>
-              {savedLocations.map((loc, idx) => {
+              {savedLocations.map((loc) => {
                 const isSelected = selectedId === loc.id;
-                const isLast = idx === savedLocations.length - 1;
                 return (
                   <Pressable
                     key={loc.id}
                     onPress={() => selectLocation(loc.id)}
                     android_ripple={{ color: colors.ripple }}
-                    className={`${styles.row} ${isLast ? '' : styles.rowDivider}`}
+                    className={styles.row}
                   >
                     <MaterialCommunityIcons
                       name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
@@ -228,15 +227,16 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
           <Pressable
             onPress={() => canAddMore && setMode('add')}
             disabled={!canAddMore}
-            android_ripple={{ color: colors.rippleOnPrimary }}
-            className={`${styles.addButton} ${canAddMore ? '' : styles.addButtonDisabled}`}
+            android_ripple={{ color: canAddMore ? colors.rippleOnPrimary : colors.ripple }}
+            className={canAddMore ? styles.addButton : styles.addButtonDisabled}
           >
             <MaterialCommunityIcons
               name="plus"
               size={20}
-              color={isDark ? colors.onPrimary : colors.onPrimary}
+              color={canAddMore ? colors.onPrimary : colors.textMuted}
+              style={!canAddMore ? { opacity: 0.6 } : undefined}
             />
-            <Text className={styles.addButtonText}>
+            <Text className={canAddMore ? styles.addButtonText : styles.addButtonTextDisabled}>
               {canAddMore ? 'Add a location' : `Limit of ${MAX_SAVED_LOCATIONS} reached`}
             </Text>
           </Pressable>
@@ -288,13 +288,12 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
             {results.length > 0 && (
               <View className={styles.card} style={{ marginTop: 8 }}>
                 {results.map((r, idx) => {
-                  const isLast = idx === results.length - 1;
                   return (
                     <Pressable
                       key={`${r.id}-${idx}`}
                       onPress={() => handlePickResult(r)}
                       android_ripple={{ color: colors.ripple }}
-                      className={`${styles.row} ${isLast ? '' : styles.rowDivider}`}
+                      className={styles.row}
                     >
                       <MaterialCommunityIcons
                         name="map-marker-outline"

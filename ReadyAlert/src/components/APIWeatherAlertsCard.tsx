@@ -15,9 +15,10 @@ import { EmptyState } from './EmptyState';
 
 interface Props {
   warnings: Warning[];
+  isFirst?: boolean;
 }
 
-export function APIWeatherAlertsCard({ warnings }: Props) {
+export function APIWeatherAlertsCard({ warnings, isFirst }: Props) {
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
@@ -31,9 +32,10 @@ export function APIWeatherAlertsCard({ warnings }: Props) {
       expanded={expanded}
       onToggle={() => setExpanded((v) => !v)}
       colours={colors}
+      isFirst={isFirst}
       summary={
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
-          <Text style={{ fontSize: 26, fontWeight: '700', color: count > 0 ? colors.warning : colors.success }}>
+          <Text style={{ fontSize: 22, fontWeight: '500', color: count > 0 ? colors.warning : colors.success }}>
             {count}
           </Text>
           <Text style={{ fontSize: 14, color: colors.textMuted }}>

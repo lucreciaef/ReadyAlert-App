@@ -4,13 +4,16 @@
 
 import { type SQLiteDatabase } from 'expo-sqlite';
 import { PHARMACY_ITEMS_SEED } from '../hooks/usePharmacyChecklist';
+import { GO_BAG_ITEMS_SEED } from '../hooks/useGoBagChecklist';
 
 /**
  * Schema v1:
  *   tasks: one row per learning-centre task / module
  *   checklist_items: individual checklist items belonging to a task
+ * Schema v2:
+ *   adds the Emergency Go-Bag task and its checklist items
  */
-const CURRENT_SCHEMA_VERSION = 1;
+const CURRENT_SCHEMA_VERSION = 2;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
   const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
@@ -19,6 +22,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
   if (version >= CURRENT_SCHEMA_VERSION) return;
 
   if (version < 1) await migration_v1(db);
+  if (version < 2) await migration_v2(db);
 
   await db.runAsync(`PRAGMA user_version = ${CURRENT_SCHEMA_VERSION}`);
 }
@@ -112,4 +116,29 @@ async function migration_v1(db: SQLiteDatabase): Promise<void> {
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
     ['wet_read', 'task_weather_tips', 'I have read and understood the weather emergency tips', null, null, 0, 0],
   );
+}
+
+async function migration_v2(db: SQLiteDatabase): Promise<void> {
+  // Emergency Go-Bag task
+  await db.runAsync(
+    `INSERT OR IGNORE INTO tasks (id, title, category, description, sort_order)
+     VALUES (?, ?, ?, ?, ?)`,
+    [
+      'task_go_bag',
+      'Emergency Go-Bag',
+      'Home Preparedness',
+      'What to pack in a go-bag so you can leave your home quickly in an emergency.',
+      3,
+    ],
+  );
+
+  for (let i = 0; i < GO_BAG_ITEMS_SEED.length; i++) {
+    const item = GO_BAG_ITEMS_SEED[i];
+    await db.runAsync(
+      `INSERT OR IGNORE INTO checklist_items
+         (id, task_id, name, group_name, quantity, checked, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [item.id, 'task_go_bag', item.name, item.group, item.quantity ?? null, 0, i],
+    );
+  }
 }

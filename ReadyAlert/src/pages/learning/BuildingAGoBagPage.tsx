@@ -1,7 +1,8 @@
 /**
- * Sub-page: Home Pharmacy Kit
- * Source: Österreichisches Rotes Kreuz - https://www.roteskreuz.at/katastrophenvorsorge (PDF downloads link)
- * Top App Bar with back button, linear progress bar, checklist with checkboxes, and a Save button
+ * Sub-page: Building a Go-Bag
+ * Source: Österreichisches Rotes Kreuz - https://www.roteskreuz.at/vorsorge (PDF downloads link)
+ * Top App Bar with back button, intro card, linear progress bar, checklist with checkboxes,
+ * and a Save button.
  */
 
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
@@ -10,18 +11,21 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
-import { usePharmacyChecklist } from '../../hooks/usePharmacyChecklist';
+import { useGoBagChecklist } from '../../hooks/useGoBagChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
 import { SaveProgressButton } from '../../components/SaveProgressButton';
 import { LearningSourceCitation } from '../../components/LearningSourceCitation';
 
-const GROUP_ORDER = ['Medicines', 'Other items', 'First-aid dressing packs'];
+const GROUP_ORDER = ['Clothing & shelter', 'Food, water & tools', 'Health & documents'];
 
-interface PharmacyKitPageProps {
+const INTRO_TEXT =
+  'Even a leak in a gas pipe, a fire in a neighbouring house, or the discovery of an unexploded aerial bomb can suddenly make it necessary to evacuate individual buildings — let alone a full-scale disaster. In such a case, you should have an emergency go-bag ready, or at least know what you need to pack. The most practical means of transport is a rucksack, so your hands stay free. A trolley is the second-best choice — thanks to its wheels, it spares you from carrying the weight.';
+
+interface BuildingAGoBagPageProps {
   onBack: () => void;
 }
 
-export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
+export function BuildingAGoBagPage({ onBack }: BuildingAGoBagPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
@@ -29,7 +33,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
   const { refresh: refreshPreparedness } = usePreparedness();
 
   const { items, loading, saving, saved, checkedCount, totalCount, toggleItem, saveChecklist } =
-    usePharmacyChecklist();
+    useGoBagChecklist();
 
   const handleSave = async () => {
     await saveChecklist();
@@ -69,7 +73,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>
         <Text className={topBar.titleMedium} numberOfLines={1}>
-          Home Pharmacy Kit
+          Emergency Go-Bag
         </Text>
       </View>
 
@@ -143,6 +147,34 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
             contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
+            <View
+              style={{
+                borderRadius: 12,
+                padding: 14,
+                marginBottom: 20,
+                backgroundColor: colors.surfaceAlt,
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <MaterialCommunityIcons
+                  name="bag-personal-outline"
+                  size={20}
+                  color={colors.primary}
+                />
+                <Text
+                  style={{
+                    marginLeft: 8,
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: colors.text,
+                  }}
+                >
+                  Why prepare a go-bag?
+                </Text>
+              </View>
+              <Text style={{ fontSize: 13, lineHeight: 19, color: colors.text }}>{INTRO_TEXT}</Text>
+            </View>
+
             {groups.map((group) => (
               <View key={group.name} style={{ marginBottom: 20 }}>
                 <Text
@@ -248,7 +280,7 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
             ))}
             <LearningSourceCitation
               source="Österreichisches Rotes Kreuz (Austrian Red Cross)"
-              url="https://www.roteskreuz.at"
+              url="https://www.roteskreuz.at/vorsorge"
             />
           </ScrollView>
           <SaveProgressButton onSave={handleSave} saving={saving} saved={saved} />

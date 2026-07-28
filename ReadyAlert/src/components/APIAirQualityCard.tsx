@@ -71,7 +71,7 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
   const colours = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
 
-  const chipBgDefault = isDark ? colours.surfaceAlt : colours.surface;
+  const chipBgDefault = colours.surface;
   const LEVEL_COLOURS: Record<ThresholdLevel, string | null> = {
     0: null,
     1: colours.warning,
@@ -108,8 +108,7 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
           )}
           {data && (
             <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
-              <Text style={{ fontSize: 26, fontWeight: '700', color: getAqiColour(data.european_aqi, colours) }}>
-
+              <Text style={{ fontSize: 22, fontWeight: '500', color: getAqiColour(data.european_aqi, colours) }}>
                 {Math.round(data.european_aqi)}
               </Text>
               <Text style={{ fontSize: 14, color: colours.textMuted }}>
@@ -143,8 +142,6 @@ export function APIAirQualityCard({ data, loading, error }: Props) {
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     minWidth: 80,
-                    borderWidth: 1,
-                    borderColor: colours.textMuted,
                   }}
                 >
                   <View

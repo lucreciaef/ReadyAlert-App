@@ -26,7 +26,6 @@ import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import {
   getBottomSheetStyles,
-  getHomeDashboardPageStyles,
   getLayoutStyles,
   getTopAppBarStyles,
 } from '../styles/appStyles';
@@ -66,7 +65,6 @@ export function HomeDashboardPage({
   const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const bottomSheet = getBottomSheetStyles(isDark);
-  const styles = getHomeDashboardPageStyles(isDark);
   const { loading: prepLoading } = usePreparedness();
   const {
     coords: userLocation,
@@ -195,8 +193,6 @@ export function HomeDashboardPage({
   };
 
   const locationName = getLocationName(warningsData);
-  const warningCount = visibleWarnings.length;
-  const hasWarnings = warningCount > 0;
 
   const initialMapRegion = {
     latitude: 47.7,
@@ -218,47 +214,23 @@ export function HomeDashboardPage({
       ? `${locationDisplayName ?? locationName ?? 'Current location'} (503 debug)`
       : (customLocationLabel ?? locationDisplayName ?? locationName ?? 'Unknown location');
 
-  const statusIcon =
-    warningsLoading || locationLoading
-      ? 'timer-sand'
-      : serviceUnavailable || !!warningsError || (!!locationError && !userLocation)
-        ? 'alert'
-        : 'check-circle';
-
-  const statusColor =
-    warningsLoading || locationLoading
-      ? colors.textMuted
-      : serviceUnavailable || !!warningsError || (!!locationError && !userLocation)
-        ? colors.warning
-        : colors.text;
-
   return (
     <View className={layout.fill} style={{ paddingTop: insets.top }}>
-      <View className={topBar.container} style={{ elevation: 0 }}>
-        <View className={topBar.contentRow}>
-          <MaterialCommunityIcons name="home-outline" size={24} color={colors.primary} />
-          <View className="flex-1 items-center">
-            <View className={styles.locationPillInner}>
-              <MaterialCommunityIcons
-                name={isCustomLocation ? 'map-marker' : 'crosshairs-gps'}
-                size={14}
-                color={isCustomLocation ? colors.primary : colors.textMuted}
-              />
-              <Text className={styles.locationPillText} numberOfLines={1}>
-                {isCustomLocation && selectedLocation ? selectedLocation.name : 'Current location'}
-              </Text>
-            </View>
-          </View>
-          <Pressable
-            onPress={onOpenSavedLocations}
-            android_ripple={{ color: colors.ripple }}
-            className={styles.addButtonPressable}
-          >
-            <View className={styles.addButtonInner}>
-              <Text className={styles.addButtonText}>+</Text>
-            </View>
-          </Pressable>
-        </View>
+      <View className={topBar.container} style={{ elevation: 0, paddingHorizontal: 12 }}>
+        <Text className={topBar.title} numberOfLines={1}>
+          {headerLabel}
+        </Text>
+        <Pressable
+          onPress={onOpenSavedLocations}
+          android_ripple={{ color: colors.ripple, borderless: true }}
+          className={topBar.iconButton}
+        >
+          <MaterialCommunityIcons
+            name={isCustomLocation ? 'map-marker' : 'map-marker-outline'}
+            size={24}
+            color={colors.text}
+          />
+        </Pressable>
       </View>
 
       <View className={layout.fill}>
@@ -331,38 +303,17 @@ export function HomeDashboardPage({
             height: HALF_HEIGHT,
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
-            backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
+            backgroundColor: colors.surfaceAlt,
             transform: [{ translateY: sheetAnim }],
             shadowColor: colors.shadow,
             shadowOffset: { width: 0, height: -3 },
             shadowOpacity: 0.12,
             shadowRadius: 10,
             elevation: 8,
-            opacity: 0.9,
           }}
         >
           <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
             <View className={bottomSheet.handle} />
-            {/*<View className={styles.sheetHeaderRow}>*/}
-            {/*  /!*<View className={styles.sheetHeaderLeft}>*!/*/}
-            {/*  /!*  <MaterialCommunityIcons name="map-marker" size={20} color={colors.text} />*!/*/}
-            {/*  /!*  <Text className={styles.sheetTitle} numberOfLines={1}>*!/*/}
-            {/*  /!*    {headerLabel}{' '}*!/*/}
-            {/*  /!*    <MaterialCommunityIcons name={statusIcon as any} size={20} color={statusColor} />*!/*/}
-            {/*  /!*  </Text>*!/*/}
-            {/*  /!*</View>*!/*/}
-            {/*  /!*<Pressable*!/*/}
-            {/*  /!*  onPress={() => snapSheet(expandedRef.current ? MAX_TRANSLATE_Y : 0)}*!/*/}
-            {/*  /!*  android_ripple={{ color: colors.ripple, borderless: true }}*!/*/}
-            {/*  /!*  className={styles.chevronButton}*!/*/}
-            {/*  /!*>*!/*/}
-            {/*  /!*  <MaterialCommunityIcons*!/*/}
-            {/*  /!*    name={sheetExpanded ? 'chevron-down' : 'chevron-up'}*!/*/}
-            {/*  /!*    size={22}*!/*/}
-            {/*  /!*    color={colors.textMuted}*!/*/}
-            {/*  /!*  />*!/*/}
-            {/*  /!*</Pressable>*!/*/}
-            {/*</View>*/}
           </View>
 
           <ScrollView
@@ -398,7 +349,7 @@ export function HomeDashboardPage({
                   !serviceUnavailable &&
                   !outsideAustria &&
                   !(locationError && !userLocation) && (
-                    <APIWeatherAlertsCard warnings={visibleWarnings} />
+                    <APIWeatherAlertsCard warnings={visibleWarnings} isFirst />
                   )}
 
                 <APIWeatherCard data={weatherData} loading={weatherLoading} error={weatherError} />
