@@ -7,6 +7,7 @@ import { ScrollView, Text, View, Pressable, Alert, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSQLiteContext } from 'expo-sqlite';
 import { useTheme, ThemeMode } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { getSettingsPageStyles, getTopAppBarStyles } from '../styles/appStyles';
@@ -47,7 +48,34 @@ export function SettingsPage({
   const colours = getThemeColours(isDark);
   const styles = getSettingsPageStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const db = useSQLiteContext();
   const [activePage, setActivePage] = useState<SubPage>(initialSubPage ?? null);
+  const [expiryDebugBusy, setExpiryDebugBusy] = useState(false);
+
+  const handleDebugExpireArticle = async () => {
+    setExpiryDebugBusy(true);
+    try {
+      const now = new Date();
+      const completedAt = now.toISOString();
+      const expiresAt = new Date(now.getTime() + 60 * 1000).toISOString();
+
+      // Mark the weather tips article as read and schedule it to expire in 1 minute
+      await db.runAsync(`UPDATE checklist_items SET checked = 1 WHERE id = 'wet_read'`);
+      await db.runAsync(
+        `UPDATE tasks SET completed_at = ?, expires_at = ? WHERE id = 'task_weather_tips'`,
+        [completedAt, expiresAt],
+      );
+
+      Alert.alert(
+        'Expiry scheduled',
+        'The "Weather Emergency Tips" article will expire in 1 minute. Background the app and return after 1 minute to receive the push notification.',
+      );
+    } catch (err) {
+      Alert.alert('Error', String(err));
+    } finally {
+      setExpiryDebugBusy(false);
+    }
+  };
 
   // Honour later prop changes (e.g. user taps the "+" on the home dashboard
   // while the settings tab was already the previous tab).
@@ -245,6 +273,21 @@ export function SettingsPage({
             </Pressable>
           </>
         )}
+
+        <Pressable
+          className={styles.item}
+          android_ripple={{ color: colours.ripple }}
+          onPress={handleDebugExpireArticle}
+          disabled={expiryDebugBusy}
+        >
+          <MaterialCommunityIcons name="timer-outline" size={24} color={colours.warning} />
+          <View style={{ flex: 1 }}>
+            <Text className={styles.itemText}>Expire article in 1 minute</Text>
+            <Text style={{ fontSize: 11, color: colours.textMuted, marginTop: 2 }}>
+              Schedules "Weather Emergency Tips" to expire and sends a notification
+            </Text>
+          </View>
+        </Pressable>
       </ScrollView>
     </View>
   );

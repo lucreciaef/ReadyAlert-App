@@ -194,11 +194,9 @@ export function NationalStatusPage() {
   return (
     <View className={layout.fill} style={{ paddingTop: insets.top }}>
       <View className={topBar.container} style={{ elevation: 0 }}>
-        <View className={topBar.contentRow}>
-          <Text className={topBar.title} numberOfLines={1}>
-            National view
-          </Text>
-        </View>
+        <Text className={topBar.title} numberOfLines={1}>
+          National view
+        </Text>
       </View>
 
       <View className={layout.fill}>

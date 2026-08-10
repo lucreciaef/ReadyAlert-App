@@ -17,6 +17,7 @@ import { BuildingAGoBagPage } from './learning/BuildingAGoBagPage';
 import { NoReactionPersonTipsPage } from './learning/NoReactionPersonTipsPage';
 import { PoisoningDangerAtHomeTipsPage } from './learning/PoisoningDangerAtHomeTipsPage';
 import { OneWeekStockpilePage } from './learning/OneWeekStockpilePage';
+import { usePreparedness } from '../context/PreparednessContext';
 
 type SubPage =
   | 'pharmacyKit'
@@ -33,6 +34,7 @@ export function LearningCentrePage() {
   const colors = getThemeColours(isDark);
   const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const { preparedness } = usePreparedness();
   const [activePage, setActivePage] = useState<SubPage>(null);
 
   if (activePage === 'pharmacyKit') {
@@ -73,6 +75,17 @@ export function LearningCentrePage() {
         </Text>
         <View style={{ marginBottom: 16 }}>
           <PreparednessScoreCard />
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '600',
+              color: preparedness.color,
+              textAlign: 'center',
+              marginTop: 8,
+            }}
+          >
+            {preparedness.label}
+          </Text>
         </View>
         <LearningCentreCard
           taskId="task_pharmacy_kit"

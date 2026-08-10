@@ -44,7 +44,7 @@ export function EmergencyPage() {
           backgroundColor: colors.background,
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 16,
+          // paddingHorizontal: 16,
           gap: 12,
         }}
       >

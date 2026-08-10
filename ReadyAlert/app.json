@@ -22,7 +22,9 @@
       ],
       "expo-sqlite",
       "expo-notifications",
-      "expo-font"
+      "expo-font",
+      "expo-task-manager",
+      "expo-background-fetch"
     ],
     "ios": {
       "supportsTablet": true
@@ -39,7 +41,8 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.VIBRATE"
+        "android.permission.VIBRATE",
+        "android.permission.FOREGROUND_SERVICE"
       ]
     },
     "web": {
