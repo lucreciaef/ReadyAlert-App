@@ -280,64 +280,66 @@ export function NationalStatusPage() {
             elevation: 8,
           }}
         >
-          <View {...panResponder.panHandlers} className={bottomSheet.handleWrap}>
+          <View {...panResponder.panHandlers}>
             <View className={bottomSheet.handle} />
 
-            {sheetView === 'main' ? (
-              <View className={styles.mainHeaderRow}>
-                <Text className={styles.mainHeaderTitle}>National RTR alert status</Text>
-              </View>
-            ) : (
-              <>
-                <View className={styles.alertsHeaderRow}>
-                  <Pressable
-                    onPress={() => setSheetView('main')}
-                    android_ripple={{ color: colors.ripple, borderless: true }}
-                    className={styles.backButton}
-                  >
-                    <MaterialCommunityIcons name="chevron-left" size={20} color={colors.text} />
-                    <Text className={styles.backButtonText}>Overview</Text>
-                  </Pressable>
-
-                  <View className={styles.alertsCountRow}>
-                    <MaterialCommunityIcons
-                      name={hasAlerts ? 'alert-circle' : 'check-circle'}
-                      size={18}
-                      color={hasAlerts ? colors.error : colors.success}
-                    />
-                    <Text className={styles.alertsCountText}>
-                      {loading
-                        ? 'Loading…'
-                        : hasAlerts
-                          ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}`
-                          : 'No Alerts'}
-                    </Text>
-                  </View>
+            <View style={{ paddingHorizontal: 20, paddingBottom: 4 }}>
+              {sheetView === 'main' ? (
+                <View className={styles.mainHeaderRow}>
+                  <Text className={styles.mainHeaderTitle}>National RTR alert status</Text>
                 </View>
+              ) : (
+                <>
+                  <View className={styles.alertsHeaderRow}>
+                    <Pressable
+                      onPress={() => setSheetView('main')}
+                      android_ripple={{ color: colors.ripple, borderless: true }}
+                      className={styles.backButton}
+                    >
+                      <MaterialCommunityIcons name="chevron-left" size={20} color={colors.text} />
+                      <Text className={styles.backButtonText}>Overview</Text>
+                    </Pressable>
 
-                {allAlerts.length > 0 && (
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 8 }}
-                  >
-                    {ALL_ALERT_LEVELS.map((level) => (
-                      <RTRLevelChip
-                        key={level}
-                        level={level}
-                        active={activeLevels.has(level)}
-                        onPress={() => toggleLevel(level)}
+                    <View className={styles.alertsCountRow}>
+                      <MaterialCommunityIcons
+                        name={hasAlerts ? 'alert-circle' : 'check-circle'}
+                        size={18}
+                        color={hasAlerts ? colors.error : colors.success}
                       />
-                    ))}
-                  </ScrollView>
-                )}
-              </>
-            )}
+                      <Text className={styles.alertsCountText}>
+                        {loading
+                          ? 'Loading…'
+                          : hasAlerts
+                            ? `${totalCount} Alert${totalCount !== 1 ? 's' : ''}`
+                            : 'No Alerts'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {allAlerts.length > 0 && (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingBottom: 8 }}
+                    >
+                      {ALL_ALERT_LEVELS.map((level) => (
+                        <RTRLevelChip
+                          key={level}
+                          level={level}
+                          active={activeLevels.has(level)}
+                          onPress={() => toggleLevel(level)}
+                        />
+                      ))}
+                    </ScrollView>
+                  )}
+                </>
+              )}
+            </View>
           </View>
 
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 16 }}
             showsVerticalScrollIndicator={false}
             scrollEnabled={sheetExpanded}
             keyboardShouldPersistTaps="handled"

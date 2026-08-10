@@ -18,23 +18,38 @@ interface Props {
   isFirst?: boolean;
 }
 
-export function ExpandableInfoCard({ icon, title, expanded, onToggle, colours, summary, children, isFirst }: Props) {
+export function ExpandableInfoCard({
+  icon,
+  title,
+  expanded,
+  onToggle,
+  colours,
+  summary,
+  children,
+  isFirst,
+}: Props) {
   return (
     <View
       style={{
         borderTopWidth: isFirst ? 0 : 1,
         borderTopColor: colours.divider,
+        paddingHorizontal: 12,
       }}
     >
-      <Pressable
-        onPress={onToggle}
-        android_ripple={{ color: colours.ripple }}
-      >
+      <Pressable onPress={onToggle} android_ripple={{ color: colours.ripple }}>
         <View style={{ paddingVertical: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
               <MaterialCommunityIcons name={icon} size={22} color={colours.text} />
-              <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.1, color: colours.text }}>
+              <Text
+                style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.1, color: colours.text }}
+              >
                 {title}
               </Text>
             </View>
