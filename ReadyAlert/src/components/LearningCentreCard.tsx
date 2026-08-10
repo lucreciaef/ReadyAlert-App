@@ -18,6 +18,11 @@ interface LearningCentreCardProps {
   taskId: string;
 }
 
+function daysUntil(isoDate: string): number {
+  const diff = new Date(isoDate).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
 export function LearningCentreCard({
   title,
   description,
@@ -33,6 +38,9 @@ export function LearningCentreCard({
   const complete = task && task.totalCount > 0 && task.checkedCount === task.totalCount;
   const started = task && task.checkedCount > 0;
   const progressPercent = task && task.totalCount > 0 ? task.checkedCount / task.totalCount : 0;
+
+  const showExpiryBadge = task && (task.isExpired || task.expiresAt !== null);
+  const expiryDaysLeft = task?.expiresAt ? daysUntil(task.expiresAt) : 0;
 
   return (
     <Pressable
@@ -61,13 +69,24 @@ export function LearningCentreCard({
             borderRadius: 20,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: complete ? colors.successContainer : colors.primaryContainer,
+            backgroundColor:
+              task?.isExpired
+                ? colors.errorContainer
+                : complete
+                  ? colors.successContainer
+                  : colors.primaryContainer,
           }}
         >
           <MaterialCommunityIcons
             name={iconName}
             size={22}
-            color={complete ? colors.successOnContainer : colors.primary}
+            color={
+              task?.isExpired
+                ? colors.error
+                : complete
+                  ? colors.successOnContainer
+                  : colors.primary
+            }
           />
         </View>
 
@@ -79,12 +98,28 @@ export function LearningCentreCard({
           >
             {description}
           </Text>
+          {showExpiryBadge && (
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: '500',
+                marginTop: 4,
+                color: task.isExpired ? colors.error : colors.textMuted,
+              }}
+            >
+              {task.isExpired
+                ? '⚠ Expired — tap to review'
+                : `Valid for ${expiryDaysLeft} more day${expiryDaysLeft === 1 ? '' : 's'}`}
+            </Text>
+          )}
         </View>
 
         {task && task.totalCount > 0 && (
           <View style={{ alignItems: 'flex-end', minWidth: 48 }}>
-            {complete ? (
+            {complete && !task.isExpired ? (
               <MaterialCommunityIcons name="check-circle" size={20} color={colors.success} />
+            ) : task.isExpired ? (
+              <MaterialCommunityIcons name="alert-circle" size={20} color={colors.error} />
             ) : (
               <>
                 <Text

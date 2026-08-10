@@ -32,6 +32,13 @@ export async function registerForPushNotifications(): Promise<boolean> {
       lightColor: '#DC2626',
       sound: 'default',
     });
+    await Notifications.setNotificationChannelAsync('preparedness-expiry', {
+      name: 'Preparedness Expiry',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#DC2626',
+      sound: 'default',
+    });
   }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -61,6 +68,21 @@ export async function sendGeosphereNotification(
           : `There are ${warningCount} active weather warnings for your area. Tap to view details.`,
       sound: 'default',
       data: { source: 'geosphere', warningCount, locationName },
+    },
+    trigger: null, // fire immediately
+  });
+}
+
+/**
+ * Send a local push notification when a preparedness task has expired.
+ */
+export async function sendTaskExpiryNotification(taskTitle: string): Promise<void> {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: '⏰ Learning Centre task expired',
+      body: `Your "${taskTitle}" task has expired. Review it to keep your preparedness score up to date.`,
+      sound: 'default',
+      data: { source: 'preparedness-expiry', taskTitle },
     },
     trigger: null, // fire immediately
   });

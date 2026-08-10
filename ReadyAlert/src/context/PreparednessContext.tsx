@@ -17,6 +17,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getThemeColours } from '../styles/themeColours';
+import {
+  checkAndExpireTasks,
+  updateTaskCompletionTimestamps,
+} from '../utils/taskExpiry';
 
 export interface TaskScore {
   taskId: string;
@@ -26,6 +30,10 @@ export interface TaskScore {
   score: number;
   contribution: number;
   weight: number;
+  expiryDurationDays: number;
+  completedAt: string | null;
+  expiresAt: string | null;
+  isExpired: boolean;
 }
 
 export interface PreparednessLevel {
@@ -64,6 +72,56 @@ const PreparednessContext = createContext<PreparednessContextType>({
   loading: true,
 });
 
+type TaskRow = {
+  id: string;
+  title: string;
+  expiry_duration_days: number;
+  completed_at: string | null;
+  expires_at: string | null;
+};
+
+async function queryTaskScores(db: ReturnType<typeof useSQLiteContext>): Promise<TaskScore[]> {
+  const tasks = await db.getAllAsync<TaskRow>(
+    `SELECT id, title, expiry_duration_days, completed_at, expires_at
+     FROM tasks ORDER BY sort_order`,
+  );
+
+  if (tasks.length === 0) return [];
+
+  const taskWeight = 100 / tasks.length;
+  const now = new Date().toISOString();
+  const scores: TaskScore[] = [];
+
+  for (const task of tasks) {
+    const result = await db.getFirstAsync<{ total: number; checked: number }>(
+      `SELECT COUNT(*) AS total, COALESCE(SUM(checked), 0) AS checked
+       FROM checklist_items WHERE task_id = ?`,
+      [task.id],
+    );
+    const total = result?.total ?? 0;
+    const checked = result?.checked ?? 0;
+    const completionRatio = total > 0 ? checked / total : 0;
+    const score = completionRatio * 100;
+    const contribution = completionRatio * taskWeight;
+
+    scores.push({
+      taskId: task.id,
+      title: task.title,
+      checkedCount: checked,
+      totalCount: total,
+      score,
+      contribution,
+      weight: taskWeight,
+      expiryDurationDays: task.expiry_duration_days,
+      completedAt: task.completed_at,
+      expiresAt: task.expires_at,
+      isExpired: task.expires_at !== null && task.expires_at <= now,
+    });
+  }
+
+  return scores;
+}
+
 export function PreparednessProvider({ children }: { children: React.ReactNode }) {
   const db = useSQLiteContext();
   const [preparedness, setPreparedness] = useState<PreparednessLevel>(defaultPreparedness);
@@ -71,42 +129,27 @@ export function PreparednessProvider({ children }: { children: React.ReactNode }
 
   const refresh = useCallback(async () => {
     try {
-      const tasks = await db.getAllAsync<{ id: string; title: string }>(
-        'SELECT id, title FROM tasks ORDER BY sort_order',
-      );
+      // 1. Update completion timestamps for newly-completed tasks
+      await updateTaskCompletionTimestamps(db);
 
-      if (tasks.length === 0) {
+      // 2. Expire any tasks whose timer has run out, uncheck their items, notify
+      const expiredIds = await checkAndExpireTasks(db);
+
+      // 3. If any tasks just expired, timestamps were cleared — re-run timestamp update
+      //    so the just-unchecked tasks don't incorrectly get a new completed_at
+      if (expiredIds.length > 0) {
+        await updateTaskCompletionTimestamps(db);
+      }
+
+      // 4. Compute scores from the now-current DB state
+      const taskScores = await queryTaskScores(db);
+
+      if (taskScores.length === 0) {
         setPreparedness(defaultPreparedness);
         return;
       }
 
-      const taskWeight = 100 / tasks.length;
-      const taskScores: TaskScore[] = [];
-
-      for (const task of tasks) {
-        const result = await db.getFirstAsync<{ total: number; checked: number }>(
-          `SELECT COUNT(*) AS total, COALESCE(SUM(checked), 0) AS checked
-           FROM checklist_items WHERE task_id = ?`,
-          [task.id],
-        );
-        const total = result?.total ?? 0;
-        const checked = result?.checked ?? 0;
-        const completionRatio = total > 0 ? checked / total : 0;
-        const score = completionRatio * 100;
-        const contribution = completionRatio * taskWeight;
-        taskScores.push({
-          taskId: task.id,
-          title: task.title,
-          checkedCount: checked,
-          totalCount: total,
-          score,
-          contribution,
-          weight: taskWeight,
-        });
-      }
-
       const overallScore = taskScores.reduce((sum, t) => sum + t.contribution, 0);
-
       const rounded = Math.round(overallScore * 10) / 10;
       const { label, color } = getLevelInfo(Math.round(overallScore), false);
 

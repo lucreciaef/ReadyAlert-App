@@ -5,17 +5,19 @@
  */
 
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { WeatherData } from '../api';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
 import { getWeatherIcon } from '../utils/weatherIcon';
+import { ExpandableInfoCard } from './ExpandableInfoCard';
 
 interface Props {
   data: WeatherData | null;
   loading: boolean;
   error: string | null;
+  isFirst?: boolean;
 }
 
 function formatTemp(value: number | undefined | null): string {
@@ -23,50 +25,21 @@ function formatTemp(value: number | undefined | null): string {
   return `${Math.round(value)}°`;
 }
 
-export function APIWeatherCard({ data, loading, error }: Props) {
+export function APIWeatherCard({ data, loading, error, isFirst }: Props) {
   const { isDark } = useTheme();
   const colours = getThemeColours(isDark);
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <View
-      style={{
-        borderTopWidth: 1,
-        borderTopColor: colours.divider,
-      }}
-    >
-      <Pressable
-        onPress={() => setExpanded((v) => !v)}
-        android_ripple={{ color: colours.ripple }}
-      >
-        <View style={{ paddingVertical: 12 }}>
-          <View
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
-              <MaterialCommunityIcons
-                name="weather-partly-cloudy"
-                size={22}
-                color={colours.text}
-              />
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: '500',
-                  letterSpacing: 0.1,
-                  color: colours.text,
-                }}
-              >
-                Weather
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name={expanded ? 'chevron-up' : 'chevron-down'}
-              size={22}
-              color={colours.textMuted}
-            />
-          </View>
-
+    <ExpandableInfoCard
+      icon="weather-partly-cloudy"
+      title="Weather"
+      expanded={expanded}
+      onToggle={() => setExpanded((v) => !v)}
+      colours={colours}
+      isFirst={isFirst}
+      summary={
+        <>
           {loading && !data && (
             <Text style={{ color: colours.textMuted, fontSize: 14, marginTop: 10 }}>
               Loading weather data…
@@ -107,11 +80,11 @@ export function APIWeatherCard({ data, loading, error }: Props) {
                 </View>
               );
             })()}
-        </View>
-      </Pressable>
-
-      {expanded && data && (
-        <View style={{ paddingBottom: 12, flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        </>
+      }
+    >
+      {data && (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           <WeatherChip
             icon="water-percent"
             label="Humidity"
@@ -145,7 +118,7 @@ export function APIWeatherCard({ data, loading, error }: Props) {
           />
         </View>
       )}
-    </View>
+    </ExpandableInfoCard>
   );
 }
 

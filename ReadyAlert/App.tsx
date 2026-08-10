@@ -1,7 +1,10 @@
-import { useState } from 'react';
-import { View } from 'react-native';
+// Side-effect import: registers the TaskManager task definition before React mounts
+import './src/tasks/expiryBackgroundTask';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, AppStateStatus, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { SQLiteProvider } from 'expo-sqlite';
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts, RobotoFlex_400Regular } from '@expo-google-fonts/roboto-flex';
 import './globals.css';
@@ -11,28 +14,48 @@ import { SettingsPage } from './src/pages/SettingsPage';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { HomeDashboardPage } from './src/pages/HomeDashboardPage';
 import { NationalStatusPage } from './src/pages/NationalStatusPage';
-import { EmergencyPage } from "./src/pages/EmergencyPage";
+import { EmergencyPage } from './src/pages/EmergencyPage';
 import { LearningCentrePage } from './src/pages/LearningCentrePage';
 import { LocationProvider, useLocationContext } from './src/context/LocationContext';
 import { SavedLocationsProvider } from './src/context/SavedLocationsContext';
-import { PreparednessProvider } from './src/context/PreparednessContext';
+import { PreparednessProvider, usePreparedness } from './src/context/PreparednessContext';
 import { migrateDbIfNeeded } from './src/db/migrations';
+import { registerExpiryBackgroundTask } from './src/tasks/expiryBackgroundTask';
+import { checkAndExpireTasks } from './src/utils/taskExpiry';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
-  // When the "+" on the Home Dashboard is tapped, we jump to the Settings tab
-  // and open Saved Locations directly. This flag gets consumed on subpage close.
   const [pendingSettingsSubPage, setPendingSettingsSubPage] = useState<
     'savedLocations' | null
   >(null);
-  // Tab to restore when a deep-linked subpage closes, so the back arrow returns
-  // to where the user came from instead of the Settings root.
   const [subPageReturnTab, setSubPageReturnTab] = useState<string | null>(null);
   const { isDark } = useTheme();
-
   const layout = getLayoutStyles(isDark);
-
   const { debugMode, setDebugDanger, setDebug503, clearDebugLocation } = useLocationContext();
+  const { refresh: refreshPreparedness } = usePreparedness();
+  const db = useSQLiteContext();
+
+  // Run expiry check whenever the app comes to the foreground
+  const appState = useRef(AppState.currentState);
+  const handleAppStateChange = useCallback(
+    async (nextState: AppStateStatus) => {
+      if (appState.current.match(/inactive|background/) && nextState === 'active') {
+        try {
+          await checkAndExpireTasks(db);
+          await refreshPreparedness();
+        } catch {
+          // Non-critical: don't crash the app if expiry check fails
+        }
+      }
+      appState.current = nextState;
+    },
+    [db, refreshPreparedness],
+  );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, [handleAppStateChange]);
 
   const openSavedLocations = () => {
     setSubPageReturnTab(activeTab);
@@ -82,6 +105,12 @@ function AppContent() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({ RobotoFlex_400Regular });
+
+  // Register background task as early as possible (does not require DB)
+  useEffect(() => {
+    registerExpiryBackgroundTask();
+  }, []);
+
   if (!fontsLoaded) return null;
 
   return (

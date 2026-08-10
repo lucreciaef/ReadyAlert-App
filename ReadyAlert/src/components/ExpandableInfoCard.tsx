@@ -33,12 +33,17 @@ export function ExpandableInfoCard({
       style={{
         borderTopWidth: isFirst ? 0 : 1,
         borderTopColor: colours.divider,
+        paddingHorizontal: 12,
       }}
     >
       <Pressable onPress={onToggle} android_ripple={{ color: colours.ripple }}>
         <View style={{ paddingVertical: 12 }}>
           <View
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
               <MaterialCommunityIcons name={icon} size={22} color={colours.text} />
