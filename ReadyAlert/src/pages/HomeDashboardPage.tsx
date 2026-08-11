@@ -24,11 +24,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import {
-  getBottomSheetStyles,
-  getLayoutStyles,
-  getTopAppBarStyles,
-} from '../styles/appStyles';
+import { getBottomSheetStyles, getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
 import { getLocationName } from '../api';
 import { useLocationContext } from '../context/LocationContext';
 import { useSavedLocations } from '../context/SavedLocationsContext';
@@ -92,8 +88,6 @@ export function HomeDashboardPage({
     error: weatherError,
   } = useWeather(userLocation);
   const radiationState = useRadiationLevel(userLocation);
-
-  const REGION_DELTA = 0.2;
 
   const [locationDisplayName, setLocationDisplayName] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
@@ -167,7 +161,7 @@ export function HomeDashboardPage({
       if (allCoords.length > 0) {
         setTimeout(() => {
           mapRef.current?.fitToCoordinates(allCoords, {
-            edgePadding: { top: 40, right: 40, bottom: HALF_HEIGHT + 40, left: 40 },
+            edgePadding: { top: 40, right: 40, bottom: 40, left: 40 },
             animated: true,
           });
         }, 500);
@@ -179,13 +173,13 @@ export function HomeDashboardPage({
         {
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
-          latitudeDelta: REGION_DELTA,
-          longitudeDelta: REGION_DELTA,
+          latitudeDelta: 0.16,
+          longitudeDelta: 0.16,
         },
         400,
       );
     }, 300);
-  }, [warningsData]);
+  }, [warningsData, userLocation]);
 
   const handleRefresh = () => {
     if (userLocation) refresh();
@@ -242,7 +236,12 @@ export function HomeDashboardPage({
           showsMyLocationButton={false}
           provider={PROVIDER_DEFAULT}
           customMapStyle={isDark ? DARK_MAP_STYLE : LIGHT_MAP_STYLE}
-          mapPadding={{ top: 0, right: 0, bottom: PEEK_HEIGHT, left: 0 }}
+          mapPadding={{
+            top: 0,
+            right: 0,
+            bottom: sheetExpanded ? HALF_HEIGHT : PEEK_HEIGHT,
+            left: 0,
+          }}
         >
           {(warningsData?.geometry?.coordinates ?? []).flatMap((polygon, polyIdx) =>
             polygon.map((ring, ringIdx) => (
