@@ -1,5 +1,7 @@
-// Side-effect import: registers the TaskManager task definition before React mounts
+// Side-effect imports: register TaskManager task definitions before React mounts
 import './src/tasks/expiryBackgroundTask';
+import './src/tasks/rtrBackgroundTask';
+import './src/tasks/geosphereBackgroundTask';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus, View } from 'react-native';
@@ -21,6 +23,9 @@ import { SavedLocationsProvider } from './src/context/SavedLocationsContext';
 import { PreparednessProvider, usePreparedness } from './src/context/PreparednessContext';
 import { migrateDbIfNeeded } from './src/db/migrations';
 import { registerExpiryBackgroundTask } from './src/tasks/expiryBackgroundTask';
+import { registerRtrBackgroundTask } from './src/tasks/rtrBackgroundTask';
+import { registerGeosphereBackgroundTask } from './src/tasks/geosphereBackgroundTask';
+import { registerForPushNotifications } from './src/utils/notifications';
 import { checkAndExpireTasks } from './src/utils/taskExpiry';
 
 function AppContent() {
@@ -106,9 +111,12 @@ function AppContent() {
 export default function App() {
   const [fontsLoaded] = useFonts({ RobotoFlex_400Regular });
 
-  // Register background task as early as possible (does not require DB)
+  // Register channels and background tasks as early as possible (does not require DB)
   useEffect(() => {
+    registerForPushNotifications();
     registerExpiryBackgroundTask();
+    registerRtrBackgroundTask();
+    registerGeosphereBackgroundTask();
   }, []);
 
   if (!fontsLoaded) return null;

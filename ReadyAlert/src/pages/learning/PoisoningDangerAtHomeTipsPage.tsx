@@ -1,10 +1,11 @@
 /**
  * Poisoning Dangers at Home – read-only educational content page.
  * Source: Österreichisches Gesundheitsportal – https://www.gesundheit.gv.at/krankheiten/vergiftungsinformation/vergiftung-gefahren-haushalt.html
- * Completing the read marks the task 100% in the preparedness score.
+ * Completing both quiz questions marks the task 100% in the preparedness score.
  */
 
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
@@ -12,10 +13,9 @@ import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
 import { LearningReadingContentCard } from '../../components/LearningReadingContentCard';
 import { LearningSourceCitation } from '../../components/LearningSourceCitation';
-import { LearningMarkAsReadCheckbox } from '../../components/LearningMarkAsReadCheckbox';
-import { usePoisoningDangerAtHomeReadStatus } from '../../hooks/usePoisoningDangerAtHomeReadStatus';
+import { ArticleQuizPage, type QuizQuestion } from '../../components/ArticleQuizPage';
+import { useArticleQuizStatus } from '../../hooks/useArticleQuizStatus';
 import { usePreparedness } from '../../context/PreparednessContext';
-import { SaveProgressButton } from '../../components/SaveProgressButton';
 
 interface PoisoningDangerAtHomeTipsProps {
   onBack: () => void;
@@ -105,19 +105,61 @@ const TIPS: {
   },
 ];
 
+const QUESTION_IDS = ['pdah_q1', 'pdah_q2'] as const;
+
+const QUIZ_QUESTIONS: readonly [QuizQuestion, QuizQuestion] = [
+  {
+    id: 'pdah_q1',
+    text: 'When someone has swallowed a household product, should you induce vomiting?',
+    options: [
+      'Yes, always — it removes the substance quickly',
+      'Only if the product is a liquid cleaner',
+      'Only if emergency services are more than 30 minutes away',
+      'No, never — it can worsen burns to the mouth and throat',
+    ],
+    correctIndex: 3,
+  },
+  {
+    id: 'pdah_q2',
+    text: 'What is the Austrian Poison Control Centre emergency number?',
+    options: [
+      '144',
+      '01 406 43 43',
+      '122',
+      '112',
+    ],
+    correctIndex: 1,
+  },
+];
+
 export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeTipsProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
-  const { isRead, loading, saving, saved, toggleRead, saveReadStatus } =
-    usePoisoningDangerAtHomeReadStatus();
+  const { loading, isAnswered, isComplete, markAnswered, reload } =
+    useArticleQuizStatus(QUESTION_IDS);
+  const [quizActive, setQuizActive] = useState(false);
 
-  const handleSave = async () => {
-    await saveReadStatus();
+  const handleQuizComplete = async () => {
     await refreshPreparedness();
+    await reload();
+    setQuizActive(false);
   };
+
+  if (quizActive) {
+    return (
+      <ArticleQuizPage
+        title="Poisoning Dangers at Home"
+        questions={QUIZ_QUESTIONS}
+        isAnswered={isAnswered}
+        markAnswered={markAnswered}
+        onBack={() => setQuizActive(false)}
+        onAllAnswered={handleQuizComplete}
+      />
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
@@ -211,15 +253,60 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
               source="Österreichisches Gesundheitsportal (Austrian Health Portal)"
               url="https://www.gesundheit.gv.at/krankheiten/vergiftungsinformation/vergiftung-gefahren-haushalt.html"
             />
-
-            <LearningMarkAsReadCheckbox
-              label="I have read and understood the poisoning dangers at home"
-              isRead={isRead}
-              onToggle={toggleRead}
-            />
           </ScrollView>
 
-          <SaveProgressButton onSave={handleSave} saving={saving} saved={saved} />
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingTop: 12,
+              paddingBottom: insets.bottom > 0 ? insets.bottom : 16,
+              borderTopWidth: 1,
+              borderTopColor: colors.divider,
+              backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
+            }}
+          >
+            {isComplete ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: 16,
+                  borderRadius: 12,
+                  backgroundColor: colors.successContainer,
+                  borderWidth: 1.5,
+                  borderColor: colors.success,
+                }}
+              >
+                <MaterialCommunityIcons name="check-circle" size={22} color={colors.success} />
+                <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: colors.successOnContainer }}>
+                  Quiz completed
+                </Text>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => setQuizActive(true)}
+                android_ripple={{ color: colors.rippleOnPrimary }}
+                style={{ borderRadius: 28, overflow: 'hidden', backgroundColor: colors.primary }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    paddingVertical: 16,
+                    paddingHorizontal: 24,
+                  }}
+                >
+                  <MaterialCommunityIcons name="head-question-outline" size={20} color={colors.onPrimary} />
+                  <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.1, color: colors.onPrimary }}>
+                    Start quiz
+                  </Text>
+                </View>
+              </Pressable>
+            )}
+          </View>
         </>
       )}
     </View>

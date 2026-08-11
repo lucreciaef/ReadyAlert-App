@@ -1,10 +1,11 @@
 /**
  * Weather Emergency Tips – read-only educational content page.
  * Source: Österreichisches Rotes Kreuz – https://www.roteskreuz.at/unwetter
- * Completing the read marks the task 100% in the preparedness score.
+ * Completing both quiz questions marks the task 100% in the preparedness score.
  */
 
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
@@ -12,10 +13,9 @@ import { getThemeColours } from '../../styles/themeColours';
 import { getTopAppBarStyles } from '../../styles/appStyles';
 import { LearningReadingContentCard } from '../../components/LearningReadingContentCard';
 import { LearningSourceCitation } from '../../components/LearningSourceCitation';
-import { LearningMarkAsReadCheckbox } from '../../components/LearningMarkAsReadCheckbox';
-import { useWeatherReadStatus } from '../../hooks/useWeatherReadStatus';
+import { ArticleQuizPage, type QuizQuestion } from '../../components/ArticleQuizPage';
+import { useArticleQuizStatus } from '../../hooks/useArticleQuizStatus';
 import { usePreparedness } from '../../context/PreparednessContext';
-import {SaveProgressButton} from "../../components/SaveProgressButton";
 
 interface WeatherEmergencyTipsProps {
   onBack: () => void;
@@ -83,6 +83,32 @@ const TIPS: {
   },
 ];
 
+const QUESTION_IDS = ['wet_q1', 'wet_q2'] as const;
+
+const QUIZ_QUESTIONS: readonly [QuizQuestion, QuizQuestion] = [
+  {
+    id: 'wet_q1',
+    text: 'When lightning strikes outdoors and you cannot get inside, what is the correct protective position?',
+    options: [
+      'Lie flat on the ground with arms spread',
+      'Stand upright away from tall trees',
+      'Crouch down with feet together and stay on your tiptoes',
+      'Climb to the highest nearby shelter',
+    ],
+    correctIndex: 2,
+  },
+  {
+    id: 'wet_q2',
+    text: 'Which of the following actions is advised when a severe weather warning is issued?',
+    options: [
+      'Open windows to ventilate your home',
+      'Secure garden furniture and park your car in a safe place',
+      'Wait for the storm to pass before taking any action',
+      'Take a walk to observe the storm from a safe distance',
+    ],
+    correctIndex: 1,
+  },
+];
 
 export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) {
   const insets = useSafeAreaInsets();
@@ -90,12 +116,28 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
   const colors = getThemeColours(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
-  const { isRead, loading, saving, saved, toggleRead, saveReadStatus } = useWeatherReadStatus();
+  const { loading, isAnswered, isComplete, markAnswered, reload } =
+    useArticleQuizStatus(QUESTION_IDS);
+  const [quizActive, setQuizActive] = useState(false);
 
-  const handleSave = async () => {
-    await saveReadStatus();
+  const handleQuizComplete = async () => {
     await refreshPreparedness();
+    await reload();
+    setQuizActive(false);
   };
+
+  if (quizActive) {
+    return (
+      <ArticleQuizPage
+        title="Weather Emergency Tips"
+        questions={QUIZ_QUESTIONS}
+        isAnswered={isAnswered}
+        markAnswered={markAnswered}
+        onBack={() => setQuizActive(false)}
+        onAllAnswered={handleQuizComplete}
+      />
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
@@ -172,15 +214,60 @@ export function WeatherEmergencyTipsPage({ onBack }: WeatherEmergencyTipsProps) 
               source="Österreichisches Rotes Kreuz (Austrian Red Cross)"
               url="https://www.roteskreuz.at/unwetter"
             />
-
-            <LearningMarkAsReadCheckbox
-              label="I have read and understood the weather emergency tips"
-              isRead={isRead}
-              onToggle={toggleRead}
-            />
           </ScrollView>
 
-          <SaveProgressButton onSave={handleSave} saving={saving} saved={saved} />
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingTop: 12,
+              paddingBottom: insets.bottom > 0 ? insets.bottom : 16,
+              borderTopWidth: 1,
+              borderTopColor: colors.divider,
+              backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
+            }}
+          >
+            {isComplete ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: 16,
+                  borderRadius: 12,
+                  backgroundColor: colors.successContainer,
+                  borderWidth: 1.5,
+                  borderColor: colors.success,
+                }}
+              >
+                <MaterialCommunityIcons name="check-circle" size={22} color={colors.success} />
+                <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: isDark ? colors.successOnContainer : colors.successOnContainer }}>
+                  Quiz completed
+                </Text>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => setQuizActive(true)}
+                android_ripple={{ color: colors.rippleOnPrimary }}
+                style={{ borderRadius: 28, overflow: 'hidden', backgroundColor: colors.primary }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    paddingVertical: 16,
+                    paddingHorizontal: 24,
+                  }}
+                >
+                  <MaterialCommunityIcons name="head-question-outline" size={20} color={colors.onPrimary} />
+                  <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.1, color: colors.onPrimary }}>
+                    Start quiz
+                  </Text>
+                </View>
+              </Pressable>
+            )}
+          </View>
         </>
       )}
     </View>
