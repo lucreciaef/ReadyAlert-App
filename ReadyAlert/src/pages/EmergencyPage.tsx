@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeColours } from '../styles/themeColours';
-import { getTopAppBarStyles } from '../styles/appStyles';
+import { getEmergencyPageStyles, getLayoutStyles, getTopAppBarStyles } from '../styles/appStyles';
 
 const SERVICES = [
   { label: 'Ambulance', number: '144', icon: 'ambulance', accent: '#DC2626' },
@@ -34,38 +34,20 @@ export function EmergencyPage() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const emergency = getEmergencyPageStyles(isDark);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View
-        style={{
-          height: 64,
-          backgroundColor: colors.background,
-          flexDirection: 'row',
-          alignItems: 'center',
-          // paddingHorizontal: 16,
-          gap: 12,
-        }}
-      >
+    <View className={layout.safeArea} style={{ paddingTop: insets.top }}>
+      <View className={topBar.containerOnBackground}>
         <Text className={topBar.title} numberOfLines={1}>
           Emergency
         </Text>
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
-        {/* Emergency call section */}
-        <Text
-          style={{
-            fontSize: 13,
-            fontWeight: '600',
-            letterSpacing: 0.5,
-            color: colors.primary,
-            marginBottom: 12,
-          }}
-        >
-          Call emergency services
-        </Text>
+      <ScrollView className={layout.fill} contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
+        <Text className={emergency.sectionLabel}>Call emergency services</Text>
 
         <View style={{ flexDirection: 'row', gap: 12 }}>
           {/* Left column */}
@@ -75,33 +57,13 @@ export function EmergencyPage() {
                 key={s.label}
                 onPress={() => Linking.openURL(`tel:${s.number}`)}
                 android_ripple={{ color: colors.ripple }}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.8 : 1,
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                })}
+                style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1, borderRadius: 16, overflow: 'hidden' })}
               >
-                <View
-                  style={{
-                    backgroundColor: colors.surfaceAlt,
-                    borderRadius: 16,
-                    height: 110,
-                    padding: 20,
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text style={{ fontSize: 13, fontWeight: '500', color: colors.textMuted }}>
-                    {s.label}
-                  </Text>
+                <View style={{ backgroundColor: colors.surfaceAlt, borderRadius: 16, height: 110, padding: 20, justifyContent: 'space-between' }}>
+                  <Text className={emergency.serviceLabel}>{s.label}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <MaterialCommunityIcons
-                      name={s.icon as ServiceIconName}
-                      size={40}
-                      color={s.accent}
-                    />
-                    <Text style={{ fontSize: 26, fontWeight: '500', color: s.accent }}>
-                      {s.number}
-                    </Text>
+                    <MaterialCommunityIcons name={s.icon as ServiceIconName} size={40} color={s.accent} />
+                    <Text style={{ fontSize: 26, fontWeight: '500', color: s.accent }}>{s.number}</Text>
                   </View>
                 </View>
               </Pressable>
@@ -115,33 +77,13 @@ export function EmergencyPage() {
                 key={s.label}
                 onPress={() => Linking.openURL(`tel:${s.number}`)}
                 android_ripple={{ color: colors.ripple }}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.8 : 1,
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                })}
+                style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1, borderRadius: 16, overflow: 'hidden' })}
               >
-                <View
-                  style={{
-                    backgroundColor: colors.surfaceAlt,
-                    borderRadius: 16,
-                    height: 110,
-                    padding: 20,
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text style={{ fontSize: 13, fontWeight: '500', color: colors.textMuted }}>
-                    {s.label}
-                  </Text>
+                <View style={{ backgroundColor: colors.surfaceAlt, borderRadius: 16, height: 110, padding: 20, justifyContent: 'space-between' }}>
+                  <Text className={emergency.serviceLabel}>{s.label}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <MaterialCommunityIcons
-                      name={s.icon as ServiceIconName}
-                      size={40}
-                      color={s.accent}
-                    />
-                    <Text style={{ fontSize: 26, fontWeight: '500', color: s.accent }}>
-                      {s.number}
-                    </Text>
+                    <MaterialCommunityIcons name={s.icon as ServiceIconName} size={40} color={s.accent} />
+                    <Text style={{ fontSize: 26, fontWeight: '500', color: s.accent }}>{s.number}</Text>
                   </View>
                 </View>
               </Pressable>
@@ -151,48 +93,18 @@ export function EmergencyPage() {
 
         <View style={{ height: 1, backgroundColor: colors.divider, marginVertical: 28 }} />
 
-        {/* Resources section */}
-        <Text
-          style={{
-            fontSize: 13,
-            fontWeight: '600',
-            letterSpacing: 0.5,
-            color: colors.primary,
-            marginBottom: 12,
-          }}
-        >
-          Resources
-        </Text>
+        <Text className={emergency.sectionLabel}>Resources</Text>
 
         {LINKS.map((link) => (
           <Pressable
             key={link.label}
             onPress={() => Linking.openURL(link.url)}
             android_ripple={{ color: colors.ripple }}
-            style={{
-              borderRadius: 12,
-              overflow: 'hidden',
-              marginBottom: 8,
-              backgroundColor: colors.surfaceAlt,
-            }}
+            className={emergency.linkRow}
           >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                gap: 16,
-              }}
-            >
-              <MaterialCommunityIcons
-                name={link.icon as LinkIconName}
-                size={24}
-                color={colors.primary}
-              />
-              <Text style={{ flex: 1, fontSize: 15, fontWeight: '400', color: colors.text }}>
-                {link.label}
-              </Text>
+            <View className={emergency.linkRowInner}>
+              <MaterialCommunityIcons name={link.icon as LinkIconName} size={24} color={colors.primary} />
+              <Text className={emergency.linkLabel}>{link.label}</Text>
               <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textMuted} />
             </View>
           </Pressable>

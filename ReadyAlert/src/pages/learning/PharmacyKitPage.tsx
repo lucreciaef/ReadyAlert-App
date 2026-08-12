@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
-import { getTopAppBarStyles } from '../../styles/appStyles';
+import { getChecklistPageStyles, getLayoutStyles, getTopAppBarShadow, getTopAppBarStyles } from '../../styles/appStyles';
 import { usePharmacyChecklist } from '../../hooks/usePharmacyChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
 import { SaveProgressButton } from '../../components/SaveProgressButton';
@@ -25,7 +25,9 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const checklist = getChecklistPageStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
 
   const { items, loading, saving, saved, checkedCount, totalCount, toggleItem, saveChecklist } =
@@ -44,27 +46,12 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
   const progressPercent = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View
-        className={topBar.container}
-        style={{
-          elevation: 2,
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.08,
-          shadowRadius: 3,
-        }}
-      >
+    <View className={layout.safeArea} style={{ paddingTop: insets.top }}>
+      <View className={topBar.container} style={getTopAppBarShadow(colors)}>
         <Pressable
           onPress={onBack}
           android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{
-            width: 48,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 24,
-          }}
+          className={topBar.iconButton}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>
@@ -74,40 +61,15 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View className={layout.centered}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={{ marginTop: 16, fontSize: 14, color: colors.textMuted }}>
-            Loading checklist…
-          </Text>
+          <Text className={layout.loadingLabel}>Loading checklist…</Text>
         </View>
       ) : (
         <>
-          <View
-            style={{
-              paddingHorizontal: 16,
-              paddingTop: 12,
-              paddingBottom: 14,
-              backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-              borderBottomWidth: 1,
-              borderBottomColor: colors.divider,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 8,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: '500',
-                  letterSpacing: 0.5,
-                  color: colors.textMuted,
-                }}
-              >
+          <View className={checklist.progressStrip}>
+            <View className={checklist.progressHeaderRow}>
+              <Text className={checklist.progressCountLabel}>
                 {checkedCount} / {totalCount} items ready at home
               </Text>
               <Text
@@ -139,110 +101,62 @@ export function PharmacyKitPage({ onBack }: PharmacyKitPageProps) {
           </View>
 
           <ScrollView
-            style={{ flex: 1 }}
+            className={layout.fill}
             contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
             {groups.map((group) => (
               <View key={group.name} style={{ marginBottom: 20 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: '500',
-                    letterSpacing: 0.1,
-                    color: colors.primary,
-                    marginBottom: 8,
-                    paddingHorizontal: 4,
-                  }}
-                >
-                  {group.name}
-                </Text>
+                <Text className={checklist.groupLabel}>{group.name}</Text>
 
-                <View
-                  style={{
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    backgroundColor: colors.surfaceAlt,
-                  }}
-                >
-                  {group.items.map((item) => {
-                    return (
-                      <Pressable
-                        key={item.id}
-                        onPress={() => toggleItem(item.id)}
-                        android_ripple={{ color: colors.ripple }}
-                      >
+                <View className={checklist.groupCard}>
+                  {group.items.map((item) => (
+                    <Pressable
+                      key={item.id}
+                      onPress={() => toggleItem(item.id)}
+                      android_ripple={{ color: colors.ripple }}
+                    >
+                      <View className={checklist.itemRow}>
                         <View
+                          className={checklist.checkbox}
                           style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            paddingHorizontal: 16,
-                            paddingVertical: 12,
+                            borderColor: item.checked ? colors.primary : colors.textMuted,
+                            backgroundColor: item.checked ? colors.primary : 'transparent',
                           }}
                         >
-                          <View
-                            style={{
-                              width: 20,
-                              height: 20,
-                              borderRadius: 2,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              borderWidth: 2,
-                              marginRight: 14,
-                              flexShrink: 0,
-                              borderColor: item.checked ? colors.primary : colors.textMuted,
-                              backgroundColor: item.checked ? colors.primary : 'transparent',
-                            }}
-                          >
-                            {item.checked && (
-                              <MaterialCommunityIcons
-                                name="check"
-                                size={14}
-                                color={colors.onPrimary}
-                              />
-                            )}
-                          </View>
-
-                          <Text
-                            style={{
-                              flex: 1,
-                              fontSize: 14,
-                              lineHeight: 20,
-                              color: item.checked ? colors.textMuted : colors.text,
-                              textDecorationLine: item.checked ? 'line-through' : 'none',
-                            }}
-                          >
-                            {item.name}
-                          </Text>
-
-                          {item.quantity && (
-                            <View
-                              style={{
-                                marginLeft: 8,
-                                paddingHorizontal: 8,
-                                paddingVertical: 2,
-                                borderRadius: 12,
-                                backgroundColor: isDark
-                                  ? colors.surfaceAlt
-                                  : colors.primaryContainer,
-                                flexShrink: 0,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 11,
-                                  fontWeight: '600',
-                                  color: isDark ? colors.textMuted : colors.primary,
-                                }}
-                              >
-                                ×{item.quantity}
-                              </Text>
-                            </View>
+                          {item.checked && (
+                            <MaterialCommunityIcons name="check" size={14} color={colors.onPrimary} />
                           )}
                         </View>
-                      </Pressable>
-                    );
-                  })}
+
+                        <Text
+                          className={checklist.itemLabel}
+                          style={{
+                            color: item.checked ? colors.textMuted : colors.text,
+                            textDecorationLine: item.checked ? 'line-through' : 'none',
+                          }}
+                        >
+                          {item.name}
+                        </Text>
+
+                        {item.quantity && (
+                          <View
+                            className={checklist.quantityBadge}
+                            style={{
+                              backgroundColor: isDark ? colors.surfaceAlt : colors.primaryContainer,
+                            }}
+                          >
+                            <Text
+                              className={checklist.quantityBadgeText}
+                              style={{ color: isDark ? colors.textMuted : colors.primary }}
+                            >
+                              ×{item.quantity}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </Pressable>
+                  ))}
                 </View>
               </View>
             ))}

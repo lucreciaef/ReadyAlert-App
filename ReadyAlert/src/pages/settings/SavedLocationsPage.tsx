@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
-import { getSavedLocationsPageStyles, getTopAppBarStyles } from '../../styles/appStyles';
+import { getSavedLocationsPageStyles, getTopAppBarShadow, getTopAppBarStyles } from '../../styles/appStyles';
 import { MAX_SAVED_LOCATIONS, useSavedLocations } from '../../context/SavedLocationsContext';
 import { GeocodingResult, searchCities } from '../../api/geocoding';
 
@@ -124,26 +124,11 @@ export function SavedLocationsPage({ onBack }: SavedLocationsPageProps) {
 
   return (
     <View className={styles.screen} style={{ paddingTop: insets.top }}>
-      <View
-        className={topBar.container}
-        style={{
-          elevation: 2,
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.08,
-          shadowRadius: 3,
-        }}
-      >
+      <View className={topBar.container} style={getTopAppBarShadow(colors)}>
         <Pressable
           onPress={isListMode ? onBack : goBackFromAdd}
           android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{
-            width: 48,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 24,
-          }}
+          className={topBar.iconButton}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>

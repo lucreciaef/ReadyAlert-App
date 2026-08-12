@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
-import { getLicenseInformationPageStyles, getTopAppBarStyles } from '../../styles/appStyles';
+import { getLicenseInformationPageStyles, getLayoutStyles, getTopAppBarShadow, getTopAppBarStyles } from '../../styles/appStyles';
 
 interface LicenseInformationPageProps {
   onBack: () => void;
@@ -67,19 +67,17 @@ export function LicenseInformationPage({ onBack }: LicenseInformationPageProps) 
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
   const styles = getLicenseInformationPageStyles(isDark);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View
-        className={topBar.container}
-        style={{ elevation: 2, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3 }}
-      >
+    <View className={layout.safeArea} style={{ paddingTop: insets.top }}>
+      <View className={topBar.container} style={getTopAppBarShadow(colors)}>
         <Pressable
           onPress={onBack}
           android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}
+          className={topBar.iconButton}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>

@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
-import { getTopAppBarStyles } from '../../styles/appStyles';
+import { getChecklistPageStyles, getLayoutStyles, getTopAppBarShadow, getTopAppBarStyles } from '../../styles/appStyles';
 import { useOneWeekStockpileChecklist } from '../../hooks/useOneWeekStockpileChecklist';
 import { usePreparedness } from '../../context/PreparednessContext';
 import { SaveProgressButton } from '../../components/SaveProgressButton';
@@ -37,7 +37,9 @@ export function OneWeekStockpilePage({ onBack }: OneWeekStockpilePageProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const checklist = getChecklistPageStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
 
   const { items, loading, saving, saved, checkedCount, totalCount, toggleItem, saveChecklist } =
@@ -56,27 +58,12 @@ export function OneWeekStockpilePage({ onBack }: OneWeekStockpilePageProps) {
   const progressPercent = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View
-        className={topBar.container}
-        style={{
-          elevation: 2,
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.08,
-          shadowRadius: 3,
-        }}
-      >
+    <View className={layout.safeArea} style={{ paddingTop: insets.top }}>
+      <View className={topBar.container} style={getTopAppBarShadow(colors)}>
         <Pressable
           onPress={onBack}
           android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{
-            width: 48,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 24,
-          }}
+          className={topBar.iconButton}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>
@@ -86,40 +73,15 @@ export function OneWeekStockpilePage({ onBack }: OneWeekStockpilePageProps) {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View className={layout.centered}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={{ marginTop: 16, fontSize: 14, color: colors.textMuted }}>
-            Loading checklist…
-          </Text>
+          <Text className={layout.loadingLabel}>Loading checklist…</Text>
         </View>
       ) : (
         <>
-          <View
-            style={{
-              paddingHorizontal: 16,
-              paddingTop: 12,
-              paddingBottom: 14,
-              backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-              borderBottomWidth: 1,
-              borderBottomColor: colors.divider,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 8,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: '500',
-                  letterSpacing: 0.5,
-                  color: colors.textMuted,
-                }}
-              >
+          <View className={checklist.progressStrip}>
+            <View className={checklist.progressHeaderRow}>
+              <Text className={checklist.progressCountLabel}>
                 {checkedCount} / {totalCount} items stocked
               </Text>
               <Text
@@ -151,98 +113,45 @@ export function OneWeekStockpilePage({ onBack }: OneWeekStockpilePageProps) {
           </View>
 
           <ScrollView
-            style={{ flex: 1 }}
+            className={layout.fill}
             contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
-            <View
-              style={{
-                borderRadius: 12,
-                padding: 14,
-                marginBottom: 20,
-                backgroundColor: colors.surfaceAlt,
-              }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <View className={checklist.introCard}>
+              <View className={checklist.introIconRow}>
                 <MaterialCommunityIcons name="fridge-outline" size={20} color={colors.primary} />
-                <Text
-                  style={{
-                    marginLeft: 8,
-                    fontSize: 14,
-                    fontWeight: '700',
-                    color: colors.text,
-                  }}
-                >
-                  About this list
-                </Text>
+                <Text className={checklist.introTitle}>About this list</Text>
               </View>
-              <Text style={{ fontSize: 13, lineHeight: 19, color: colors.text }}>{INTRO_TEXT}</Text>
+              <Text className={checklist.introBody}>{INTRO_TEXT}</Text>
             </View>
 
             {groups.map((group) => (
               <View key={group.name} style={{ marginBottom: 20 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: '500',
-                    letterSpacing: 0.1,
-                    color: colors.primary,
-                    marginBottom: 8,
-                    paddingHorizontal: 4,
-                  }}
-                >
-                  {group.name}
-                </Text>
+                <Text className={checklist.groupLabel}>{group.name}</Text>
 
-                <View
-                  style={{
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    backgroundColor: colors.surfaceAlt,
-                  }}
-                >
+                <View className={checklist.groupCard}>
                   {group.items.map((item) => (
                     <Pressable
                       key={item.id}
                       onPress={() => toggleItem(item.id)}
                       android_ripple={{ color: colors.ripple }}
                     >
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          paddingHorizontal: 16,
-                          paddingVertical: 12,
-                        }}
-                      >
+                      <View className={checklist.itemRow}>
                         <View
+                          className={checklist.checkbox}
                           style={{
-                            width: 20,
-                            height: 20,
-                            borderRadius: 2,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderWidth: 2,
-                            marginRight: 14,
-                            flexShrink: 0,
                             borderColor: item.checked ? colors.primary : colors.textMuted,
                             backgroundColor: item.checked ? colors.primary : 'transparent',
                           }}
                         >
                           {item.checked && (
-                            <MaterialCommunityIcons
-                              name="check"
-                              size={14}
-                              color={colors.onPrimary}
-                            />
+                            <MaterialCommunityIcons name="check" size={14} color={colors.onPrimary} />
                           )}
                         </View>
 
                         <Text
+                          className={checklist.itemLabel}
                           style={{
-                            flex: 1,
-                            fontSize: 14,
-                            lineHeight: 20,
                             color: item.checked ? colors.textMuted : colors.text,
                             textDecorationLine: item.checked ? 'line-through' : 'none',
                           }}
@@ -252,21 +161,14 @@ export function OneWeekStockpilePage({ onBack }: OneWeekStockpilePageProps) {
 
                         {item.quantity && (
                           <View
+                            className={checklist.quantityBadge}
                             style={{
-                              marginLeft: 8,
-                              paddingHorizontal: 8,
-                              paddingVertical: 2,
-                              borderRadius: 12,
                               backgroundColor: isDark ? colors.surfaceAlt : colors.primaryContainer,
-                              flexShrink: 0,
                             }}
                           >
                             <Text
-                              style={{
-                                fontSize: 11,
-                                fontWeight: '600',
-                                color: isDark ? colors.textMuted : colors.primary,
-                              }}
+                              className={checklist.quantityBadgeText}
+                              style={{ color: isDark ? colors.textMuted : colors.primary }}
                             >
                               ×{item.quantity}
                             </Text>

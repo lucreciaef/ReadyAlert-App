@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
-import { getTopAppBarStyles } from '../../styles/appStyles';
+import { getLearningArticlePageStyles, getLayoutStyles, getTopAppBarShadow, getTopAppBarStyles } from '../../styles/appStyles';
 import { LearningReadingContentCard } from '../../components/LearningReadingContentCard';
 import { LearningSourceCitation } from '../../components/LearningSourceCitation';
 import { ArticleQuizPage, type QuizQuestion } from '../../components/ArticleQuizPage';
@@ -136,7 +136,9 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const colors = getThemeColours(isDark);
+  const layout = getLayoutStyles(isDark);
   const topBar = getTopAppBarStyles(isDark);
+  const article = getLearningArticlePageStyles(isDark);
   const { refresh: refreshPreparedness } = usePreparedness();
   const { loading, isAnswered, isComplete, markAnswered, reload } =
     useArticleQuizStatus(QUESTION_IDS);
@@ -162,27 +164,12 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View
-        className={topBar.container}
-        style={{
-          elevation: 2,
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.08,
-          shadowRadius: 3,
-        }}
-      >
+    <View className={layout.safeArea} style={{ paddingTop: insets.top }}>
+      <View className={topBar.container} style={getTopAppBarShadow(colors)}>
         <Pressable
           onPress={onBack}
           android_ripple={{ color: colors.ripple, borderless: true }}
-          style={{
-            width: 48,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 24,
-          }}
+          className={topBar.iconButton}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </Pressable>
@@ -192,28 +179,18 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View className={layout.centered}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={{ marginTop: 16, fontSize: 14, color: colors.textMuted }}>Loading…</Text>
+          <Text className={layout.loadingLabel}>Loading…</Text>
         </View>
       ) : (
         <>
           <ScrollView
-            style={{ flex: 1 }}
+            className={layout.fill}
             contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
             showsVerticalScrollIndicator={false}
           >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: '500',
-                letterSpacing: 0.1,
-                color: colors.primary,
-                marginTop: 8,
-                marginBottom: 12,
-                paddingHorizontal: 4,
-              }}
-            >
+            <Text className={article.articleSectionLabel}>
               Common household products can cause poisoning, and children are most at risk. Few home
               substances cause severe poisoning, but quick action is always important.
             </Text>
@@ -225,19 +202,7 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
               body={IMMEDIATE_ACTIONS.body}
             />
 
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: '500',
-                letterSpacing: 0.1,
-                color: colors.primary,
-                marginTop: 8,
-                marginBottom: 12,
-                paddingHorizontal: 4,
-              }}
-            >
-              Tips by product type
-            </Text>
+            <Text className={article.articleSectionLabel}>Tips by product type</Text>
 
             {TIPS.map((tip) => (
               <LearningReadingContentCard
@@ -256,14 +221,8 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
           </ScrollView>
 
           <View
-            style={{
-              paddingHorizontal: 16,
-              paddingTop: 12,
-              paddingBottom: insets.bottom > 0 ? insets.bottom : 16,
-              borderTopWidth: 1,
-              borderTopColor: colors.divider,
-              backgroundColor: isDark ? colors.surfaceAlt : colors.surface,
-            }}
+            className={article.quizActionBar}
+            style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 16 }}
           >
             {isComplete ? (
               <View
@@ -279,7 +238,7 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
                 }}
               >
                 <MaterialCommunityIcons name="check-circle" size={22} color={colors.success} />
-                <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: colors.successOnContainer }}>
+                <Text className={article.quizCompleteText} style={{ color: colors.successOnContainer }}>
                   Quiz completed
                 </Text>
               </View>
@@ -287,22 +246,12 @@ export function PoisoningDangerAtHomeTipsPage({ onBack }: PoisoningDangerAtHomeT
               <Pressable
                 onPress={() => setQuizActive(true)}
                 android_ripple={{ color: colors.rippleOnPrimary }}
-                style={{ borderRadius: 28, overflow: 'hidden', backgroundColor: colors.primary }}
+                className={article.quizStartButton}
+                style={{ backgroundColor: colors.primary }}
               >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    paddingVertical: 16,
-                    paddingHorizontal: 24,
-                  }}
-                >
+                <View className={article.quizStartButtonInner}>
                   <MaterialCommunityIcons name="head-question-outline" size={20} color={colors.onPrimary} />
-                  <Text style={{ fontSize: 14, fontWeight: '500', letterSpacing: 0.1, color: colors.onPrimary }}>
-                    Start quiz
-                  </Text>
+                  <Text className={article.quizStartButtonText}>Start quiz</Text>
                 </View>
               </Pressable>
             )}
