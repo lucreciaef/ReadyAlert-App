@@ -77,6 +77,7 @@ src/
 │   └── learning/ # Learning Centre sub-pages
 │   └── settings/ # Settings sub-pages
 ├── styles/       # Theme colours, map styles, shared styles
+├── tasks/        # Background task managing helpers
 ├── theme/        # Dark/light theme context
 └── utils/        # Coordinate conversion, notification helpers
 ```
