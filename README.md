@@ -8,11 +8,11 @@ Built with [Expo](https://expo.dev) and React Native.
 
 ## Features
 
-- **Home Dashboard** — Detects your GPS location and fetches active weather warnings from the [Geosphere Austria](https://www.geosphere.at/) API, the current weather status and Air Quality Index from [OpenMeteo API](https://open-meteo.com/), and the Radiation level from the [Austrian-BMLUK](https://radiologischesereignis.gv.at/de/home/), displayed on an interactive map with expandable warning cards (Features in progress);
+- **Home Dashboard** — Detects your GPS location and fetches active weather warnings from the [Geosphere Austria](https://www.geosphere.at/) API, the current weather status and Air Quality Index from [OpenMeteo API](https://open-meteo.com/), and the Radiation level from the [Austrian-BMLUK](https://radiologischesereignis.gv.at/de/home/), displayed on an interactive map with expandable warning cards.
 - **National Status** — Shows country-wide alerts from the [RTR Austria](https://www.rtr.at/) alerting system, colour-coded by severity, on a national map. Shows the daily weather state for each Austrian state (capital city) from the [OpenMeteo API](https://open-meteo.com/).
-- **Emergency Page** — Quick-access emergency contacts and guidance for crisis situations. (Feature in progress)
+- **Emergency Page** — Quick-access emergency contacts and guidance for crisis situations.
 - **Learning Centre** — Step-by-step preparedness guides and checklists, with progress tracking.
-- **Push Notifications** — Alerts you when new warnings or alerts are detected, even in the background. (In planning)
+- **Push Notifications** — Alerts you when new warnings or alerts are detected, even in the background.
 - **Dark / Light Theme** — Follows system preference automatically.
 
 ---
@@ -75,6 +75,7 @@ src/
 ├── hooks/        # Custom hooks (location, notifications, checklists, etc.)
 ├── pages/        # App screens
 │   └── learning/ # Learning Centre sub-pages
+│   └── settings/ # Settings sub-pages
 ├── styles/       # Theme colours, map styles, shared styles
 ├── theme/        # Dark/light theme context
 └── utils/        # Coordinate conversion, notification helpers
