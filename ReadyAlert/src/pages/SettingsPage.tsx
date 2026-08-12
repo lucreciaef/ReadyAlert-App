@@ -14,9 +14,15 @@ import { getSettingsPageStyles, getTopAppBarStyles } from '../styles/appStyles';
 import { DebugMode } from '../context/LocationContext';
 import { LicenseInformationPage } from './settings/LicenseInformationPage';
 import { SavedLocationsPage } from './settings/SavedLocationsPage';
+import { AboutPage } from './settings/AboutPage';
+import {
+  cancelScheduledTaskExpiryNotification,
+  scheduleRtrTestNotification,
+  scheduleTaskExpiryNotification,
+} from '../utils/notifications';
 import appJson from '../../app.json';
 
-type SubPage = 'licenseInformation' | 'savedLocations' | null;
+type SubPage = 'licenseInformation' | 'savedLocations' | 'about' | null;
 
 const APP_VERSION = appJson.expo.version;
 
@@ -51,24 +57,67 @@ export function SettingsPage({
   const db = useSQLiteContext();
   const [activePage, setActivePage] = useState<SubPage>(initialSubPage ?? null);
   const [expiryDebugBusy, setExpiryDebugBusy] = useState(false);
+  const [dangerDebugBusy, setDangerDebugBusy] = useState(false);
+  const [logoTapCount, setLogoTapCount] = useState(0);
+  const debugUnlocked = logoTapCount >= 10;
+
+  const handleLogoTap = () => {
+    const next = logoTapCount + 1;
+    setLogoTapCount(next);
+    if (next === 10) {
+      Alert.alert('Debug settings unlocked', 'Debug tools are now visible.');
+    }
+  };
+
+  const handleDebugDangerPress = async () => {
+    setDangerDebugBusy(true);
+    try {
+      onDebugDangerPress?.();
+      await scheduleRtrTestNotification();
+      Alert.alert(
+        'Alert simulation scheduled',
+        'A national danger alert notification will arrive in ~1 minute. Close the app and wait.',
+      );
+    } catch (err) {
+      Alert.alert('Error', String(err));
+    } finally {
+      setDangerDebugBusy(false);
+    }
+  };
 
   const handleDebugExpireArticle = async () => {
     setExpiryDebugBusy(true);
     try {
       const now = new Date();
       const completedAt = now.toISOString();
-      const expiresAt = new Date(now.getTime() + 60 * 1000).toISOString();
+      const expiresAt = new Date(now.getTime() + 60 * 1000);
 
-      // Mark the weather tips article as read and schedule it to expire in 1 minute
-      await db.runAsync(`UPDATE checklist_items SET checked = 1 WHERE id = 'wet_read'`);
+      // Cancel any existing scheduled notification before rescheduling.
+      const existing = await db.getFirstAsync<{ expiry_notification_id: string | null }>(
+        `SELECT expiry_notification_id FROM tasks WHERE id = 'task_weather_tips'`,
+      );
+      if (existing?.expiry_notification_id) {
+        await cancelScheduledTaskExpiryNotification(existing.expiry_notification_id);
+      }
+
+      const notificationId = await scheduleTaskExpiryNotification(
+        'Weather Emergency Tips',
+        expiresAt,
+      );
+
+      // Mark all weather tips checklist items as answered/checked (works for both
+      // the legacy single-checkbox and the post-migration quiz question rows).
       await db.runAsync(
-        `UPDATE tasks SET completed_at = ?, expires_at = ? WHERE id = 'task_weather_tips'`,
-        [completedAt, expiresAt],
+        `UPDATE checklist_items SET checked = 1 WHERE task_id = 'task_weather_tips'`,
+      );
+      await db.runAsync(
+        `UPDATE tasks SET completed_at = ?, expires_at = ?, expiry_notification_id = ? WHERE id = 'task_weather_tips'`,
+        [completedAt, expiresAt.toISOString(), notificationId],
       );
 
       Alert.alert(
         'Expiry scheduled',
-        'The "Weather Emergency Tips" article will expire in 1 minute. Background the app and return after 1 minute to receive the push notification.',
+        'The "Weather Emergency Tips" article will expire in 1 minute. Close the app and wait for the push notification.',
       );
     } catch (err) {
       Alert.alert('Error', String(err));
@@ -94,6 +143,10 @@ export function SettingsPage({
 
   if (activePage === 'savedLocations') {
     return <SavedLocationsPage onBack={closeSubPage} />;
+  }
+
+  if (activePage === 'about') {
+    return <AboutPage onBack={closeSubPage} />;
   }
 
   const isDebugMode = debugMode !== null && debugMode !== undefined;
@@ -126,10 +179,12 @@ export function SettingsPage({
             gap: 16,
           }}
         >
-          <Image
-            source={require('../../assets/icon.png')}
-            style={{ width: 48, height: 48, borderRadius: 8 }}
-          />
+          <Pressable onPress={handleLogoTap} android_ripple={null}>
+            <Image
+              source={require('../../assets/icon.png')}
+              style={{ width: 48, height: 48, borderRadius: 8 }}
+            />
+          </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 18, fontWeight: '500', color: colours.text }}>ReadyAlert</Text>
             <Text style={{ fontSize: 13, color: colours.textMuted, marginTop: 2 }}>
@@ -223,7 +278,7 @@ export function SettingsPage({
         </Pressable>
 
         <Pressable
-          onPress={() => Alert.alert('Feature coming up soon')}
+          onPress={() => setActivePage('about')}
           className={styles.item}
           android_ripple={{ color: colours.ripple }}
         >
@@ -236,58 +291,68 @@ export function SettingsPage({
           </View>
         </Pressable>
 
-        <Text className={styles.sectionLabel}>Debug</Text>
-
-        {isDebugMode ? (
-          <Pressable
-            className={styles.item}
-            android_ripple={{ color: colours.ripple }}
-            onPress={onClearDebugPress}
-          >
-            <MaterialCommunityIcons name="bug-outline" size={24} color={colours.warning} />
-            <View style={{ flex: 1 }}>
-              <Text className={styles.itemText}>Clear debug mode</Text>
-              <Text style={{ fontSize: 11, color: colours.warning, marginTop: 2 }}>
-                Currently: {debugLabel[debugMode!]}
-              </Text>
-            </View>
-          </Pressable>
-        ) : (
+        {debugUnlocked && (
           <>
-            <Pressable
-              className={styles.item}
-              android_ripple={{ color: colours.ripple }}
-              onPress={onDebugDangerPress}
-            >
-              <MaterialCommunityIcons name="alert-outline" size={24} color={colours.warning} />
-              <Text className={styles.itemText}>Simulate national danger alert</Text>
-            </Pressable>
+            <Text className={styles.sectionLabel}>Debug</Text>
+
+            {isDebugMode ? (
+              <Pressable
+                className={styles.item}
+                android_ripple={{ color: colours.ripple }}
+                onPress={onClearDebugPress}
+              >
+                <MaterialCommunityIcons name="bug-outline" size={24} color={colours.warning} />
+                <View style={{ flex: 1 }}>
+                  <Text className={styles.itemText}>Clear debug mode</Text>
+                  <Text style={{ fontSize: 11, color: colours.warning, marginTop: 2 }}>
+                    Currently: {debugLabel[debugMode!]}
+                  </Text>
+                </View>
+              </Pressable>
+            ) : (
+              <>
+                <Pressable
+                  className={styles.item}
+                  android_ripple={{ color: colours.ripple }}
+                  onPress={handleDebugDangerPress}
+                  disabled={dangerDebugBusy}
+                >
+                  <MaterialCommunityIcons name="alert-outline" size={24} color={colours.warning} />
+                  <View style={{ flex: 1 }}>
+                    <Text className={styles.itemText}>Simulate national danger alert</Text>
+                    <Text style={{ fontSize: 11, color: colours.textMuted, marginTop: 2 }}>
+                      Schedules a notification in 1 minute — close the app to test
+                    </Text>
+                  </View>
+                </Pressable>
+
+                <Pressable
+                  className={styles.item}
+                  android_ripple={{ color: colours.ripple }}
+                  onPress={onDebug503Press}
+                >
+                  <MaterialCommunityIcons name="server-off" size={24} color={colours.warning} />
+                  <Text className={styles.itemText}>Simulate 503 server response</Text>
+                </Pressable>
+              </>
+            )}
 
             <Pressable
               className={styles.item}
               android_ripple={{ color: colours.ripple }}
-              onPress={onDebug503Press}
+              onPress={handleDebugExpireArticle}
+              disabled={expiryDebugBusy}
             >
-              <MaterialCommunityIcons name="server-off" size={24} color={colours.warning} />
-              <Text className={styles.itemText}>Simulate 503 server response</Text>
+              <MaterialCommunityIcons name="timer-outline" size={24} color={colours.warning} />
+              <View style={{ flex: 1 }}>
+                <Text className={styles.itemText}>Expire article in 1 minute</Text>
+                <Text style={{ fontSize: 11, color: colours.textMuted, marginTop: 2 }}>
+                  Schedules "Weather Emergency Tips" to expire and sends a notification
+                </Text>
+              </View>
             </Pressable>
           </>
         )}
-
-        <Pressable
-          className={styles.item}
-          android_ripple={{ color: colours.ripple }}
-          onPress={handleDebugExpireArticle}
-          disabled={expiryDebugBusy}
-        >
-          <MaterialCommunityIcons name="timer-outline" size={24} color={colours.warning} />
-          <View style={{ flex: 1 }}>
-            <Text className={styles.itemText}>Expire article in 1 minute</Text>
-            <Text style={{ fontSize: 11, color: colours.textMuted, marginTop: 2 }}>
-              Schedules "Weather Emergency Tips" to expire and sends a notification
-            </Text>
-          </View>
-        </Pressable>
       </ScrollView>
     </View>
   );
