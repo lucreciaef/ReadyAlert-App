@@ -8,9 +8,10 @@
  * simulation flows but does not override coords.
  */
 
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Coordinates, useLocation } from '../hooks/useLocation';
 import { useSavedLocations } from './SavedLocationsContext';
+import { setLastKnownCoords } from '../utils/locationStore';
 
 export type DebugMode = 'danger' | '503' | null;
 
@@ -46,6 +47,14 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
   // A user-picked saved location wins over real GPS.
   const effectiveCoords = savedCoords ?? gps.coords;
+
+  // Persist latest coords so background tasks can fetch location-aware APIs
+  // (e.g. Geosphere weather warnings) without needing a live GPS fix.
+  useEffect(() => {
+    if (effectiveCoords) {
+      setLastKnownCoords(effectiveCoords).catch(() => {});
+    }
+  }, [effectiveCoords?.latitude, effectiveCoords?.longitude]);
 
   const value: LocationContextValue = {
     coords: effectiveCoords,

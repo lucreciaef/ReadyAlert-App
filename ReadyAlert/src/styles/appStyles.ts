@@ -7,6 +7,17 @@ export const getLayoutStyles = (isDark: boolean) => ({
   app: 'flex-1 relative',
   content: 'flex-1 p-4 pt-0',
   fill: 'flex-1',
+  centered: 'flex-1 items-center justify-center',
+  loadingLabel: `mt-4 text-sm ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+});
+
+// Shared elevation/shadow style for top app bars. Used as `style={getTopAppBarShadow(colors)}`.
+export const getTopAppBarShadow = (colours: { shadow: string }) => ({
+  elevation: 2,
+  shadowColor: colours.shadow,
+  shadowOffset: { width: 0, height: 1 } as const,
+  shadowOpacity: 0.08 as const,
+  shadowRadius: 3,
 });
 
 export const getBottomMenuStyles = (isDark: boolean) => ({
@@ -75,6 +86,40 @@ export const getPreparednessScoreCardStyles = (isDark: boolean) => ({
   card: `rounded-xl px-4 py-3 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
   label: `mb-2 text-[14px] font-medium ${isDark ? 'text-primary-dark' : 'text-primary'}`,
   trophyRow: 'flex-row gap-1.5',
+});
+
+export const getEmergencyPageStyles = (isDark: boolean) => ({
+  sectionLabel: `text-[13px] font-semibold tracking-[0.5px] mb-3 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
+  serviceLabel: `text-[13px] font-medium ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  linkRow: `rounded-xl overflow-hidden mb-2 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
+  linkRowInner: 'flex-row items-center py-3 px-4 gap-4',
+  linkLabel: `flex-1 text-[15px] ${isDark ? 'text-text-dark' : 'text-text'}`,
+});
+
+export const getChecklistPageStyles = (isDark: boolean) => ({
+  groupLabel: `text-sm font-medium tracking-[0.1px] mb-2 px-1 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
+  groupCard: `rounded-xl overflow-hidden ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
+  itemRow: 'flex-row items-center px-4 py-3',
+  checkbox: 'w-5 h-5 rounded-sm items-center justify-center border-2 mr-3.5 shrink-0',
+  itemLabel: 'flex-1 text-sm leading-5',
+  quantityBadge: 'ml-2 px-2 py-0.5 rounded-xl shrink-0',
+  quantityBadgeText: 'text-[11px] font-semibold',
+  progressStrip: `px-4 pt-3 pb-3.5 border-b ${isDark ? 'bg-surface-alt-dark border-divider-dark' : 'bg-surface border-divider'}`,
+  progressHeaderRow: 'flex-row items-center justify-between mb-2',
+  progressCountLabel: `text-xs font-medium tracking-[0.5px] ${isDark ? 'text-text-muted-dark' : 'text-text-muted'}`,
+  introCard: `rounded-xl p-3.5 mb-5 ${isDark ? 'bg-surface-alt-dark' : 'bg-surface-alt'}`,
+  introIconRow: 'flex-row items-center mb-2',
+  introTitle: `ml-2 text-sm font-bold ${isDark ? 'text-text-dark' : 'text-text'}`,
+  introBody: `text-[13px] leading-[19px] ${isDark ? 'text-text-dark' : 'text-text'}`,
+});
+
+export const getLearningArticlePageStyles = (isDark: boolean) => ({
+  articleSectionLabel: `text-sm font-medium tracking-[0.1px] mt-2 mb-3 px-1 ${isDark ? 'text-primary-dark' : 'text-primary'}`,
+  quizActionBar: `px-4 pt-3 border-t ${isDark ? 'bg-surface-alt-dark border-divider-dark' : 'bg-surface border-divider'}`,
+  quizCompleteText: 'flex-1 text-sm font-semibold',
+  quizStartButton: 'rounded-[28px] overflow-hidden',
+  quizStartButtonInner: 'flex-row items-center justify-center gap-2 py-4 px-6',
+  quizStartButtonText: `text-sm font-medium tracking-[0.1px] ${isDark ? 'text-on-primary-dark' : 'text-on-primary'}`,
 });
 
 export const getNationalStatusPageStyles = (isDark: boolean) => ({
