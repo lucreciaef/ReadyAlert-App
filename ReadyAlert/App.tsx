@@ -1,4 +1,3 @@
-// Side-effect imports: register TaskManager task definitions before React mounts
 import './src/tasks/expiryBackgroundTask';
 import './src/tasks/rtrBackgroundTask';
 import './src/tasks/geosphereBackgroundTask';
@@ -30,9 +29,9 @@ import { checkAndExpireTasks } from './src/utils/taskExpiry';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
-  const [pendingSettingsSubPage, setPendingSettingsSubPage] = useState<
-    'savedLocations' | null
-  >(null);
+  const [pendingSettingsSubPage, setPendingSettingsSubPage] = useState<'savedLocations' | null>(
+    null,
+  );
   const [subPageReturnTab, setSubPageReturnTab] = useState<string | null>(null);
   const { isDark } = useTheme();
   const layout = getLayoutStyles(isDark);
@@ -111,7 +110,7 @@ function AppContent() {
 export default function App() {
   const [fontsLoaded] = useFonts({ RobotoFlex_400Regular });
 
-  // Register channels and background tasks as early as possible (does not require DB)
+  // Registers channels and background tasks
   useEffect(() => {
     registerForPushNotifications();
     registerExpiryBackgroundTask();
