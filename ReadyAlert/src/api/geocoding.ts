@@ -1,6 +1,7 @@
 /**
  * Service layer for the Open-Meteo geocoding API.
  * Used to search for cities and districts by name when the user is saving a custom location.
+ * Source: https://open-meteo.com/en/docs/geocoding-api
  */
 
 const BASE_URL = 'https://geocoding-api.open-meteo.com/v1/search';

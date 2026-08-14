@@ -8,7 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme/ThemeContext';
 import { getThemeColours } from '../../styles/themeColours';
-import { getLicenseInformationPageStyles, getLayoutStyles, getTopAppBarShadow, getTopAppBarStyles } from '../../styles/appStyles';
+import {
+  getLicenseInformationPageStyles,
+  getLayoutStyles,
+  getTopAppBarShadow,
+  getTopAppBarStyles,
+} from '../../styles/appStyles';
 
 interface LicenseInformationPageProps {
   onBack: () => void;
@@ -21,7 +26,11 @@ interface LibraryEntry {
 }
 
 const OPEN_SOURCE_LIBRARIES: LibraryEntry[] = [
-  { name: '@expo-google-fonts/roboto-flex', license: 'OFL-1.1', url: 'https://github.com/expo/google-fonts' },
+  {
+    name: '@expo-google-fonts/roboto-flex',
+    license: 'OFL-1.1',
+    url: 'https://github.com/expo/google-fonts',
+  },
   { name: 'expo', license: 'MIT', url: 'https://github.com/expo/expo' },
   { name: 'expo-background-fetch', license: 'MIT', url: 'https://github.com/expo/expo' },
   { name: 'expo-dev-client', license: 'MIT', url: 'https://github.com/expo/expo' },
@@ -32,17 +41,41 @@ const OPEN_SOURCE_LIBRARIES: LibraryEntry[] = [
   { name: 'expo-status-bar', license: 'MIT', url: 'https://github.com/expo/expo' },
   { name: 'expo-task-manager', license: 'MIT', url: 'https://github.com/expo/expo' },
   { name: '@expo/vector-icons', license: 'MIT', url: 'https://github.com/expo/vector-icons' },
-  { name: '@react-native-async-storage/async-storage', license: 'MIT', url: 'https://github.com/react-native-async-storage/async-storage' },
+  {
+    name: '@react-native-async-storage/async-storage',
+    license: 'MIT',
+    url: 'https://github.com/react-native-async-storage/async-storage',
+  },
   { name: 'nativewind', license: 'MIT', url: 'https://github.com/nativewind/nativewind' },
   { name: 'openmeteo', license: 'MIT', url: 'https://github.com/open-meteo/sdk' },
   { name: 'proj4', license: 'MIT', url: 'https://github.com/proj4js/proj4js' },
   { name: 'react', license: 'MIT', url: 'https://github.com/facebook/react' },
   { name: 'react-native', license: 'MIT', url: 'https://github.com/facebook/react-native' },
-  { name: 'react-native-maps', license: 'MIT', url: 'https://github.com/react-native-maps/react-native-maps' },
-  { name: 'react-native-reanimated', license: 'MIT', url: 'https://github.com/software-mansion/react-native-reanimated' },
-  { name: 'react-native-safe-area-context', license: 'MIT', url: 'https://github.com/th3rdwave/react-native-safe-area-context' },
-  { name: 'react-native-webview', license: 'MIT', url: 'https://github.com/react-native-webview/react-native-webview' },
-  { name: 'react-native-worklets', license: 'MIT', url: 'https://github.com/software-mansion/react-native-reanimated' },
+  {
+    name: 'react-native-maps',
+    license: 'MIT',
+    url: 'https://github.com/react-native-maps/react-native-maps',
+  },
+  {
+    name: 'react-native-reanimated',
+    license: 'MIT',
+    url: 'https://github.com/software-mansion/react-native-reanimated',
+  },
+  {
+    name: 'react-native-safe-area-context',
+    license: 'MIT',
+    url: 'https://github.com/th3rdwave/react-native-safe-area-context',
+  },
+  {
+    name: 'react-native-webview',
+    license: 'MIT',
+    url: 'https://github.com/react-native-webview/react-native-webview',
+  },
+  {
+    name: 'react-native-worklets',
+    license: 'MIT',
+    url: 'https://github.com/software-mansion/react-native-reanimated',
+  },
 ];
 
 interface CreditEntry {
@@ -55,14 +88,24 @@ const CREDITS: CreditEntry[] = [
   {
     title: 'Open-Meteo',
     description:
-      'Weather and air quality data provided by Open-Meteo.com, licensed under Creative Commons Attribution 4.0 (CC BY 4.0).',
+      'Weather and air quality, and geocoding data provided by Open-Meteo.com, licensed under Creative Commons Attribution 4.0 (CC BY 4.0).',
     url: 'https://open-meteo.com/en/license',
   },
   {
-    title: 'Österreichisches Rotes Kreuz (Austrian Red Cross)',
-    description:
-      'Emergency preparedness checklists and weather safety guidance are adapted from the Austrian Red Cross.',
-    url: 'https://www.roteskreuz.at/',
+    title:
+      'Austrian Federal Ministry of Agriculture Forestry Climate and Environmental Protection Regions and Water Management (BMLUK)',
+    description: 'Source for radiation information in Austria.',
+    url: 'https://www.bmluk.gv.at/themen/klima-und-umwelt/strahlenschutz/fruehwarnsystem/messwerte.html',
+  },
+  {
+    title: 'GeoSphere Austria',
+    description: 'Source for weather alerts and map overlays in Austria.',
+    url: 'https://openapi.hub.geosphere.at/warnapi/v1/',
+  },
+  {
+    title: 'Runkfunk und Telekom Regulierungs GmbH',
+    description: 'Source for the AT-Alert system in Austria.',
+    url: 'https://warnungen.at-alert.at/en',
   },
 ];
 

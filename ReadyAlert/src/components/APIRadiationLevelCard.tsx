@@ -13,12 +13,9 @@ import { getThemeColours } from '../styles/themeColours';
 import { ExpandableInfoCard } from './ExpandableInfoCard';
 import { RadiationState } from '../hooks/useRadiationLevel';
 
-function radiationColour(
-  nsvh: number,
-  c: ReturnType<typeof getThemeColours>,
-): string {
+function radiationColour(nsvh: number, c: ReturnType<typeof getThemeColours>): string {
   const level = classifyRadiation(nsvh);
-  if (level === 'normal' || level === 'elevated')   return c.success;
+  if (level === 'normal' || level === 'elevated') return c.success;
   if (level === 'high') return c.warning;
   return c.error;
 }
@@ -60,9 +57,7 @@ export function APIRadiationLevelCard({
           )}
 
           {error && !closestStation && (
-            <Text style={{ color: colours.warning, fontSize: 14, marginTop: 10 }}>
-              {error}
-            </Text>
+            <Text style={{ color: colours.warning, fontSize: 14, marginTop: 10 }}>{error}</Text>
           )}
 
           {!loading && !error && !closestStation && (
@@ -78,14 +73,13 @@ export function APIRadiationLevelCard({
                   style={{
                     fontSize: 22,
                     fontWeight: '500',
-                    color: radiationColour(closestStation.messwert, colours),
+                    color: radiationColour(closestStation.measurement, colours),
                   }}
                 >
-                  {closestStation.messwert}
+                  {closestStation.measurement}
                 </Text>
                 <Text style={{ fontSize: 14, color: colours.textMuted }}>
-                  nSv/h ·{' '}
-                  {RADIATION_LEVEL_LABEL[classifyRadiation(closestStation.messwert)]}
+                  nSv/h · {RADIATION_LEVEL_LABEL[classifyRadiation(closestStation.measurement)]}
                 </Text>
               </View>
               <Text style={{ fontSize: 12, color: colours.textMuted }}>
@@ -116,20 +110,35 @@ export function APIRadiationLevelCard({
             <Text style={{ flex: 1, fontSize: 11, color: colours.textMuted, fontWeight: '600' }}>
               Station
             </Text>
-            <Text style={{ width: 68, fontSize: 11, color: colours.textMuted, fontWeight: '600', textAlign: 'right' }}>
+            <Text
+              style={{
+                width: 68,
+                fontSize: 11,
+                color: colours.textMuted,
+                fontWeight: '600',
+                textAlign: 'right',
+              }}
+            >
               nSv/h
             </Text>
-            <Text style={{ width: 60, fontSize: 11, color: colours.textMuted, fontWeight: '600', textAlign: 'right' }}>
+            <Text
+              style={{
+                width: 60,
+                fontSize: 11,
+                color: colours.textMuted,
+                fontWeight: '600',
+                textAlign: 'right',
+              }}
+            >
               Distance
             </Text>
           </View>
-                      
-          {nearbyStations.slice(0, 10).map((s) => {
 
-            const col = radiationColour(s.messwert, colours);
+          {nearbyStations.slice(0, 10).map((s) => {
+            const col = radiationColour(s.measurement, colours);
             return (
               <View
-                key={s.nummer}
+                key={s.number}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -137,7 +146,7 @@ export function APIRadiationLevelCard({
                   paddingHorizontal: 4,
                   borderRadius: 6,
                   backgroundColor:
-                    s.nummer === closestStation?.nummer
+                    s.number === closestStation?.number
                       ? isDark
                         ? `${colours.primary}22`
                         : `${colours.primary}11`
@@ -154,10 +163,7 @@ export function APIRadiationLevelCard({
                     marginRight: 8,
                   }}
                 />
-                <Text
-                  style={{ flex: 1, fontSize: 13, color: colours.text }}
-                  numberOfLines={1}
-                >
+                <Text style={{ flex: 1, fontSize: 13, color: colours.text }} numberOfLines={1}>
                   {s.name}
                 </Text>
                 <Text
@@ -169,7 +175,7 @@ export function APIRadiationLevelCard({
                     textAlign: 'right',
                   }}
                 >
-                  {s.messwert}
+                  {s.measurement}
                 </Text>
                 <Text
                   style={{
@@ -200,5 +206,3 @@ export function APIRadiationLevelCard({
     </ExpandableInfoCard>
   );
 }
-
-

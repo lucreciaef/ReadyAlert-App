@@ -3,8 +3,7 @@
  *
  * The HomeDashboardPage component is the main page of the app.
  * It displays the user's current location, weather, air quality, and geosphere warnings.
- * It is especially designed for Austria, but some information like weather can also work in other countries,
- * as the API returns valid info.
+ * It is especially designed for Austria, but some information like weather can also work in other countries, as the API returns valid info.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -257,7 +256,7 @@ export function HomeDashboardPage({
 
           {radiationExpanded &&
             radiationState.nearbyStations.map((station) => {
-              const level = classifyRadiation(station.messwert);
+              const level = classifyRadiation(station.measurement);
               const circleColor =
                 level === 'normal'
                   ? colors.success
@@ -266,7 +265,7 @@ export function HomeDashboardPage({
                     : colors.error;
               return (
                 <Circle
-                  key={`rad-${station.nummer}`}
+                  key={`rad-${station.number}`}
                   center={{ latitude: station.latitude, longitude: station.longitude }}
                   radius={4000}
                   fillColor={`${circleColor}66`}
