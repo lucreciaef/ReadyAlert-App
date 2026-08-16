@@ -11,8 +11,6 @@ import { checkAndExpireTasks } from '../utils/taskExpiry';
 
 export const EXPIRY_TASK_NAME = 'READYALERT_EXPIRY_CHECK';
 
-// defineTask must run at module level, but throws in Expo Go where the native
-// module is absent. Wrap so the app loads normally in all environments.
 try {
   TaskManager.defineTask(EXPIRY_TASK_NAME, async () => {
     try {
@@ -24,8 +22,7 @@ try {
     }
   });
 } catch {
-  // Native module unavailable (Expo Go) — background task silently disabled.
-  // Foreground expiry checks via AppState still work normally.
+  // Background tasks don't work on Expo Go, so ignore in this case
 }
 
 /**
@@ -52,6 +49,6 @@ export async function registerExpiryBackgroundTask(): Promise<void> {
       });
     }
   } catch {
-    // Background fetch is unavailable in Expo Go; silently skip
+    // Background tasks don't work on Expo Go, so ignore in this case
   }
 }

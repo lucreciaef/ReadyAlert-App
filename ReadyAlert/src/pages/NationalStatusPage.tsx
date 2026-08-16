@@ -38,15 +38,13 @@ import { RTRAlertSummaryButton } from '../components/RTRAlertSummaryButton';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
-import { useNotifications } from '../hooks/useNotifications';
 import { useWeatherBatch } from '../hooks/useWeather';
+import { setLastSeenAlertIds } from '../utils/rtrAlertStore';
 import { RTRAlertCard } from '../components/RTRAlertCard';
 import { RTRLevelChip } from '../components/RTRLevelChip';
 import { StateWeatherOverview } from '../components/StateWeatherOverview';
 import { AUSTRIAN_CAPITALS, AUSTRIAN_CAPITAL_COORDS } from '../utils/austrianCapitals';
 import { getWeatherIcon } from '../utils/weatherIcon';
-
-let _prevRtrAlertCount = 0;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PEEK_HEIGHT = 88;
@@ -88,7 +86,6 @@ export function NationalStatusPage() {
   const sheetAnim = useRef(new Animated.Value(0)).current;
   const [mapBottomPadding, setMapBottomPadding] = useState(HALF_HEIGHT);
   const expandedRef = useRef(true);
-  const { notifyRtrAlerts } = useNotifications();
   const [sheetExpanded, setSheetExpanded] = useState(true);
   const debugModeRef = useRef(debugMode);
   useEffect(() => {
@@ -144,15 +141,11 @@ export function NationalStatusPage() {
         const result = await fetchRtrAlerts({ alertLevels: ALL_ALERT_LEVELS });
         count = result.totalCount;
         data = result.alerts;
+        // Mark these IDs as seen so the background task does not re-notify for alerts the user has already viewed in the foreground.
+        await setLastSeenAlertIds(data.map((a) => a.consolidation_identifier));
       }
       setTotalCount(count);
       setAllAlerts(sortAlertsBySeverity(data));
-      if (count > 0 && count !== _prevRtrAlertCount) {
-        const sorted = sortAlertsBySeverity(data);
-        const highestLevel = sorted[0]?.alert_level ?? 'AlertLevel4';
-        notifyRtrAlerts(count, highestLevel);
-      }
-      _prevRtrAlertCount = count;
     } catch (err) {
       if (err instanceof ServiceUnavailableError) {
         setServiceUnavailable(true);

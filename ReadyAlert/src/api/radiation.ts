@@ -11,11 +11,11 @@
 
 // Raw station entry as returned by the API
 export interface RadiationStationRaw {
-  number: string; // Station ID
+  nummer: string; // Station ID
   name: string;
-  coordinateX: number; // Pixel X on the Austrian map image (west → east)
-  coordinateY: number; // Pixel Y on the Austrian map image (north → south)
-  measurement: number; // Measured radiation level in nSv/h
+  koordinatenX: number; // Pixel X on the Austrian map image (west → east)
+  koordinatenY: number; // Pixel Y on the Austrian map image (north → south)
+  messwert: number; // Measured radiation level in nSv/h
 }
 
 export interface RadiationApiResponse {
@@ -85,7 +85,7 @@ export type RadiationLevel = 'normal' | 'elevated' | 'high' | 'serious';
  * > 1000 -> serious, abnormal (emergency)
  *
  * Sources: https://www.bmluk.gv.at/en/topics/climate-environment/radiation-protection/radiation-early-warning-system.html
- * More info: https://biologyinsights.com/how-many-microsieverts-per-hour-is-dangerous/?utm_source=chatgpt.com
+ * More info: https://biologyinsights.com/how-many-microsieverts-per-hour-is-dangerous/
  */
 export function classifyRadiation(nsvh: number): RadiationLevel {
   if (nsvh <= 200) return 'normal';
@@ -120,13 +120,13 @@ export async function fetchRadiationData(): Promise<{
   const json: RadiationApiResponse = await response.json();
 
   const stations = json.data.map((raw) => {
-    const { latitude, longitude } = pixelToLatLon(raw.coordinateX, raw.coordinateY);
+    const { latitude, longitude } = pixelToLatLon(raw.koordinatenX, raw.koordinatenY);
     return {
-      number: raw.number,
+      number: raw.nummer,
       name: raw.name,
       latitude,
       longitude,
-      measurement: raw.measurement,
+      measurement: raw.messwert,
     };
   });
 

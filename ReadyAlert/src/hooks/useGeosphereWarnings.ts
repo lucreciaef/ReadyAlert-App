@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import {
   fetchWarningsForLocation,
   filterWarningsInWindow,
@@ -15,6 +16,7 @@ import {
 import { Coordinates } from './useLocation';
 import { useLocationContext } from '../context/LocationContext';
 import { useNotifications } from './useNotifications';
+import { setLastSeenWarningIds } from '../utils/geosphereWarningStore';
 
 const POLL_INTERVAL_MS = 30_000;
 const WARNING_WINDOW_HOURS = 48;
@@ -36,57 +38,75 @@ export function useGeosphereWarnings(coords: Coordinates | null): GeosphereWarni
 
   // Track latest debugMode
   const debugModeRef = useRef(debugMode);
-  useEffect(() => { debugModeRef.current = debugMode; }, [debugMode]);
+  useEffect(() => {
+    debugModeRef.current = debugMode;
+  }, [debugMode]);
 
   const prevWarningCountRef = useRef(0);
 
   const [data, setData] = useState<GeosphereResponse | null>(null);
-  const [visibleWarnings, setVisibleWarnings] = useState<ReturnType<typeof filterWarningsInWindow>>([]);
+  const [visibleWarnings, setVisibleWarnings] = useState<ReturnType<typeof filterWarningsInWindow>>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [outsideAustria, setOutsideAustria] = useState(false);
   const [outsideAustriaMessage, setOutsideAustriaMessage] = useState<string | null>(null);
 
-  const load = useCallback(async (lon: number, lat: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setServiceUnavailable(false);
-      setOutsideAustria(false);
-      setOutsideAustriaMessage(null);
-      setData(null);
-      setVisibleWarnings([]);
+  const load = useCallback(
+    async (lon: number, lat: number) => {
+      try {
+        setLoading(true);
+        setError(null);
+        setServiceUnavailable(false);
+        setOutsideAustria(false);
+        setOutsideAustriaMessage(null);
+        setData(null);
+        setVisibleWarnings([]);
 
-      if (debugModeRef.current === '503') {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        throw new ServiceUnavailableError();
+        if (debugModeRef.current === '503') {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          throw new ServiceUnavailableError();
+        }
+
+        const result = await fetchWarningsForLocation(lon, lat, 'en');
+        const inWindow = filterWarningsInWindow(
+          result?.properties?.warnings ?? [],
+          WARNING_WINDOW_HOURS,
+        );
+
+        setData(result);
+        setVisibleWarnings(inWindow);
+
+        // Mark current warnings as seen so the background task won't re-notify for warnings the user has already viewed in the foreground.
+        setLastSeenWarningIds(inWindow.map((w) => w.properties.warnid)).catch(() => {});
+
+        const newCount = inWindow.length;
+        // Only notify when the app is not in the foreground
+        if (
+          newCount > 0 &&
+          newCount !== prevWarningCountRef.current &&
+          AppState.currentState !== 'active'
+        ) {
+          notifyGeosphereWarnings(newCount, getLocationName(result));
+        }
+        prevWarningCountRef.current = newCount;
+      } catch (err) {
+        if (err instanceof ServiceUnavailableError) {
+          setServiceUnavailable(true);
+        } else if (err instanceof OutsideAustriaError) {
+          setOutsideAustria(true);
+          setOutsideAustriaMessage(err.message);
+        } else {
+          setError(err instanceof Error ? err.message : 'Failed to fetch warnings');
+        }
+      } finally {
+        setLoading(false);
       }
-
-      const result = await fetchWarningsForLocation(lon, lat, 'en');
-      const inWindow = filterWarningsInWindow(result?.properties?.warnings ?? [], WARNING_WINDOW_HOURS);
-
-      setData(result);
-      setVisibleWarnings(inWindow);
-
-      const newCount = inWindow.length;
-      if (newCount > 0 && newCount !== prevWarningCountRef.current) {
-        notifyGeosphereWarnings(newCount, getLocationName(result));
-      }
-      prevWarningCountRef.current = newCount;
-    } catch (err) {
-      if (err instanceof ServiceUnavailableError) {
-        setServiceUnavailable(true);
-      } else if (err instanceof OutsideAustriaError) {
-        setOutsideAustria(true);
-        setOutsideAustriaMessage(err.message);
-      } else {
-        setError(err instanceof Error ? err.message : 'Failed to fetch warnings');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [notifyGeosphereWarnings]);
+    },
+    [notifyGeosphereWarnings],
+  );
 
   // Initial fetch, also re-fires when debugMode changes
   useEffect(() => {

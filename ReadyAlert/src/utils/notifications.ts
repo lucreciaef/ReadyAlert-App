@@ -69,12 +69,48 @@ export async function sendGeosphereNotification(
       sound: 'default',
       data: { source: 'geosphere', warningCount, locationName },
     },
-    trigger: null, // fire immediately
+    trigger: { channelId: 'alerts' },
   });
 }
 
 /**
- * Send a local push notification when a preparedness task has expired.
+ * Schedule a local notification to fire at the exact moment a preparedness task expires.
+ * Returns the notification identifier so it can be cancelled if the task is reset.
+ */
+export async function scheduleTaskExpiryNotification(
+  taskTitle: string,
+  expiresAt: Date,
+): Promise<string> {
+  return await Notifications.scheduleNotificationAsync({
+    content: {
+      title: '⏰ Learning Centre task expired',
+      body: `Your "${taskTitle}" task has expired. Review it to keep your preparedness score up to date.`,
+      sound: 'default',
+      data: { source: 'preparedness-expiry', taskTitle },
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: expiresAt,
+      channelId: 'preparedness-expiry',
+    },
+  });
+}
+
+/**
+ * Cancel a previously scheduled task-expiry notification.
+ * Safe to call if the notification has already fired or was never registered.
+ */
+export async function cancelScheduledTaskExpiryNotification(notificationId: string): Promise<void> {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+  } catch {
+    // Already fired or removed — nothing to cancel.
+  }
+}
+
+/**
+ * Send an immediate local notification when a preparedness task has expired.
+ * Used as a fallback for tasks that expired before scheduled notifications were introduced.
  */
 export async function sendTaskExpiryNotification(taskTitle: string): Promise<void> {
   await Notifications.scheduleNotificationAsync({
@@ -84,7 +120,27 @@ export async function sendTaskExpiryNotification(taskTitle: string): Promise<voi
       sound: 'default',
       data: { source: 'preparedness-expiry', taskTitle },
     },
-    trigger: null, // fire immediately
+    trigger: { channelId: 'preparedness-expiry' },
+  });
+}
+
+/**
+ * Schedule a debug RTR notification to fire in 1 minute.
+ * Used by the debug settings to test background notification delivery.
+ */
+export async function scheduleRtrTestNotification(): Promise<void> {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: '🚨 Emergency Alert – Austria',
+      body: 'There are 3 active national alerts. Tap to view details.',
+      sound: 'default',
+      data: { source: 'rtr', alertCount: 3, highestLevel: 'AlertLevel3' },
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: new Date(Date.now() + 60 * 1000),
+      channelId: 'alerts',
+    },
   });
 }
 
@@ -111,6 +167,6 @@ export async function sendRtrNotification(alertCount: number, highestLevel: stri
       sound: 'default',
       data: { source: 'rtr', alertCount, highestLevel },
     },
-    trigger: null, // fire immediately
+    trigger: { channelId: 'alerts' },
   });
 }
