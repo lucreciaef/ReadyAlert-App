@@ -2,7 +2,7 @@
   "expo": {
     "name": "ReadyAlert",
     "slug": "ReadyAlert",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -32,8 +32,8 @@
     "android": {
       "package": "com.lucreciaef.readyalert",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FAFCFF"
+        "foregroundImage": "./assets/icon-foreground.png",
+        "backgroundColor": "#FBF6F5"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [

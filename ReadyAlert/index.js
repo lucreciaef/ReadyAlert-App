@@ -1,8 +1,12 @@
 import { registerRootComponent } from 'expo';
+import { recordError } from './src/utils/crashReporting';
 
-import App from './App';
+let App;
+try {
+  App = require('./App').default;
+} catch (error) {
+  recordError(error, 'App module failed to load');
+  App = () => null;
+}
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
 registerRootComponent(App);
